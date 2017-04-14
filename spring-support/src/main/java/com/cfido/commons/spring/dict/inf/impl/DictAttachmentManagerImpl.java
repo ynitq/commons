@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.beans.apiExceptions.SimpleApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.dict.core.DictAdminWebUser;
@@ -26,6 +27,7 @@ import com.linzi.common.loginCheck.ANeedCheckLogin;
  * @author 梁韦江 2016年11月16日
  */
 @Service
+@AApiServerImpl
 @ANeedCheckLogin(userClass = DictAdminWebUser.class)
 public class DictAttachmentManagerImpl implements IDictAttechmentManager {
 

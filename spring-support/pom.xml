@@ -23,11 +23,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>api-server</artifactId>
-		</dependency>
-
-		<dependency>
 			<!-- JMX web管理界面 -->
 			<groupId>com.ynitq.utils</groupId>
 			<artifactId>JmxInWeb</artifactId>

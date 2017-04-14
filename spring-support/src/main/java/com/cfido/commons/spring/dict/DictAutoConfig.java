@@ -1,18 +1,10 @@
 package com.cfido.commons.spring.dict;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import com.cfido.commons.apiServer.adapter.ApiMapContainer;
-import com.cfido.commons.spring.dict.inf.impl.DictAdminUserImpl;
-import com.cfido.commons.spring.dict.inf.impl.DictAttachmentManagerImpl;
-import com.cfido.commons.spring.dict.inf.impl.DictManagerImpl;
 
 /**
  * <pre>
@@ -34,25 +26,6 @@ public class DictAutoConfig extends WebMvcConfigurerAdapter {
 
 	public DictAutoConfig() {
 		log.debug("自动配置  DictAutoConfig");
-	}
-
-	@Autowired
-	private DictManagerImpl manager;
-
-	@Autowired
-	private DictAttachmentManagerImpl attachmentManagerImpl;
-
-	@Autowired
-	private DictAdminUserImpl adminUserImpl;
-
-	@PostConstruct
-	public void init() throws Exception {
-
-		log.info("增加字典管理接口到 api server");
-		ApiMapContainer.getInstance().addImplToMap(manager);
-		ApiMapContainer.getInstance().addImplToMap(adminUserImpl);
-		ApiMapContainer.getInstance().addImplToMap(attachmentManagerImpl);
-
 	}
 
 	@Override

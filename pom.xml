@@ -39,7 +39,6 @@
 		<module>annotation</module>
 		<module>beans</module>
 		<module>utils</module>
-		<module>api-server</module>
 		<module>spring-support</module>
 		<module>code-gen</module>
 		<!-- <module>weixin</module>  -->
@@ -67,12 +66,6 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>utils</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>api-server</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			

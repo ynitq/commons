@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.beans.apiExceptions.SimpleApiException;
 import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
@@ -39,6 +40,7 @@ import com.linzi.common.loginCheck.ANeedCheckLogin;
  */
 @Service
 @ANeedCheckLogin(userClass = DictAdminWebUser.class)
+@AApiServerImpl
 public class DictManagerImpl implements IDictManager {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictManagerImpl.class);

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.beans.apiServer.impl.CommonSuccessResponse;
 import com.cfido.commons.beans.exceptions.security.InvalidPasswordException;
 import com.cfido.commons.beans.form.LoginForm;
@@ -28,6 +29,7 @@ import com.linzi.common.loginCheck.IWebUser;
  * @author 梁韦江 2016年11月16日
  */
 @Service
+@AApiServerImpl
 public class DictAdminUserImpl implements IDictAdminUser {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictAdminUserImpl.class);
