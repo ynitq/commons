@@ -1,0 +1,35 @@
+## 获得所有的表名和备注
+```
+SELECT C.`TABLE_NAME`, C.`TABLE_COMMENT`
+	FROM INFORMATION_SCHEMA.`TABLES` c
+	WHERE c.`TABLE_SCHEMA`='appserver_new'
+```
+
+## 获得所有的字段
+```
+SELECT 
+  c.`COLUMN_NAME`,c.`IS_NULLABLE`,c.`DATA_TYPE`,
+  c.`CHARACTER_MAXIMUM_LENGTH`,c.`NUMERIC_PRECISION`,c.`NUMERIC_SCALE`,
+  c.`EXTRA`,c.`COLUMN_COMMENT`
+FROM INFORMATION_SCHEMA.`COLUMNS` c
+WHERE c.`TABLE_NAME`='server_event_log'
+  AND c.`TABLE_SCHEMA`='appserver_new'
+  ORDER BY c.`ORDINAL_POSITION`
+```
+
+## 获得主键
+```
+SELECT k.`COLUMN_NAME`
+FROM INFORMATION_SCHEMA.`STATISTICS` k
+WHERE k.`TABLE_NAME`='server_event_log' 
+  AND k.`TABLE_SCHEMA`='appserver_new'
+  AND k.`INDEX_NAME`='PRIMARY'
+```
+
+## 获得所有外键
+```
+SELECT k.`COLUMN_NAME`, k.`REFERENCED_TABLE_NAME`,k.`REFERENCED_COLUMN_NAME`
+FROM information_schema.`KEY_COLUMN_USAGE` k 
+WHERE k.`TABLE_NAME`='server_event_log'  AND k.`TABLE_SCHEMA`='appserver_new' 
+AND k.`REFERENCED_TABLE_NAME` IS NOT NULL
+```

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any)-->
+<!--编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any)-->
+<!--编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any)-->
+<!--示例 XML 文件由 XMLSpy v2006 U 创建 (http://www.altova.com)-->
+<Mail xsi:noNamespaceSchemaLocation="..\build\xsd\linZiShh.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <smtp isSsl="true" port="465" password="Dearping20120318" host="smtp.qq.com" user="865906016@qq.com"/>
+  <mailTemplate from="云南林业惠农云服务网">
+    <forgotPasswordMail>
+      <title>${systemName}提醒您重置密码</title>
+      <body><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>重置密码</title>
+<style>
+body {	background:#fff;	font: 90%/130% Arial, Helvetica, sans-serif;}
+a {	color:#36a8fe;	text-decoration:none;}
+a:hover {	text-decoration:underline;}
+p {	margin:15px;}
+hr {	border-color:#ff7300;}
+#content {	width:600px;	margin-left:auto;	margin-right:auto;	padding:10px;	-webkit-border-radius: 5px;	-moz-border-radius: 5px;	border-radius: 5px;	border: 1px solid #ff7300;}
+#title {	text-align:center;	color:#36a8fe;	margin-top:8px;	font-size: 24px;	font-weight:bolder;	text-shadow: 0 1px 1px #000;}
+.name {	color:#ff7300;}
+.sysName {	color:#090;	font-weight:bold;}
+.addTime {color:#C00; font-weight:bold;}
+.url {color:#666}
+</style>
+</head>
+<body>
+<div id="content">
+  <div id="title">请查收您的密码</div>
+  <div><strong>亲爱的会员，您好</strong></div>
+  <hr/>
+  <p> 以下是您的找回密码信息，请查收。如果您本人并没有要求过重置密码，请忽略该邮件。</p>
+  <p>
+    <strong>您的会员名</strong>: <span class="name">${email}</span><br/>
+    <a href="${url}" target="_blank">点击此链接重置您的密码</a></p>
+  <p> 如果链接无效，请复制以下的链接<br/>
+    <span class="url">${url}</span></p>
+<hr/>
+  <p>如果您在使用过程中遇到任何问题，您可以写信给我们:
+  <a href="mailto:service@lin-zi.com" target="_blank">service@lin-zi.com</a> 
+  或者联系我们<span class="sysName">电话 4009947755</span>，我们会尽快为您解决。</p>
+  <p>希望您能继续使用我们的产品。您的支持是我们前进的最大动力。谢谢！</p>
+  <div align="right"><span class="sysName">${systemName}系统</span> 客服团队 </div>
+</div>
+</body>
+</html>]]></body>
+    </forgotPasswordMail>
+    <registerMail>
+      <title>${systemName}提醒您账号注册确认</title>
+      <body><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>欢迎注册</title>
+<style>
+body {	background:#fff;	font: 90%/130% Arial, Helvetica, sans-serif;}
+a {	color:#36a8fe;	text-decoration:none;}
+a:hover {	text-decoration:underline;}
+p {	margin:15px;}
+hr {	border-color:#ff7300;}
+#content {	width:600px;	margin-left:auto;	margin-right:auto;	padding:10px;	-webkit-border-radius: 5px;	-moz-border-radius: 5px;	border-radius: 5px;	border: 1px solid #ff7300;}
+#title {	text-align:center;	color:#36a8fe;	margin-top:8px;	font-size: 24px;	font-weight:bolder;	text-shadow: 0 1px 1px #000;}
+.name {	color:#ff7300;}
+.sysName {	color:#090;	font-weight:bold;}
+.addTime {color:#C00; font-weight:bold;}
+.url {color:#666}
+</style>
+</head>
+<body>
+<div id="content">
+  <div><strong>亲爱的会员，您好</strong></div>
+<hr/>
+  <p> 感谢您使用<span class="sysName">${systemName}</span>，请按下面提示完成注册。
+     如果并不是您本人在注册成为<span class="sysName">${systemName}</span>的会员，请忽略该邮件。</p>
+  <p><strong>您的会员名</strong>: <span class="name">${email}</span><br/>
+  <a href="${url}" target="_blank">点击此链接完成注册的最后一步</a></p>
+  <p> 如果上述文字点击无效，请将以下网页地址复制到浏览器地址栏中打开<br/>
+    <span class="url">${url}</span></p>
+<hr/>
+  <p>如果您在使用过程中遇到任何问题，您可以写信给我们:
+  <a href="mailto:service@lin-zi.com" target="_blank">service@lin-zi.com</a> 
+  或致电我们<span class="sysName">4009947755</span>，我们会尽快为您解决。</p>
+  <p>希望您能继续使用我们的产品。您的支持是我们前进的最大动力。谢谢！</p>
+  <div align="right"><span class="sysName">${systemName}系统</span> 客服团队 </div>
+</div>
+</body>
+</html>]]></body>
+    </registerMail>
+  </mailTemplate>
+</Mail>

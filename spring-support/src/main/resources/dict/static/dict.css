@@ -1,0 +1,206 @@
+body {
+	font-family: "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei",
+		"\9ED1\4F53", Arial, sans-serif;
+	color: #333333;
+	font-size: 14px;
+	min-width: 1200px;
+}
+
+pre {
+	overflow: auto;
+	white-space: pre-wrap;
+	white-space: -moz-pre-wrap;
+	white-space: -pre-wrap;
+	white-space: -o-pre-wrap;
+	word-wrap: break-word;
+}
+
+.navbar-default {
+	z-index: 1000;
+}
+
+.main-box {
+	position: absolute;
+	top: 50px;
+	left: 5px;
+	right: 5px;
+	bottom: 10px;
+	margin: 5px;
+}
+
+.search_mark {
+	color: #ff0000;
+}
+
+#div_left {
+	position: absolute;
+	top: 0px;
+	left: 5px;
+	bottom: 10px;
+	margin: 5px;
+	width: 600px;
+	overflow: auto;
+}
+
+#div_main {
+	position: absolute;
+	top: 0px;
+	left: 620px;
+	bottom: 10px;
+	margin: 5px;
+	right: 5px;
+	min-width: 500px;
+	overflow: auto;
+}
+
+tr.link {
+	cursor: pointer;
+}
+
+.panel-heading h4 {
+	display: inline-block;
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+	margin-bottom: 7px;
+	color: #4db3a4 !important;
+}
+
+.title {
+	color: #4db3a4 !important;
+}
+
+.required {
+	color: #ff0000;
+	margin-left: 5px;
+}
+
+.w100 {
+	min-width: 100px;
+}
+
+.searchPanel {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	margin: 0px;
+}
+
+.searchPanel .panel-body {
+	position: absolute;
+	top: 55px;
+	left: 0px;
+	right: 0px;
+	bottom: 45px;
+	overflow: auto;
+}
+
+.searchPanel .panel-footer {
+	position: absolute;
+	height: 45px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+.searchPanel .pagination {
+	margin: 0px;
+}
+
+.searchPanel .table {
+	margin: 0px;
+}
+
+#div_loading {
+	position: fixed;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	z-index: 2040;
+}
+#div_loading .loading_text {
+	font-size: 14px;
+	margin: auto;
+	width: 200px;
+	text-align: center;
+	line-height:50px;
+	background-color: #fff;
+}
+#div_loading .loading_bg {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+
+	opacity: 0.01;
+	background-color: rgb(0, 0, 0);
+}
+
+#div_left_attach {
+	position: absolute;
+	top: 0px;
+	left: 5px;
+	bottom: 10px;
+	margin: 5px;
+	right:440px;
+	min-width: 600px;
+	overflow: auto;
+}
+
+#div_main_attach {
+	position: absolute;
+	top: 0px;
+	width:420px;
+	bottom: 10px;
+	margin: 5px;
+	right: 5px;
+	overflow: auto;
+}
+
+.attach_div {
+	float: left;
+	width: 160px;
+	height: 205px;
+	margin: 0px 5px;
+}
+
+.attach_div .memo{
+	padding: 5px 5px;
+}
+
+.attach_div .imgDiv {
+	width:150px;
+	height:150px;
+}
+
+.attach_div img {
+	vertical-align:middle;
+}
+
+.attach_div p {
+	padding: 0px;
+	margin: 2px;
+}
+
+.attach_div .other-file {
+	display: block;
+	width:150px;
+	height:150px;
+	background-image: url("img/file.png");
+	text-align: center;
+	line-height: 150px;
+	font-size: 20px;
+}
+
+.attach_div a:HOVER{
+	text-decoration: none;
+}
+
+.thumbnail {
+	margin-bottom: 2px;
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any)-->
+<!--编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any)-->
+<!--编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any)-->
+<!--示例 XML 文件由 XMLSpy v2006 U 创建 (http://www.altova.com)-->
+<Mail xsi:noNamespaceSchemaLocation="..\build\xsd\linZiShh.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <smtp isSsl="true" port="465" password="Dearping20120318" host="smtp.qq.com" user="865906016@qq.com"/>
+  <mailTemplate from="云南林业惠农云服务网">
+    <forgotPasswordMail>
+      <title>${systemName}提醒您重置密码</title>
+      <body>body</body>
+    </forgotPasswordMail>
+    <registerMail>
+      <title>${systemName}提醒您账号注册确认</title>
+      <body>body</body>
+    </registerMail>
+  </mailTemplate>
+</Mail>

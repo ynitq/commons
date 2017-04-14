@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<!-- 编辑使用 XMLSpy v2006 U (http://www.altova.com) 由 any (any) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="IncludeHelper">
+		<xs:annotation>
+			<xs:documentation>Include模块内容</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element name="model">
+					<xs:complexType>
+						<xs:sequence maxOccurs="unbounded">
+							<xs:element name="role">
+								<xs:annotation>
+									<xs:documentation>角色</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence maxOccurs="unbounded">
+										<xs:element name="element">
+											<xs:annotation>
+												<xs:documentation>页面元素</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required">
+													<xs:annotation>
+														<xs:documentation>元素名称</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="isValid" type="xs:boolean" use="optional" default="true">
+													<xs:annotation>
+														<xs:documentation>是否隐藏元素</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="url" type="xs:string" use="required">
+													<xs:annotation>
+														<xs:documentation>元素url</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="isDisabled" type="xs:boolean" use="optional" default="false">
+													<xs:annotation>
+														<xs:documentation>是否可编辑元素</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="desp" type="xs:string" use="required">
+													<xs:annotation>
+														<xs:documentation>功能描述</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="name" type="xs:string" use="required">
+										<xs:annotation>
+											<xs:documentation>角色名称</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="bz" type="xs:string" use="required">
+										<xs:annotation>
+											<xs:documentation>步骤</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="name" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>模块名称</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="mailTemplateType">
+		<xs:sequence>
+			<xs:element name="title" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>邮件标题</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="body" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>邮件正文</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Mail">
+		<xs:annotation>
+			<xs:documentation>发邮件的账号</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="smtp" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>邮件</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="user" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>smtp认证的用户名</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="password" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>smtp认证的密码</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="host" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>gmail:smtp.gmail.com</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="port" type="xs:int" use="required">
+							<xs:annotation>
+								<xs:documentation>gmail:465
+普通:25</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="isSsl" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>是否是SSL连接，大部分都是</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="mailTemplate">
+					<xs:annotation>
+						<xs:documentation>邮件模板
+用FreeMarker</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="forgotPasswordMail" type="mailTemplateType">
+								<xs:annotation>
+									<xs:documentation>忘记密码邮件模板</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="registerMail" type="mailTemplateType">
+								<xs:annotation>
+									<xs:documentation>注册邮件模板</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="from" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>发件人名</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="HelpString">
+		<xs:annotation>
+			<xs:documentation>帮助内容</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded">
+				<xs:element name="help">
+					<xs:annotation>
+						<xs:documentation>一个帮助文字</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="xs:string">
+								<xs:attribute name="id" use="required">
+									<xs:annotation>
+										<xs:documentation>文字的ID</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string"/>
+									</xs:simpleType>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,7 @@
+${AnsiColor.BRIGHT_BLUE}
+
+代码生成工具
+
+版本: ${project.groupId}-{project.artifactId}-{project.version}
+Build: ${AnsiColor.RED}UTC 时间 ${timestamp}
+${AnsiColor.DEFAULT}

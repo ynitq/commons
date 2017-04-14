@@ -1,0 +1,667 @@
+package com.cfido.commons.spring.dict.core;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.xml.bind.JAXBException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import com.cfido.commons.beans.apiExceptions.IdNotFoundException;
+import com.cfido.commons.beans.apiExceptions.MissFieldException;
+import com.cfido.commons.beans.apiExceptions.SimpleApiException;
+import com.cfido.commons.beans.apiExceptions.SystemErrorException;
+import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.spring.debugMode.DebugModeProperties;
+import com.cfido.commons.spring.dict.DictAutoConfig;
+import com.cfido.commons.spring.dict.DictProperties;
+import com.cfido.commons.spring.dict.inf.form.DictAttachmentEditForm;
+import com.cfido.commons.spring.dict.inf.form.DictRowEditForm;
+import com.cfido.commons.spring.dict.inf.form.KeySearchPageForm;
+import com.cfido.commons.spring.dict.inf.responses.DictAttachmentVo;
+import com.cfido.commons.spring.dict.inf.responses.DictVo;
+import com.cfido.commons.spring.dict.schema.DictXml;
+import com.cfido.commons.spring.dict.schema.DictXml.DictAttachmentRow;
+import com.cfido.commons.spring.dict.schema.DictXml.DictXmlRow;
+import com.cfido.commons.spring.imageUpload.ImageUploadService;
+import com.cfido.commons.spring.imageUpload.ImageUploadService.SaveResult;
+import com.cfido.commons.spring.security.LoginCheckInterceptor;
+import com.cfido.commons.spring.utils.WebContextHolderHelper;
+import com.cfido.commons.utils.db.PageQueryResult;
+import com.cfido.commons.utils.utils.DateUtil;
+import com.cfido.commons.utils.utils.EncodeUtil;
+import com.cfido.commons.utils.utils.JaxbUtil;
+
+/**
+ * <pre>
+ * 字典项目的核心服务
+ * </pre>
+ * 
+ * @author 梁韦江 2016年11月15日
+ */
+@Service
+public class DictCoreService {
+
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictCoreService.class);
+
+	public static final String VO_NAME = "dict";
+
+	/** debug模式下的 输出格式 */
+	public static final String DEBUG_FORMAT = "<span title=\"key=%s\">%s</span>";
+
+	@Autowired
+	private DebugModeProperties debugMode;
+
+	@Autowired
+	private DictProperties prop;
+
+	@Autowired
+	private ImageUploadService imageUploadService;
+
+	@Autowired(required = false)
+	private LoginCheckInterceptor loginCheckInterceptor;
+
+	/** 缓存所有帮助文字的map */
+	private final Map<String, DictXmlRow> map = new HashMap<>();
+
+	/** 缓存所有上传的附件的map */
+	private final Map<String, DictAttachmentRow> attahcmentMap = new HashMap<>();
+
+	/** 对操作map时的锁 */
+	private final Lock lockForMap = new ReentrantLock();
+
+	private boolean isNeedSave = false;
+
+	/** 主线程池，处理游戏的各类事件、聊天、发送系统信息等 */
+	private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+	/**
+	 * 删除一个附件
+	 * 
+	 * @throws BaseApiException
+	 * @throws IOException
+	 */
+	public void deleteAttachmengRow(String key) throws BaseApiException, IOException {
+		if (!StringUtils.hasText(key)) {
+			throw new SimpleApiException("请输入关键词");
+		}
+
+		log.debug("删除附件键值:{}", key);
+
+		lockForMap.lock();
+		try {
+			DictAttachmentRow deletedRow = this.attahcmentMap.remove(key);
+
+			if (deletedRow == null) {
+				throw new IdNotFoundException("附件", key);
+			} else {
+				this.imageUploadService.deleteOldFile(deletedRow.getKey(), deletedRow.getExtName());
+			}
+		} finally {
+			lockForMap.unlock();
+		}
+
+		this.isNeedSave = true;
+	}
+
+	/**
+	 * 删除一个键值
+	 * 
+	 * @throws BaseApiException
+	 */
+	public void deleteRow(String key) throws BaseApiException {
+
+		if (!StringUtils.hasText(key)) {
+			throw new SimpleApiException("请输入关键词");
+		}
+
+		log.debug("删除字典键值:{}", key);
+
+		lockForMap.lock();
+		try {
+			DictXmlRow deletedRow = this.map.remove(key);
+
+			if (deletedRow == null) {
+				throw new IdNotFoundException("字典", key);
+			}
+		} finally {
+			lockForMap.unlock();
+		}
+
+		this.isNeedSave = true;
+	}
+
+	/**
+	 * 根据表单查询数据库，并返回封装好的分页结果集
+	 * 
+	 * @param form
+	 * @return
+	 */
+	public PageQueryResult<DictVo> findInPage(KeySearchPageForm form) {
+		log.debug("搜索字典关键字: [{}] , pageNo={} pageSize={}",
+				form.getKey(), form.getPageNo(), form.getPageSize());
+
+		List<DictXmlRow> all = this.getAllFromMap();
+
+		form.verifyPageNo();
+		int start = (form.getPageNo() - 1) * form.getPageSize();// 分页时的起点
+		int point = 0;// 当前指针
+		int totalItem = 0;// 符合条件的总记录数
+		List<DictVo> list = new LinkedList<>();
+		for (DictXmlRow row : all) {
+			if (form.isMatch(row)) {
+				totalItem++;
+				if (point >= start && list.size() < form.getPageSize()) {
+					// 如果到达了某页的起点，并且结果集不到页长度，就添加到结果集中
+					DictVo vo = this.rowToVo(row);
+					vo.updateSearchKeyword(form.getKey());
+					list.add(vo);
+				} else {
+					point++;
+				}
+			}
+		}
+
+		PageQueryResult<DictVo> page = new PageQueryResult<>(totalItem, list, form);
+		return page;
+	}
+
+	/**
+	 * 根据key返回key对应的原始文本，不做html转化
+	 * 
+	 * @return
+	 */
+	public String getRawText(String key) {
+		return this.getStringByKey(key, false, true, null);
+	}
+
+	/**
+	 * 根据key返回key对应的原始文本，不做html转化
+	 * 
+	 * @return
+	 */
+	public String getRawText(String key, String defaultValue) {
+		return this.getStringByKey(key, false, true, defaultValue);
+	}
+
+	/**
+	 * 根据key返回key对于的html代码。这个方法是在模板中调用的。例如 dict["hi"]
+	 */
+	public String get(String key) {
+		return this.getStringByKey(key, true, false, null);
+	}
+
+	/**
+	 * 根据key返回key对于的html代码。这个方法是在模板中调用的。例如 dict["hi"]
+	 * 
+	 * @param key
+	 *            键值
+	 * @param incCounter
+	 *            是否在计数器中+1
+	 * @param onlyRawText
+	 *            是否只返回原始文本
+	 * @return
+	 */
+	private String getStringByKey(String key, boolean incCounter, boolean onlyRawText, String defaultValue) {
+
+		if (!StringUtils.hasText(key)) {
+			return null;
+		}
+
+		DictXmlRow row;
+
+		this.lockForMap.lock();
+		try {
+
+			row = this.map.get(key);
+			if (row == null) {
+
+				log.debug("发现新的键值 {}", key);
+
+				// 如果原来不存在这个key，就创建一条记录
+				row = this.newDefaultEntity(key, defaultValue, true);
+
+				// 在备注里面说明这个是自动添加的，需要处理
+				if (defaultValue != null) {
+					row.setMemo(String.format("第一次发现于: %s (%s)",
+							WebContextHolderHelper.getRequestURL(false),
+							DateUtil.dateFormat(new Date())));
+				}
+
+				// 同时将key放到map中
+				this.map.put(row.getKey(), row);
+			}
+
+			if (incCounter) {
+				// 这个key的使用次数+1，
+				row.setUsedCount(row.getUsedCount() + 1);
+			}
+
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		if (incCounter) {
+			// 每一次get，其实都导致了计数器发生了变化，所以都需要异步保存一下
+			this.asyncSave();
+		}
+
+		if (onlyRawText) {
+			return row.getValue();
+		} else {
+			return this.getRowOutputHtml(row, this.debugMode.isDebugMode());
+		}
+	}
+
+	/**
+	 * 保存附件
+	 * 
+	 * @param form
+	 * @throws BaseApiException
+	 * @throws IOException
+	 */
+	public void saveAttachmentRow(DictAttachmentEditForm form) throws BaseApiException, IOException {
+
+		Assert.hasText(form.getKey());
+
+		SaveResult res = null;
+		if (form.getFile() != null && !form.getFile().isEmpty()) {
+			res = this.imageUploadService.save(form.getFile(), DictAutoConfig.ATTACHMENT_PATH, form.getKey());
+			log.debug("上传的文件保存在 {}", res.getFullPath());
+		}
+
+		this.lockForMap.lock();
+		try {
+			DictAttachmentRow row = this.attahcmentMap.get(form.getKey());
+
+			if (row == null) {
+				// 如果原来没有，就增加
+
+				if (res == null) {
+					throw new MissFieldException("请上传文件");
+				}
+				row = new DictAttachmentRow();
+
+				row.setKey(form.getKey());
+
+				this.attahcmentMap.put(form.getKey(), row);
+			} else {
+				// 如果原来已经存在，并且这次又上传了文件，就需要比较一下扩展名
+				if (res != null && !row.getExtName().equals(res.getExtName())) {
+					// 如果扩展名不同，就需要将原来的存在的文件删除
+					this.imageUploadService.deleteOldFile(form.getKey(), row.getExtName());
+				}
+			}
+
+			// 只有一个备注字段需要更新
+			row.setMemo(form.getMemo());
+
+			if (res != null) {
+				// 如果有上传文件，就保存上传文件内存，非空判断已经在上班做了
+				row.setExtName(res.getExtName());
+				row.setImageFile(res.isImage());
+				row.setPathPrefix(DictAutoConfig.ATTACHMENT_PATH);
+				if (res.isImage()) {
+					// 如果是图片，就需要填写和图片相关的参数
+					row.setImageHeight(res.getImageHeight());
+					row.setImageWidth(res.getImageWidth());
+				}
+			}
+			this.asyncSave();
+
+		} finally {
+			this.lockForMap.unlock();
+		}
+	}
+
+	/**
+	 * 保存一对键值到数据库
+	 */
+	public DictVo saveRow(DictRowEditForm form) {
+
+		Assert.hasText(form.getKey());
+
+		log.debug("保存字典键值 {}", form.getKey());
+
+		this.lockForMap.lock();
+		try {
+			DictXmlRow row = this.map.get(form.getKey());
+
+			if (row == null) {
+				// 手动添加的，todo可以为false
+				row = this.newDefaultEntity(form.getKey(), form.getValue(), false);
+				this.map.put(form.getKey(), row);
+			}
+
+			// 记录一下原来的值，用于比较是否发生了变化
+			String oldValue = row.getValue();
+
+			// 根据表单填写数据
+			row.setValue(form.getValue());
+			row.setHtml(form.isHtml());
+			row.setMemo(form.getMemo());
+
+			if (row.isTodo() && StringUtils.hasText(form.getValue())) {
+				// 如果原来是待处理状态，并且表单中有值，就判断值是否发生了变化
+				row.setTodo(form.getValue().equals(oldValue));
+			}
+
+			this.asyncSave();
+
+			return this.rowToVo(row);
+
+		} finally {
+			this.lockForMap.unlock();
+		}
+	}
+
+	/**
+	 * 异步保存。其实啥都不用干，因为有个定时器在定期保存
+	 */
+	private void asyncSave() {
+		this.isNeedSave = true;
+	}
+
+	/**
+	 * 实际的保存数据
+	 */
+	public void doSaveAll() {
+
+		if (!this.isNeedSave) {
+			return;
+		}
+
+		log.debug("有字典数据发生了变化，需要保存到文件");
+
+		// 执行保存时，取消需要保存的标志位
+		this.isNeedSave = false;
+
+		DictXml xml = new DictXml();
+
+		this.lockForMap.lock();
+		try {
+			// 从map中获取数据的时候，需要锁一下
+			xml.getDictXmlRow().addAll(this.map.values());
+			xml.getDictAttachmentRow().addAll(this.attahcmentMap.values());
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		try {
+			this.saveXml(xml);
+		} catch (JAXBException e) {
+			log.error("保存字典数据到xml文件的时候出错了", e);
+		}
+	}
+
+	/**
+	 * 获取所有附件
+	 */
+	public List<DictAttachmentVo> getAllAttechmentsFromMap() {
+		List<DictAttachmentRow> listAll = new LinkedList<>();
+		this.lockForMap.lock();
+		try {
+			listAll.addAll(this.attahcmentMap.values());
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		// 对两list进行按key排序
+		Comparator<DictAttachmentRow> comparator = new Comparator<DictAttachmentRow>() {
+			@Override
+			public int compare(DictAttachmentRow row1, DictAttachmentRow row2) {
+				return row1.getKey().compareTo(row2.getKey());
+			}
+		};
+		Collections.sort(listAll, comparator);
+
+		List<DictAttachmentVo> voList = new LinkedList<>();
+		for (DictAttachmentRow row : listAll) {
+			String basePath = WebContextHolderHelper.getAttachmentFullPath(null);
+			String thumbPostfix = this.imageUploadService.getThumbPostfix();
+
+			DictAttachmentVo vo = new DictAttachmentVo();
+			vo.updateFromXml(row, basePath, thumbPostfix);
+			voList.add(vo);
+		}
+
+		return voList;
+	}
+
+	/**
+	 * 获得所有的内容,并排好序
+	 * 
+	 * @return
+	 */
+	public List<DictXmlRow> getAllFromMap() {
+		List<DictXmlRow> listAll = new LinkedList<>();
+		this.lockForMap.lock();
+		try {
+			listAll.addAll(this.map.values());
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		// 对两list进行按key排序,先按todo排序，再按名字排序
+		Comparator<DictXmlRow> comparator = new Comparator<DictXmlRow>() {
+			@Override
+			public int compare(DictXmlRow row1, DictXmlRow row2) {
+				if (row1.isTodo() == row2.isTodo()) {
+					return row1.getKey().compareTo(row2.getKey());
+
+				} else {
+					return row1.isTodo() ? -1 : 1;
+				}
+			}
+		};
+		Collections.sort(listAll, comparator);
+
+		return listAll;
+	}
+
+	/**
+	 * 获得输出的html字符串
+	 */
+	private String getRowOutputHtml(DictXmlRow row, boolean debugMode) {
+		// 如果是html模式就直接输出value，否则就需要转码
+		String value = row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false);
+		if (debugMode) {
+			// 如果是debug模式，就用debug的格式
+			return String.format(DEBUG_FORMAT,
+					row.getKey(),
+					value);
+		} else {
+			// 否则就直接输出
+			return value;
+		}
+
+	}
+
+	/**
+	 * 新见PO时的各项默认值
+	 * 
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+	private DictXmlRow newDefaultEntity(String key, String value, boolean todo) {
+
+		DictXmlRow row = new DictXmlRow();
+
+		row.setKey(key);
+		row.setHtml(false);
+		row.setTodo(todo);
+		row.setUsedCount(0);
+
+		if (StringUtils.hasText(value)) {
+			// 如果有默认值，就用默认值
+			row.setValue(value);
+		} else {
+			// 如果没有默认值，就用key作为值
+			row.setValue(key);
+		}
+
+		return row;
+	}
+
+	/**
+	 * 将xml行对象转为vo
+	 */
+	private DictVo rowToVo(DictXmlRow row) {
+		DictVo vo = new DictVo();
+
+		// 通过row设置数据
+		vo.updateFromXml(row);
+
+		// 预览的html
+		vo.setPreview(this.getRowOutputHtml(row, true));
+
+		return vo;
+	}
+
+	@PostConstruct
+	protected void init() throws JAXBException {
+
+		if (this.loginCheckInterceptor == null) {
+			log.info("DictCoreService 初始化失败，需要和LoginCheck一起使用");
+		} else {
+
+			this.loginCheckInterceptor.addCommonModel(VO_NAME, this);
+
+			DictXml xmlDoc = this.getXml();
+
+			// 初始化字典map
+			this.map.clear();
+			int todo = 0;
+			for (DictXmlRow row : xmlDoc.getDictXmlRow()) {
+				this.map.put(row.getKey(), row);
+				if (row.isTodo()) {
+					todo++;
+				}
+			}
+
+			// 初始化附件map
+			this.attahcmentMap.clear();
+			for (DictAttachmentRow row : xmlDoc.getDictAttachmentRow()) {
+				this.attahcmentMap.put(row.getKey(), row);
+			}
+			log.info("初始化 DictCoreService 字典，共 {} 条记录，其中 {} 条待处理中, {} 个附件",
+					xmlDoc.getDictXmlRow().size(), todo, xmlDoc.getDictAttachmentRow().size());
+
+			// 启动定时器，定时检查是否需要保存数据
+			this.scheduledExecutorService.scheduleAtFixedRate(
+					new Runnable() {
+						@Override
+						public void run() {
+							DictCoreService.this.doSaveAll();
+						}
+					},
+					0, this.prop.getSavePeriod(), TimeUnit.SECONDS);
+		}
+	}
+
+	@PreDestroy
+	protected void onShutdown() {
+		// 先将定时器停止了
+		this.scheduledExecutorService.shutdown();
+
+		// shutdown前需要检查一下是否有数据需要保存
+		this.doSaveAll();
+
+	}
+
+	private DictXml getXml() throws JAXBException {
+		DictXml xml;
+
+		String fileName = this.prop.getXmlFullPath();
+
+		File file = new File(fileName);
+		if (!file.exists()) {
+			// 如果文件不存在，就创建默认文件
+			file.getParentFile().mkdirs();
+
+			xml = new DictXml();
+			JaxbUtil.save(xml, file);
+		} else {
+			xml = JaxbUtil.parserXml(DictXml.class, file);
+		}
+		return xml;
+	}
+
+	private void saveXml(DictXml xml) throws JAXBException {
+		String fileName = this.prop.getXmlFullPath();
+		File file = new File(fileName);
+		JaxbUtil.save(xml, file);
+	}
+
+	/**
+	 * 从xml文件导入内容，并覆盖原来的数据
+	 * 
+	 * @throws BaseApiException
+	 */
+	public void importXml(DictXml xml, boolean cleanOld) throws BaseApiException {
+
+		Assert.notNull(xml);
+		Assert.notEmpty(xml.getDictXmlRow());
+
+		// 导入前先备份
+		try {
+			this.backup();
+		} catch (JAXBException e) {
+			log.error("备份字典文件时，发生了错误", e);
+
+			throw new SystemErrorException(e);
+		}
+
+		this.lockForMap.lock();
+		try {
+			if (cleanOld) {
+				// 如果不保留原来的数据，就清空
+				this.map.clear();
+			}
+
+			List<DictXmlRow> list = xml.getDictXmlRow();
+			int todo = 0;
+			for (DictXmlRow row : list) {
+				this.map.put(row.getKey(), row);
+				if (row.isTodo()) {
+					todo++;
+				}
+			}
+			log.info("导入数据完成，共 {} 条记录，其中 {} 条待处理中", list.size(), todo);
+
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		this.asyncSave();
+	}
+
+	private void backup() throws JAXBException {
+		String backupFile = this.prop.getBackupFileFullPath();
+
+		DictXml backupXml = new DictXml();
+		backupXml.getDictXmlRow().addAll(this.getAllFromMap());
+
+		File file = new File(backupFile);
+		JaxbUtil.save(backupXml, file);
+	}
+
+}

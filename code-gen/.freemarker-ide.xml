@@ -1,0 +1,10 @@
+<config>
+	<context-values>
+		<resource path="">
+			<value key="table" object-class="com.linzi.commons.codeGen.models.EnTableVo"/>
+			<value key="column" object-class="com.linzi.commons.codeGen.models.EnColumnVo"/>
+		</resource>
+	</context-values>
+	<macro-library>
+	</macro-library>
+</config>

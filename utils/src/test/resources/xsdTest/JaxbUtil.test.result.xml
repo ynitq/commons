@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Mail>
+    <smtp user="user" password="password" host="host" port="443" isSsl="true"/>
+    <mailTemplate from="from">
+        <forgotPasswordMail>
+            <title>fg title</title>
+            <body>fg body</body>
+        </forgotPasswordMail>
+        <registerMail>
+            <title>reg title</title>
+            <body>reg body</body>
+        </registerMail>
+    </mailTemplate>
+</Mail>

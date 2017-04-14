@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- 主项目直接继承 我们自己定义的parent -->
+	<parent>
+		<groupId>com.cfido.commons</groupId>
+		<artifactId>root-pom</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>spring-support</artifactId>
+	<description>Spring 支持工具集合</description>
+
+	<dependencies>
+		<!-- 我们自己项目的依赖 -->
+		<dependency>
+			<!-- 工具包 -->
+			<groupId>${project.groupId}</groupId>
+			<artifactId>utils</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>api-server</artifactId>
+		</dependency>
+
+		<dependency>
+			<!-- JMX web管理界面 -->
+			<groupId>com.ynitq.utils</groupId>
+			<artifactId>JmxInWeb</artifactId>
+		</dependency>
+		<!-- /我们自己项目的依赖 -->
+
+		<!-- Spring boot 批量依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+<!--  这行容易导致maven 编译是出现递归错误，原因未知
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+ -->		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+		</dependency>
+		<!-- /Spring boot 批量依赖 -->
+
+		<!-- 其他的依赖 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.paho</groupId>
+			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- /其他的依赖 -->
+
+	</dependencies>
+</project>
