@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.Assert;
 
-import com.linzi.common.loginCheck.IWebUser;
+import com.cfido.commons.loginCheck.IWebUser;
 
 /**
  * <pre>

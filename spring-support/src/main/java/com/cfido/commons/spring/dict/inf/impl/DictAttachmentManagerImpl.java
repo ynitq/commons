@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.beans.apiExceptions.SimpleApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.dict.core.DictAdminWebUser;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.dict.inf.IDictAttechmentManager;
@@ -17,7 +18,6 @@ import com.cfido.commons.spring.dict.inf.form.DictAttachmentEditForm;
 import com.cfido.commons.spring.dict.inf.form.DictKeyForm;
 import com.cfido.commons.spring.dict.inf.responses.DictAttachmentSearchResponse;
 import com.cfido.commons.spring.dict.inf.responses.DictAttachmentVo;
-import com.linzi.common.loginCheck.ANeedCheckLogin;
 
 /**
  * <pre>

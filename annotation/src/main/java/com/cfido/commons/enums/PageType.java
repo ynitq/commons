@@ -1,4 +1,4 @@
-package com.linzi.common.enums;
+package com.cfido.commons.enums;
 
 /***
  *  <pre>

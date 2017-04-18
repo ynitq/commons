@@ -10,6 +10,7 @@ import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.beans.apiServer.impl.CommonSuccessResponse;
 import com.cfido.commons.beans.exceptions.security.InvalidPasswordException;
 import com.cfido.commons.beans.form.LoginForm;
+import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.dict.DictProperties;
 import com.cfido.commons.spring.dict.core.DictAdminWebUser;
 import com.cfido.commons.spring.dict.inf.IDictAdminUser;
@@ -19,7 +20,6 @@ import com.cfido.commons.spring.security.IUserServiceForRememberMe;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.security.RememberMeUserHandler;
 import com.cfido.commons.utils.utils.PasswordEncoder;
-import com.linzi.common.loginCheck.IWebUser;
 
 /**
  * <pre>

@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.linzi.common.enums.SearchInputType;
+import com.cfido.commons.enums.SearchInputType;
 
 /**
  * <pre>

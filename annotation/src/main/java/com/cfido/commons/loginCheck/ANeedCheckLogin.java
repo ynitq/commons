@@ -1,4 +1,4 @@
-package com.linzi.common.loginCheck;
+package com.cfido.commons.loginCheck;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

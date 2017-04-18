@@ -17,11 +17,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.impl.CommonErrorResponse;
+import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.monitor.MonitorClientContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.StringUtils;
-import com.linzi.common.loginCheck.ANeedCheckLogin;
 
 /**
  * 认证安全拦截器

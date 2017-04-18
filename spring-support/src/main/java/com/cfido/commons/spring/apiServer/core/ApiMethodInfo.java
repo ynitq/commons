@@ -13,15 +13,15 @@ import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
 import com.cfido.commons.beans.apiServer.ApiCommonCode;
 import com.cfido.commons.beans.apiServer.BaseResponse;
 import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
+import com.cfido.commons.loginCheck.ANeedCheckLogin;
+import com.cfido.commons.loginCheck.IWebUser;
+import com.cfido.commons.loginCheck.IWebUserProvider;
 import com.cfido.commons.spring.apiServer.service.ApiServerController;
 import com.cfido.commons.spring.utils.MockDataCreater;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.BinderUtil;
-import com.linzi.common.loginCheck.ANeedCheckLogin;
-import com.linzi.common.loginCheck.IWebUser;
-import com.linzi.common.loginCheck.IWebUserProvider;
 
 /**
  * <pre>

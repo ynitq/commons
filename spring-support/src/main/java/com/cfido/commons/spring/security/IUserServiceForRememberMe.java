@@ -1,6 +1,6 @@
 package com.cfido.commons.spring.security;
 
-import com.linzi.common.loginCheck.IWebUser;
+import com.cfido.commons.loginCheck.IWebUser;
 
 /**
  * <pre>

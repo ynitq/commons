@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.linzi.common.loginCheck.IWebUser;
+import com.cfido.commons.loginCheck.IWebUser;
 
 /**
  * <pre>

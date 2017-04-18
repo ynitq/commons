@@ -1,4 +1,4 @@
-package com.linzi.common.loginCheck;
+package com.cfido.commons.loginCheck;
 
 /**
  * web项目中，要从session检查的用户对象的基类

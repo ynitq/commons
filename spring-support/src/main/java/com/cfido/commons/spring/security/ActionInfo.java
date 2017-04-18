@@ -11,12 +11,12 @@ import org.springframework.web.method.HandlerMethod;
 import com.cfido.commons.annotation.other.AMonitorIngore;
 import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
 import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
+import com.cfido.commons.loginCheck.ANeedCheckLogin;
+import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.WebUtils;
-import com.linzi.common.loginCheck.ANeedCheckLogin;
-import com.linzi.common.loginCheck.IWebUser;
 
 /**
  * <pre>

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
 
-import com.linzi.common.loginCheck.IWebUser;
+import com.cfido.commons.loginCheck.IWebUser;
 
 /**
  * <pre>

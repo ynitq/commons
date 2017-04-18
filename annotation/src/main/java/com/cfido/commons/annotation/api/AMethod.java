@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.linzi.common.loginCheck.ANeedCheckLogin;
+import com.cfido.commons.loginCheck.ANeedCheckLogin;
 
 /**
  * <pre>

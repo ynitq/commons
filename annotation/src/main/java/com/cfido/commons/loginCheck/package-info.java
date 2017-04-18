@@ -7,4 +7,4 @@
  *  2016年9月1日
  */
 
-package com.linzi.common.loginCheck;
+package com.cfido.commons.loginCheck;

@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cfido.commons.loginCheck.IWebUser;
+import com.cfido.commons.loginCheck.IWebUserProvider;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.web.WebUtils;
-import com.linzi.common.loginCheck.IWebUser;
-import com.linzi.common.loginCheck.IWebUserProvider;
 
 /**
  * <pre>

@@ -7,9 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.dict.core.DictAdminWebUser;
 import com.cfido.commons.spring.security.IUserServiceForRememberMe;
-import com.linzi.common.loginCheck.IWebUser;
 
 /**
  * <pre>

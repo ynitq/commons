@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.utils.utils.BitUtils;
 import com.cfido.commons.utils.utils.EncryptUtil;
 import com.cfido.commons.utils.web.CookieUtils;
-import com.linzi.common.loginCheck.IWebUser;
 
 /**
  * <pre>

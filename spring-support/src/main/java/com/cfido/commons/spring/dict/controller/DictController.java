@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.DictProperties;
 import com.cfido.commons.spring.dict.core.DictAdminWebUser;
@@ -22,7 +23,6 @@ import com.cfido.commons.spring.dict.schema.DictXml.DictXmlRow;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.FileUtil;
-import com.linzi.common.loginCheck.ANeedCheckLogin;
 
 import freemarker.template.TemplateException;
 
