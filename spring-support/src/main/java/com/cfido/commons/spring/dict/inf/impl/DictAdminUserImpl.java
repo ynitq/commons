@@ -81,7 +81,7 @@ public class DictAdminUserImpl implements IDictAdminUser {
 
 	private UserInfoResponse getResponse(IWebUser user) {
 
-		Assert.notNull(user);
+		Assert.notNull(user, "user不能为空");
 
 		UserInfoResponse res = new UserInfoResponse();
 		res.setAccount(user.getUsername());
@@ -92,8 +92,8 @@ public class DictAdminUserImpl implements IDictAdminUser {
 	@Override
 	public UserInfoResponse login(LoginForm form) throws InvalidPasswordException {
 
-		Assert.notNull(form.getAccount());
-		Assert.notNull(form.getPassword());
+		Assert.notNull(form.getAccount(), "账号不能为空");
+		Assert.notNull(form.getPassword(), "密码不能为空");
 
 		log.debug("字典管理用户 {} 登录后台", form.getAccount());
 

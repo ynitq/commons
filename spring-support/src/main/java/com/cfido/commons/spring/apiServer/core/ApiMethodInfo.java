@@ -15,8 +15,8 @@ import com.cfido.commons.beans.apiServer.BaseResponse;
 import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.loginCheck.IWebUser;
-import com.cfido.commons.loginCheck.IWebUserProvider;
-import com.cfido.commons.spring.apiServer.service.ApiServerController;
+import com.cfido.commons.spring.apiServer.service.ApiController;
+import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.utils.MockDataCreater;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
@@ -28,8 +28,7 @@ import com.cfido.commons.utils.web.BinderUtil;
  * 保存接口定义中的一个方法的信息
  * </pre>
  * 
- * @author 梁韦江
- *  2016年6月28日
+ * @author 梁韦江 2016年6月28日
  */
 public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 
@@ -200,7 +199,9 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 */
 	public BaseResponse createMockData() throws Exception {
 		BaseResponse res = MockDataCreater.newInstance(this.returnClass);
-		res.setCode(ApiCommonCode.RESPONSE_OK);
+		if (res != null) {
+			res.setCode(ApiCommonCode.RESPONSE_OK);
+		}
 		return res;
 	}
 
@@ -355,21 +356,20 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	/**
 	 * 检查登录情况，该方法需要用到的 IWebUserProvider 需要从外部注入。所有可用在 invoke前仔细
 	 * 
-	 * @see ApiServerController#onBeforeInvoke
+	 * @see ApiController#onBeforeInvoke
 	 * 
 	 * @param loginedUserProvider
 	 *            已登录用户的查询接口
 	 * @throws InvalidLoginStatusException
 	 *             InvalidLoginStatusException
 	 * 
-	 * @see IWebUserProvider 已登录用户的容器
 	 */
-	public void checkRightUseLoginCheck(IWebUserProvider loginedUserProvider) throws InvalidLoginStatusException {
+	public void checkRights(LoginContext loginedUserProvider) throws InvalidLoginStatusException {
 		if (this.loginCheck == null) {
-
 			return;
 		}
 
+		// 先看看这个方法可支持哪些登录的用户类型
 		Map<Class<? extends IWebUser>, IWebUser> userMap = new HashMap<>(4);
 		for (Class<? extends IWebUser> userClass : this.loginCheck.userClass()) {
 			IWebUser user = loginedUserProvider.getUser(userClass);
@@ -487,10 +487,10 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * @return String
 	 */
 	public String getWebUserClasses() {
-		if (this.loginCheck==null) {
+		if (this.loginCheck == null) {
 			return null;
 		}
-		
+
 		StringBuffer sb = new StringBuffer();
 
 		for (Class<?> clazz : this.loginCheck.userClass()) {

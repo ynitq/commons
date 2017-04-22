@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+import com.cfido.commons.spring.apiServer.ApiServerAutoConfig;
 import com.cfido.commons.spring.debugMode.DebugModeAutoConfig;
 import com.cfido.commons.spring.dict.DictAutoConfig;
 import com.cfido.commons.spring.errorPage.ErrorPageAutoConfig;
@@ -26,13 +27,14 @@ import com.cfido.commons.spring.security.LoginCheckAutoConfig;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Import(value = {
-		DebugModeAutoConfig.class, // debugmode组件，用于设置调试模式
+		DebugModeAutoConfig.class, // debug mode组件，用于设置调试模式
 		DictAutoConfig.class, // 字典组件，用于管理页面上的key
 		LoginCheckAutoConfig.class, // loginCheck简易安全框架
 		JmxInWebConfig.class, // JMX 页面ui
 		ErrorPageAutoConfig.class, // 错误页面处理
 		MonitorClientAutoConfig.class, // 系统监控
 		ImageUploadAutoConfig.class,// 图片上传
+		ApiServerAutoConfig.class, // api server
 })
 public @interface EnableWebPorjectSet {
 

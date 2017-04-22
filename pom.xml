@@ -32,6 +32,7 @@
 		<!-- 时间变量，用于自动写在各个项目的banner中 -->
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+		<version.cfido.commons>1.0.0-SNAPSHOT</version.cfido.commons>
 	</properties>
 
 	<!-- 项目块列表 -->
@@ -52,33 +53,33 @@
 
 			<!-- 我们自己的工具类项目 -->
 			<dependency>
-				<groupId>${project.groupId}</groupId>
+				<groupId>com.cfido.commons</groupId>
 				<artifactId>annotation</artifactId>
-				<version>${project.version}</version>
+				<version>${version.cfido.commons}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>${project.groupId}</groupId>
+				<groupId>com.cfido.commons</groupId>
 				<artifactId>beans</artifactId>
-				<version>${project.version}</version>
+				<version>${version.cfido.commons}</version>
 			</dependency>
 
 			<dependency>
-				<groupId>${project.groupId}</groupId>
+				<groupId>com.cfido.commons</groupId>
 				<artifactId>utils</artifactId>
-				<version>${project.version}</version>
+				<version>${version.cfido.commons}</version>
 			</dependency>
 			
 			<dependency>
 				<groupId>com.cfido.commons</groupId>
 				<artifactId>spring-support</artifactId>
-				<version>${project.version}</version>
+				<version>${version.cfido.commons}</version>
 			</dependency>
 			
 			<dependency>
-				<groupId>${project.groupId}</groupId>
+				<groupId>com.cfido.commons</groupId>
 				<artifactId>code-gen</artifactId>
-				<version>${project.version}</version>
+				<version>${version.cfido.commons}</version>
 			</dependency>
 			<!-- /我们自己的工具类项目 -->
 

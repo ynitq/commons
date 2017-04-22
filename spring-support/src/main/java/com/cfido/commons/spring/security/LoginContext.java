@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cfido.commons.loginCheck.IWebUser;
-import com.cfido.commons.loginCheck.IWebUserProvider;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.web.WebUtils;
 
@@ -21,7 +20,7 @@ import com.cfido.commons.utils.web.WebUtils;
  * @author 梁韦江 2016年8月23日
  */
 @Component
-public class LoginContext implements IWebUserProvider {
+public class LoginContext {
 	private static final String NEXT_PAGE_MSG_SESSION_NAME = "NEXT_PAGE_MSG_SESSION_NAME";
 
 	/**
@@ -55,7 +54,6 @@ public class LoginContext implements IWebUserProvider {
 	 * @param clazz
 	 * @return
 	 */
-	@Override
 	public <T extends IWebUser> T getUser(Class<? extends IWebUser> clazz) {
 		HttpServletRequest request = WebContextHolderHelper.getRequest();
 		HttpServletResponse response = WebContextHolderHelper.getResponse();

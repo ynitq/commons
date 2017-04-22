@@ -75,7 +75,7 @@ public class DictController {
 	@ResponseBody
 	public String manager() throws TemplateException, IOException {
 		Map<String, Object> model = new HashMap<>();
-		model.put("pageTitle", this.prop.getAdmin().getPageTitle());
+		model.put("pageTitle", this.coreService.getSystemName());
 		model.put("adminInProp", this.adminUserImpl.isAdminInPorp());
 
 		String basePath = WebContextHolderHelper.getAttachmentFullPath(null);

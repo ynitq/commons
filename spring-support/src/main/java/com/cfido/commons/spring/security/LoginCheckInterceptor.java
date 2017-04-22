@@ -167,8 +167,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	 *            属性值
 	 */
 	public void addCommonModel(String attrName, Object attrValue) {
-		Assert.hasText(attrName);
-		Assert.notNull(attrValue);
+		Assert.hasText(attrName, "attrName不能为空");
+		Assert.notNull(attrValue, "attrValue不能为空");
 
 		this.commonModel.put(attrName, attrValue);
 	}

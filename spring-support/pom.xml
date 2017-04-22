@@ -53,21 +53,18 @@
 			<scope>provided</scope>
 		</dependency>
 
-<!--  这行容易导致maven 编译是出现递归错误，原因未知
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
- -->		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-		
+
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+
+			<!-- 如果不加这个依赖，elipse会报警告，但如果加了maven 编译会出现递归错误，原因未知，所以只能用scope=test -->
+			<scope>test</scope>
 		</dependency>
 		<!-- /Spring boot 批量依赖 -->
 

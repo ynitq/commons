@@ -184,7 +184,7 @@ public class DictProperties {
 	}
 
 	public void setXmlFile(String fileName) {
-		Assert.hasText(fileName);
+		Assert.hasText(fileName, "文件名不能为空");
 
 		this.xmlFile = fileName;
 	}

@@ -41,7 +41,7 @@ public class MqttSubscriberFactory {
 	 */
 	public MqttSubscriber createSubscriber(String clientId, IMessageListener messageListener) throws MqttException {
 
-		Assert.hasText(clientId);
+		Assert.hasText(clientId, "clientId不能为空");
 
 		log.debug("创建新订阅者 {}", clientId);
 

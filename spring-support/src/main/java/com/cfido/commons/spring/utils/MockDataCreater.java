@@ -10,6 +10,7 @@ import org.springframework.cglib.proxy.MethodProxy;
 
 import com.cfido.commons.annotation.api.AMock;
 import com.cfido.commons.utils.utils.ClassUtil;
+import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.OpenTypeUtil;
 import com.cfido.commons.utils.utils.StringUtils;
 
@@ -84,6 +85,7 @@ public class MockDataCreater {
 	}
 
 	private Object getMockDateForNotList(Class<?> returnCalss, String propName, Method paramMethod) {
+
 		Object propValue = null;
 		if (OpenTypeUtil.isOpenType(returnCalss)) {
 			// 如果是可以直接转的类型，就直接转;
@@ -141,16 +143,25 @@ public class MockDataCreater {
 						// 获取list中的泛型类型
 						Class<?> componentClazz = ClassUtil.getMethodReturnComponentType(paramMethod);
 
-						for (int i = 0; i < size; i++) {
-							list.add(this.getMockDateForNotList(componentClazz, componentClazz.getSimpleName(), paramMethod));
+						if (componentClazz != null) {
+
+							for (int i = 0; i < size; i++) {
+								Object value = this.getMockDateForNotList(componentClazz, componentClazz.getSimpleName(),
+										paramMethod);
+								if (value != null) {
+									list.add(value);
+								} else {
+									break;
+								}
+							}
 						}
 					}
 				} else {
 					propValue = this.getMockDateForNotList(returnCalss, propName, paramMethod);
 				}
 			}
-		} catch (Throwable ex) {
-			ex.printStackTrace();
+		} catch (Throwable e) {
+			LogUtil.traceError(log, e);
 		}
 
 		return propValue;

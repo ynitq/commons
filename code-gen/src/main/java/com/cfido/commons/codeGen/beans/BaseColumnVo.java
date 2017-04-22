@@ -9,8 +9,8 @@ import org.springframework.util.Assert;
 
 import com.cfido.commons.codeGen.convertor.MysqlDataTypeConvertor;
 import com.cfido.commons.codeGen.core.MetadataReader.ColumnInfo;
-import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.utils.MBeanUtils.IgnoreWhenObjectToMap;
+import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -41,8 +41,8 @@ public abstract class BaseColumnVo implements IColumnBean {
 	private final MysqlDataTypeConvertor dataTypeConvertor = MysqlDataTypeConvertor.getInstance();
 
 	public BaseColumnVo(TableBean table, ColumnInfo info) {
-		Assert.notNull(table);
-		Assert.notNull(info);
+		Assert.notNull(table, "table不能为空");
+		Assert.notNull(info, "字段信息不能为空");
 
 		// 原始数据
 		this.table = table;
@@ -199,7 +199,7 @@ public abstract class BaseColumnVo implements IColumnBean {
 	}
 
 	public void setRefTable(TableBean refTable) {
-		Assert.notNull(refTable);
+		Assert.notNull(refTable, "关联表不能为空");
 
 		this.refTable = refTable;
 	}

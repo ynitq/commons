@@ -1,13 +1,14 @@
 package com.cfido.commons.spring.apiServer.service;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractJsonpResponseBodyAdvice;
 
 import com.alibaba.fastjson.JSON;
@@ -16,6 +17,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.BaseResponse;
 import com.cfido.commons.spring.apiServer.core.ApiMethodInfo;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
+import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.BinderUtil;
@@ -33,11 +35,11 @@ import com.cfido.commons.utils.web.WebUtils;
  * 
  * @author 梁韦江 2016年6月30日
  */
-@Controller
+@RestController
 @RequestMapping("/api")
-public class ApiServerController {
+public class ApiController {
 
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ApiServerController.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ApiController.class);
 
 	@Autowired
 	private ApiMapContainer apiMapContainer;
@@ -45,11 +47,29 @@ public class ApiServerController {
 	@Autowired
 	private DebugModeProperties debugMode;
 
+	@Autowired(required = false)
+	private LoginContext loginContext;
+
+	/** 额外的安全服务，如果能找到，就用这个作为安全服务，否则就直接用loginContext */
+	@Autowired(required = false)
+	private IApiControllerSecurityService securityService;
+
 	/**
 	 * 用于自动判断是否是jsonp的情况
 	 */
 	protected String getJsonpParamName() {
 		return "callback";
+	}
+
+	@PostConstruct
+	protected void init() {
+		if (this.securityService != null) {
+			log.info("{} 有特殊的安全服务者 {}", this.getClass().getSimpleName(), this.securityService.getClass().getSimpleName());
+		} else {
+			if (this.loginContext == null) {
+				log.warn("警告！！ {} 没有任何安全保障，请检查");
+			}
+		}
 	}
 
 	/**
@@ -62,9 +82,17 @@ public class ApiServerController {
 	 * @param methodInfo
 	 *            ApiMethodInfo
 	 */
-	protected void onBeforeInvoke(HttpServletRequest req, HttpServletResponse resp, ApiMethodInfo methodInfo)
+	private void onBeforeInvoke(HttpServletRequest req, HttpServletResponse resp, ApiMethodInfo methodInfo)
 			throws BaseApiException {
 
+		if (methodInfo.isNeedLogin()) {
+			if (this.securityService != null) {
+				this.securityService.onBeforeInvoke(req, resp, methodInfo);
+			} else {
+				// 否则就用LoginCheck的安全检查
+				methodInfo.checkRights(this.loginContext);
+			}
+		}
 	}
 
 	@RequestMapping(value = "/{infName}/{methodName}")

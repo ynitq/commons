@@ -73,12 +73,12 @@ public class MqttPublisherService extends BaseMqttService {
 	@ManagedOperation(description = "发送消息")
 	@ManagedOperationParameters({
 			@ManagedOperationParameter(description = "主题名", name = "topic"),
-			@ManagedOperationParameter(description = "要发送的内容", name = "msg"),
+			@ManagedOperationParameter(description = "要发送的内容", name = "plainText"),
 			@ManagedOperationParameter(description = "是否保存为最后一条", name = "retained")
 	})
 	public boolean publish(String topic, String plainText, boolean retained) {
-		Assert.hasText(topic);
-		Assert.hasText(plainText);
+		Assert.hasText(topic, "主题不能为空");
+		Assert.hasText(plainText, "内容不能为空");
 
 		try {
 			this.connect();

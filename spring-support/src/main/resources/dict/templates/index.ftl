@@ -6,9 +6,9 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="/webjars/dropify/0.2.1/dist/css/dropify.css">
-<link rel="stylesheet" type="text/css" href="/dict/static/lib/toastr/2.1.2/build/toastr.min.css">
+<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/toastr.js/2.1.3/toastr.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/Dropify/0.2.2/css/dropify.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/dict/static/dict.css">
 </head>
 
@@ -64,15 +64,12 @@
 	</div>
 </body>
 
-<!-- wabjar库 -->
-<script src="/webjars/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
-<script src="/webjars/jquery-form/3.51/jquery.form.js" type="text/javascript"></script>
-<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="/webjars/dropify/0.2.1/dist/js/dropify.js" type="text/javascript"></script>
-
-<!-- 本地库 -->
-<script src="/dict/static/lib/toastr/2.1.2/build/toastr.min.js"></script>
-<script src='/dict/static/lib/vue/2.0.5/vue.min.js'></script>
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.min.js"></script>
+<script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
 
 <!-- 自己的js -->
 <script src="/dict/static/linzi-util.js" type="text/javascript"></script>

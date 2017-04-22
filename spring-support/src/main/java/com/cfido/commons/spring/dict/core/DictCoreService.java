@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -279,7 +280,7 @@ public class DictCoreService {
 	 */
 	public void saveAttachmentRow(DictAttachmentEditForm form) throws BaseApiException, IOException {
 
-		Assert.hasText(form.getKey());
+		Assert.hasText(form.getKey(), "key不能为空");
 
 		SaveResult res = null;
 		if (form.getFile() != null && !form.getFile().isEmpty()) {
@@ -336,7 +337,7 @@ public class DictCoreService {
 	 */
 	public DictVo saveRow(DictRowEditForm form) {
 
-		Assert.hasText(form.getKey());
+		Assert.hasText(form.getKey(), "key不能为空");
 
 		log.debug("保存字典键值 {}", form.getKey());
 
@@ -618,8 +619,8 @@ public class DictCoreService {
 	 */
 	public void importXml(DictXml xml, boolean cleanOld) throws BaseApiException {
 
-		Assert.notNull(xml);
-		Assert.notEmpty(xml.getDictXmlRow());
+		Assert.notNull(xml, "字典xml不能为空");
+		Assert.notEmpty(xml.getDictXmlRow(), "字典必须有数据不能为空");
 
 		// 导入前先备份
 		try {
@@ -662,6 +663,20 @@ public class DictCoreService {
 
 		File file = new File(backupFile);
 		JaxbUtil.save(backupXml, file);
+	}
+
+	/**
+	 * 将当前对象放入freemark的model用于非request请求
+	 */
+	public void addToModel(ModelMap model) {
+		model.addAttribute(VO_NAME, this);
+	}
+
+	/**
+	 * 我们用一个key来保存当前应用的名字，这个名字用于字典页面、api测试页面等地方
+	 */
+	public String getSystemName() {
+		return this.getRawText("system.name");
 	}
 
 }

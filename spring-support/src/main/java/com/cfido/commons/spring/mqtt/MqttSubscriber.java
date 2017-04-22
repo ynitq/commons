@@ -92,7 +92,7 @@ public class MqttSubscriber extends BaseMqttService {
 	})
 	public boolean subscribe(String topic) {
 
-		Assert.hasText(topic);
+		Assert.hasText(topic, "主题不能为空");
 
 		try {
 			this.connect();

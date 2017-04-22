@@ -180,7 +180,7 @@ public class CodeGenMainService {
 	 * @throws IOException
 	 */
 	private void doCreateFileByTemplate(String templateDir) throws IOException {
-		Assert.hasText(templateDir);
+		Assert.hasText(templateDir, "模板目录不能为空");
 
 		// 扫描，并获得所有的模板
 		List<String> templateList = ResourceScaner.scan(templateDir);

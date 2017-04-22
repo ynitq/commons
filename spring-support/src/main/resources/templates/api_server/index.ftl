@@ -8,12 +8,14 @@
 <meta http-equiv="Expires" content="0" />
 <meta http-equiv="Cache-Control" content="must-revalidate" />
 <title>${pageTitle} - API测试</title>
-<link rel="stylesheet" type="text/css" href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="/webjars/dropify/0.2.1/dist/css/dropify.css">
-<script src="/webjars/jquery/1.11.1/jquery.min.js" type="text/javascript"></script>
-<script src="/webjars/jquery-form/3.51/jquery.form.js" type="text/javascript"></script>
-<script src="/webjars/dropify/0.2.1/dist/js/dropify.js" type="text/javascript"></script>
-<script src="/webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/Dropify/0.2.2/css/dropify.min.css" rel="stylesheet">
+<link href="https://cdn.bootcss.com/toastr.js/2.1.3/toastr.min.css" rel="stylesheet">
+
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.min.js"></script>
+<script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <style>
 .msgWin {
@@ -163,7 +165,7 @@ a:VISITED {
 	<nav class="navbar navbar-default" role="navigation">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand">API测试 ${apiServerUrl}</a>
+				<a class="navbar-brand">${pageTitle} - API测试 </a>
 			</div>
 
 			<div class="navbar-collapse">

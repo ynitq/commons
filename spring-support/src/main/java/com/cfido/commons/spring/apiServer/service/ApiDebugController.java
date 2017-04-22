@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cfido.commons.spring.apiServer.core.DebugPageVo;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
+import com.cfido.commons.spring.dict.core.DictCoreService;
 
 import freemarker.template.TemplateException;
 
@@ -43,6 +44,9 @@ public class ApiDebugController {
 	@Autowired
 	private ApiServerTemplateService templateService;
 
+	@Autowired(required = false)
+	private DictCoreService dictCoreService;
+
 	@RequestMapping("/")
 	@ResponseBody
 	public String index(ModelMap model, String token) throws TemplateException, IOException {
@@ -51,28 +55,17 @@ public class ApiDebugController {
 		DebugPageVo vo = this.apiMapContainer.getDebugPageVo(apiUtlPrefix);
 
 		model.addAttribute("vo", vo);
-		model.addAttribute("pageTitle", this.getPageTitle());
 		model.addAttribute("token", token);
-		model.addAttribute("apiServerUrl", this.getApiServerUrl());
+		if (this.dictCoreService != null) {
+			model.addAttribute("pageTitle", this.dictCoreService.getSystemName());
+			this.dictCoreService.addToModel(model);
+		}
 
 		if (this.debugMode.isDebugMode()) {
 			return this.templateService.process("index", model);
 		} else {
 			return "isDebugMode=false";
 		}
-	}
-
-	public String getPageTitle() {
-		return "xxx";
-	}
-
-	/**
-	 * 获得api server的路径，用于配置跨域调试
-	 * 
-	 * @return
-	 */
-	public String getApiServerUrl() {
-		return "";
 	}
 
 	@RequestMapping("headers")

@@ -9,8 +9,11 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.annotation.api.AMethod;
 import com.cfido.commons.spring.apiServer.core.ApiMethodInfo;
 import com.cfido.commons.spring.apiServer.core.ApiServerInitException;
@@ -30,14 +33,21 @@ public class ApiMapContainer {
 
 	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
+	@Autowired
+	private ApplicationContext applicationContext;
+
 	private final Map<String, ApiMethodInfo> apiMap = new HashMap<>();
 
 	public ApiMapContainer() {
 	}
 
 	@PostConstruct
-	protected void init() {
-		// TODO 自动寻找所有的实现类
+	protected void init() throws ApiServerInitException {
+		// 自动寻找所有的实现类
+		Map<String, Object> map = this.applicationContext.getBeansWithAnnotation(AApiServerImpl.class);
+		for (Object implObj : map.values()) {
+			this.addImplToMap(implObj);
+		}
 	}
 
 	/**
