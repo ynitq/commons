@@ -14,7 +14,7 @@ public interface IUserServiceForRememberMe {
 	/**
 	 * 需要声明这个类支持那些WebUser类
 	 */
-	String[] getSupportUserClassNames();
+	Class<? extends IWebUser> getSupportUserClassNames();
 
 	/**
 	 * 根据用户名获得用户

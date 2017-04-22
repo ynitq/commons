@@ -1,10 +1,8 @@
 package com.cfido.commons.spring.apiServer.core;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.annotation.api.AForm;
@@ -12,9 +10,7 @@ import com.cfido.commons.annotation.api.AMethod;
 import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
 import com.cfido.commons.beans.apiServer.ApiCommonCode;
 import com.cfido.commons.beans.apiServer.BaseResponse;
-import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
-import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.apiServer.service.ApiController;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.utils.MockDataCreater;
@@ -365,39 +361,9 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * 
 	 */
 	public void checkRights(LoginContext loginedUserProvider) throws InvalidLoginStatusException {
-		if (this.loginCheck == null) {
-			return;
-		}
 
-		// 先看看这个方法可支持哪些登录的用户类型
-		Map<Class<? extends IWebUser>, IWebUser> userMap = new HashMap<>(4);
-		for (Class<? extends IWebUser> userClass : this.loginCheck.userClass()) {
-			IWebUser user = loginedUserProvider.getUser(userClass);
-			if (user != null) {
-				userMap.put(userClass, user);
-			}
-		}
+		loginedUserProvider.checkRight(this.loginCheck);
 
-		if (userMap.isEmpty()) {
-			// 如果没找到登录用户就抛错
-			throw new InvalidLoginStatusException();
-		}
-
-		if (StringUtils.isEmpty(this.loginCheck.optId())) {
-			// 如果没有指定需要特殊检查的权限id，就直接通过
-			return;
-		}
-
-		// 遍历所有的用户，检查指定要特殊检查的权限id
-		for (IWebUser user : userMap.values()) {
-			if (user.checkRights(this.loginCheck.optId())) {
-				// 只要有其中一个用户能通过权限校验，就当通过了
-				return;
-			}
-		}
-
-		// 如果所有用户的权限都无法满足当前权限,就抛错
-		throw new PermissionDeniedException();
 	}
 
 	/**
@@ -444,23 +410,6 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	}
 
 	/**
-	 * 该方法调用时，是否需要检查指定用户类型的登录状态
-	 */
-	public boolean isNeedLogin(Class<? extends IWebUser> webUserClass) {
-		if (this.loginCheck == null) {
-			return false;
-		}
-
-		for (Class<?> clazz : this.loginCheck.userClass()) {
-			if (clazz == webUserClass) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * 接口中是否需要上传文件
 	 * 
 	 * @return boolean
@@ -489,18 +438,9 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	public String getWebUserClasses() {
 		if (this.loginCheck == null) {
 			return null;
+		} else {
+			return this.loginCheck.userClass().getSimpleName();
 		}
-
-		StringBuffer sb = new StringBuffer();
-
-		for (Class<?> clazz : this.loginCheck.userClass()) {
-			if (sb.length() > 0) {
-				sb.append(',');
-			}
-			sb.append(clazz.getSimpleName());
-		}
-
-		return sb.toString();
 	}
 
 	/**

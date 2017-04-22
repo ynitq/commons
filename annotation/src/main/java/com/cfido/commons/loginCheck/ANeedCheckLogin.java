@@ -26,7 +26,7 @@ public @interface ANeedCheckLogin {
 	 * 
 	 * @return
 	 */
-	Class<? extends IWebUser>[] userClass();
+	Class<? extends IWebUser> userClass();
 
 	/**
 	 * 要检查的权限id，如果是-1表示任何权限

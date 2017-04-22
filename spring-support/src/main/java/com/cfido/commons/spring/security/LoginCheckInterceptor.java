@@ -78,7 +78,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		this.context.addMsgFromPrevPage(request);
 
 		// 先获取目标方法的信息
-		ActionInfo info = ActionInfo.create(request, target, this.context);
+		String defaultLoginUrl = this.context.getProp().getLoginUrl();// 默认的登录url
+		ActionInfo info = ActionInfo.create(request, target, defaultLoginUrl);
 		this.context.saveActionInfo(info);
 
 		// 如果这个方法需要统计访问次数并汇报给监控系统
@@ -96,7 +97,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		}
 
 		try {
-			info.checkLogin();
+			this.context.checkRight(info.getLoginCheck());
 		} catch (BaseApiException ex) {
 			if (info.isAjax()) {
 				// 如果是ajax，就输出json格式的错误信息

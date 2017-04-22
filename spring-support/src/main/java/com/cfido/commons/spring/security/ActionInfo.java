@@ -1,18 +1,13 @@
 package com.cfido.commons.spring.security;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.method.HandlerMethod;
 
 import com.cfido.commons.annotation.other.AMonitorIngore;
-import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
-import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
-import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.StringUtils;
@@ -31,14 +26,13 @@ public class ActionInfo {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ActionInfo.class);
 
-	/**
-	 * 要检查的在http session中的用户类的类型
-	 */
-	private final Map<Class<? extends IWebUser>, IWebUser> userMap = new HashMap<>(4);
-
 	private boolean isAjax = false;
 
 	private ANeedCheckLogin loginCheck;
+
+	public ANeedCheckLogin getLoginCheck() {
+		return loginCheck;
+	}
 
 	private final long createTime = System.currentTimeMillis();
 
@@ -76,40 +70,6 @@ public class ActionInfo {
 	}
 
 	/**
-	 * 检查登录状态
-	 * 
-	 * @throws InvalidLoginStatusException
-	 */
-	protected void checkLogin() throws InvalidLoginStatusException {
-		if (!this.isNeedCheckLogin()) {
-			// 如果根本不需要检查权限，则直接通过检查
-			return;
-		}
-
-		if (this.userMap.isEmpty()) {
-			// 如果没找到登录用户就抛错
-			throw new InvalidLoginStatusException();
-		}
-
-		if (StringUtils.isEmpty(this.loginCheck.optId())) {
-			// 如果没有指定需要特殊检查的权限id，就直接通过
-			return;
-		}
-
-		// 遍历所有的用户，检查指定要特殊检查的权限id
-		for (IWebUser user : this.userMap.values()) {
-			if (user.checkRights(this.loginCheck.optId())) {
-				// 只要有其中一个用户能通过权限校验，就当通过了
-				return;
-			}
-		}
-
-		// 如果所有用户的权限都无法满足当前权限,就抛错
-		throw new PermissionDeniedException();
-
-	}
-
-	/**
 	 * 通过拦截器传过来的参数，初始化
 	 * 
 	 * @param request
@@ -119,7 +79,7 @@ public class ActionInfo {
 	 * @param context
 	 *            LoginContext
 	 */
-	private void init(HttpServletRequest request, HandlerMethod handlerMethod, LoginContext context) {
+	private void init(HttpServletRequest request, HandlerMethod handlerMethod, String defaultLoginUrl) {
 
 		Class<?> clazz = handlerMethod.getBean().getClass();
 		Method method = handlerMethod.getMethod();
@@ -131,17 +91,10 @@ public class ActionInfo {
 			this.loginCheck = method.getDeclaringClass().getAnnotation(ANeedCheckLogin.class);
 		}
 		if (this.loginCheck != null) {
-			// 如果该方法需要检查登录，则将从session中将注解中声明的所有用户类型获取出来
-			for (Class<? extends IWebUser> userClass : this.loginCheck.userClass()) {
-				IWebUser user = context.getUser(userClass);
-				if (user != null) {
-					this.userMap.put(userClass, user);
-				}
-			}
 
 			// 有些检查 注解中的登录url，如果注解中没有什么，就用配置文件中
 			if (StringUtils.isEmpty(this.loginCheck.loginUrl())) {
-				this.loginUrl = context.getProp().getLoginUrl();
+				this.loginUrl = defaultLoginUrl;
 			} else {
 				this.loginUrl = this.loginCheck.loginUrl();
 			}
@@ -167,7 +120,7 @@ public class ActionInfo {
 
 			if (loginCheck != null) {
 				debugMsg.append(LogUtil.format(" 需要安全验证: %s ",
-						loginCheck.userClass()[0].getSimpleName()));
+						loginCheck.userClass().getSimpleName()));
 			}
 		}
 
@@ -212,12 +165,12 @@ public class ActionInfo {
 	 * @param target
 	 * @return
 	 */
-	protected static ActionInfo create(HttpServletRequest request, Object target, LoginContext context) {
+	protected static ActionInfo create(HttpServletRequest request, Object target, String defaultLoginUrl) {
 		ActionInfo res = new ActionInfo();
 		res.initDebugMsg(request);
 
 		if (target instanceof org.springframework.web.method.HandlerMethod) {
-			res.init(request, (HandlerMethod) target, context);
+			res.init(request, (HandlerMethod) target, defaultLoginUrl);
 		} else {
 			if (log.isDebugEnabled()) {
 				res.debugMsg.append(" 其他Handler ").append(target.getClass().getSimpleName());

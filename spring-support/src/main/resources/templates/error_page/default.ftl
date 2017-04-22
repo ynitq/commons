@@ -8,9 +8,7 @@
 <meta http-equiv="Expires" content="0" />
 <meta http-equiv="Cache-Control" content="must-revalidate" />
 <title>出错了</title>
-<link rel="stylesheet" type="text/css"
-	href="/webjars/bootstrap/3.3.6/css/bootstrap.min.css">
-</head>
+<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"></head>
 <style>
 .errorPage {
 	margin-top: 100px;

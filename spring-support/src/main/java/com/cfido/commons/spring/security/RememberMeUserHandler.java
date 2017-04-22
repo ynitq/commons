@@ -43,7 +43,7 @@ public class RememberMeUserHandler {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	private final Map<String, IUserServiceForRememberMe> userProviderMap = new HashMap<>();
+	private final Map<Class<? extends IWebUser>, IUserServiceForRememberMe> userProviderMap = new HashMap<>();
 
 	protected static class CookieValue {
 		String username;
@@ -145,7 +145,7 @@ public class RememberMeUserHandler {
 		if (!this.isEnable()) {
 			return null;
 		}
-		
+
 		Assert.notNull(request, "request 不能为空 ");
 		Assert.notNull(clazz, "clazz 不能为空 ");
 
@@ -162,7 +162,7 @@ public class RememberMeUserHandler {
 
 		if (value != null) {
 			// 根据用户class寻找这个用户类型的数据提供者
-			IUserServiceForRememberMe userProvider = this.userProviderMap.get(clazz.getName());
+			IUserServiceForRememberMe userProvider = this.userProviderMap.get(clazz);
 			if (userProvider != null) {
 				// 如果能找到
 				IWebUser tmpUser = userProvider.loadUserByUsername(value.username);
@@ -302,17 +302,14 @@ public class RememberMeUserHandler {
 	 * 判断是否已经存在了一种用户类型的属性提供者
 	 */
 	public IUserServiceForRememberMe getUserProvider(Class<? extends IWebUser> clazz) {
-		return this.userProviderMap.get(clazz.getName());
+		return this.userProviderMap.get(clazz);
 	}
 
 	public void addUserProvider(IUserServiceForRememberMe userProvider) {
-		String[] supportUserClassNames = userProvider.getSupportUserClassNames();
-		if (supportUserClassNames != null) {
-			for (String name : supportUserClassNames) {
-				this.userProviderMap.put(name, userProvider);
-				log.debug("找到类型:{} 的用户信息提供者 {}",
-						name, userProvider.getClass().getName());
-			}
-		}
+		Class<? extends IWebUser> clazz = userProvider.getSupportUserClassNames();
+		this.userProviderMap.put(clazz, userProvider);
+
+		log.debug("找到类型:{} 的用户信息提供者 {}",
+				clazz.getName(), userProvider.getClass().getName());
 	}
 }

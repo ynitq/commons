@@ -38,8 +38,7 @@ public class DictProperties {
 
 	/** 管理页面的url */
 	public final static String MANAGER_URL = "/dict/manager";
-	
-	
+
 	/** Js的url */
 	public final static String DICT_JS = "/dict/dictJs.js";
 
@@ -98,8 +97,8 @@ public class DictProperties {
 	public class AdminUserProvider implements IUserServiceForRememberMe {
 
 		@Override
-		public String[] getSupportUserClassNames() {
-			return new String[] { DictAdminWebUser.class.getName(), };
+		public Class<? extends IWebUser> getSupportUserClassNames() {
+			return DictAdminWebUser.class;
 		}
 
 		@Override
