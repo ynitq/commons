@@ -17,7 +17,7 @@
 	<dependencies>
 		<!-- 我们自己项目的依赖 -->
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>com.cfido.commons</groupId>
 			<artifactId>beans</artifactId>
 		</dependency>
 		<!-- /我们自己项目的依赖 -->
@@ -58,12 +58,6 @@
 		<!-- /特殊的依赖 -->
 
 		<!-- Sping boot内置的依赖，全部作为provided处理 -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
@@ -150,38 +144,6 @@
 	</dependencies>
 
 	<build>
-		<finalName>linzi-commons-utils-${project.version}</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.properties</include>
-					<include>**/*.xml</include>
-				</includes>
-				<!-- 是否替换资源中的属性 -->
-				<filtering>false</filtering>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-
-		<testResources>
-			<testResource>
-				<directory>src/test/java</directory>
-				<includes>
-					<include>**/*.properties</include>
-					<include>**/*.xml</include>
-					<include>**/*</include>
-				</includes>
-				<!-- 是否替换资源中的属性 -->
-				<filtering>false</filtering>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources</directory>
-			</testResource>
-		</testResources>
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -204,8 +166,6 @@
 					<nohelp>true</nohelp>
 					<show>private</show>
 					<doctitle>常用工具集</doctitle>
-					<bottom><![CDATA[Copyright 2016, <a href="http://www.lin-zi.com" target="_blank">云南林资科技有限公司<a>]]>
-					</bottom>
 					<additionalJOptions>
 						<additionalJOption>-J-Duser.language=zh</additionalJOption>
 						<additionalJOption>-J-Duser.region=CN</additionalJOption>
