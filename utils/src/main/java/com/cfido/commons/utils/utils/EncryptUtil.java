@@ -15,13 +15,14 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.Base64.Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * 各类编码工具，包括base64 desc md5 rsa等等
@@ -43,7 +44,7 @@ public class EncryptUtil {
 			this.privateKey = privateKey;
 			this.publicKey = publicKey;
 
-			Base64 b = new Base64();
+			Encoder b = Base64.getEncoder();
 			this.privateKeyStr = new String(b.encode(privateKey.getEncoded()));
 			this.publicKeyStr = new String(b.encode(publicKey.getEncoded()));
 		}
@@ -67,14 +68,6 @@ public class EncryptUtil {
 	}
 
 	private final static char[] hexDigits = "0123456789abcdef".toCharArray();
-
-	public static String base64Decode(String str) {
-		return new String(org.apache.commons.codec.binary.Base64.decodeBase64(str.getBytes()));
-	}
-
-	public static String base64Encode(String str) {
-		return new String(org.apache.commons.codec.binary.Base64.encodeBase64(str.getBytes()));
-	}
 
 	/**
 	 * 字节数组 -- 十六进制字符串
@@ -242,7 +235,7 @@ public class EncryptUtil {
 
 	public static RSAPrivateKey loadRsaPrivateKey(String privateKeyStr) throws EncryptException {
 		try {
-			byte[] buffer = Base64.decodeBase64(privateKeyStr.getBytes());
+			byte[] buffer = Base64.getDecoder().decode(privateKeyStr.getBytes());
 			PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
@@ -261,7 +254,7 @@ public class EncryptUtil {
 	 */
 	public static RSAPublicKey loadRsaPublicKey(String publicKeyStr) throws EncryptException {
 		try {
-			byte[] buffer = Base64.decodeBase64(publicKeyStr.getBytes());
+			byte[] buffer = Base64.getDecoder().decode(publicKeyStr.getBytes());
 			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 			X509EncodedKeySpec keySpec = new X509EncodedKeySpec(buffer);
 			return (RSAPublicKey) keyFactory.generatePublic(keySpec);
