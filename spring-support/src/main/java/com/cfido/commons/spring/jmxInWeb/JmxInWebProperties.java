@@ -13,11 +13,14 @@ import com.cfido.commons.spring.security.IUserServiceForRememberMe;
 
 /**
  * <pre>
- * 配置
+ * 可配置参数
  * 
  * jmxInWeb.admin.account=admin
  * jmxInWeb.admin.password=linzi777
  * </pre>
+ * 
+ * @see IUserServiceForRememberMe
+ *      如果spring能找到一个实现了IUserServiceForRememberMe接口的服务，并且该接口是提供给{@link JwWebUser}的，则使用这个服务来验证用户，否则就用系统内置的
  * 
  * @author 梁韦江 2016年8月26日
  */

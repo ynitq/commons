@@ -4,14 +4,17 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
+
 /**
  * <pre>
- * 自动启动jmx的web管理界面
+ * 自动配置jmx的web管理界面
  * 
  * </pre>
  * 
- * @author 梁韦江
- *  2016年8月11日
+ * @see JmxInWebService 配置后可以使用该服务注册和反注册mbean
+ * 
+ * @author 梁韦江 2016年8月11日
  */
 @Configuration
 @ComponentScan(basePackageClasses = JmxInWebAutoConfig.class)

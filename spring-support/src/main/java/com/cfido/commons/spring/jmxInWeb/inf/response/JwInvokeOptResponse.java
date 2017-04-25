@@ -12,9 +12,7 @@ import com.cfido.commons.beans.apiServer.BaseResponse;
 public class JwInvokeOptResponse extends BaseResponse {
 
 	private boolean hasReturn;
-	private String returnData = "NULL";
-
-	private String opName;
+	private String returnData;
 
 	public boolean isHasReturn() {
 		return hasReturn;
@@ -28,20 +26,8 @@ public class JwInvokeOptResponse extends BaseResponse {
 		return returnData;
 	}
 
-	public void setReturnData(Object returnData) {
-		if (returnData != null) {
-			this.returnData = returnData.toString();
-		} else {
-			this.returnData = "null";
-		}
-	}
-
-	public String getOpName() {
-		return opName;
-	}
-
-	public void setOpName(String opName) {
-		this.opName = opName;
+	public void setReturnData(String returnData) {
+		this.returnData = returnData;
 	}
 
 }
