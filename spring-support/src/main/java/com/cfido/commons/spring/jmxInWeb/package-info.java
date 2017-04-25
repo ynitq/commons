@@ -7,4 +7,4 @@
  *  2016年8月11日
  */
 
-package com.cfido.commons.spring.jmx;
+package com.cfido.commons.spring.jmxInWeb;

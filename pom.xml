@@ -83,13 +83,6 @@
 			</dependency>
 			<!-- /我们自己的工具类项目 -->
 
-			<dependency>
-				<!-- JMX web管理界面 -->
-				<groupId>com.ynitq.utils</groupId>
-				<artifactId>JmxInWeb</artifactId>
-				<version>0.2.0-SNAPSHOT</version>
-			</dependency>
-
 			<!-- 常用工具包 -->
 			<dependency>
 				<!-- 二维码相关 -->

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 import com.cfido.commons.codeGen.config.CodeGenAutoConfig;
-import com.cfido.commons.spring.jmx.JmxInWebConfig;
+import com.cfido.commons.spring.jmxInWeb.JmxInWebAutoConfig;
 
 /**
  * <pre>
@@ -23,7 +23,7 @@ import com.cfido.commons.spring.jmx.JmxInWebConfig;
 @Documented
 @Import(value = {
 		CodeGenAutoConfig.class,
-		JmxInWebConfig.class,
+		JmxInWebAutoConfig.class,
 })
 public @interface CodeGenEntity {
 

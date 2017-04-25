@@ -13,7 +13,7 @@ import com.cfido.commons.spring.debugMode.DebugModeAutoConfig;
 import com.cfido.commons.spring.dict.DictAutoConfig;
 import com.cfido.commons.spring.errorPage.ErrorPageAutoConfig;
 import com.cfido.commons.spring.imageUpload.ImageUploadAutoConfig;
-import com.cfido.commons.spring.jmx.JmxInWebConfig;
+import com.cfido.commons.spring.jmxInWeb.JmxInWebAutoConfig;
 import com.cfido.commons.spring.monitor.MonitorClientAutoConfig;
 import com.cfido.commons.spring.security.LoginCheckAutoConfig;
 
@@ -30,7 +30,7 @@ import com.cfido.commons.spring.security.LoginCheckAutoConfig;
 		DebugModeAutoConfig.class, // debug mode组件，用于设置调试模式
 		DictAutoConfig.class, // 字典组件，用于管理页面上的key
 		LoginCheckAutoConfig.class, // loginCheck简易安全框架
-		JmxInWebConfig.class, // JMX 页面ui
+		JmxInWebAutoConfig.class, // JMX 页面ui
 		ErrorPageAutoConfig.class, // 错误页面处理
 		MonitorClientAutoConfig.class, // 系统监控
 		ImageUploadAutoConfig.class,// 图片上传
