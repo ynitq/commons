@@ -217,7 +217,6 @@ a:VISITED {
 				</p>
 				<form method="post" action="${apiServerUrl}${vo.apiUrlPrefix}/${m.url}"
 					<#if m.uploadFile>enctype="multipart/form-data"</#if> class="js_form">
-					<input name="linzi_ri_token" type="hidden" value="${token}"/>
 						<table width="100%" class="table">
 <#list m.paramVoList as pp>
 								<tr>
