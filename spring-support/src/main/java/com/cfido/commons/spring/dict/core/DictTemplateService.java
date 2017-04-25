@@ -16,7 +16,7 @@ public class DictTemplateService extends BaseTemplateService {
 
 	@Override
 	protected String getTemplatePath(String templateName) {
-		return String.format("dict/templates/%s.ftl", templateName);
+		return String.format("templates/common_dict/%s.ftl", templateName);
 	}
 
 }
