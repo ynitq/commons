@@ -16,6 +16,8 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
+
 /**
  * <pre>
  * 用于异步put cache的CacheManager
@@ -24,8 +26,8 @@ import org.springframework.util.Assert;
  * @author 梁韦江
  *  2016年8月24日
  */
-@ManagedResource(description = "异步Cache管理器", objectName = "Common缓存:name=ASyncCacheManager")
-public class ASyncCacheManager implements CacheManager {
+@ManagedResource(description = "异步Cache管理器")
+public class ASyncCacheManager extends CommonMBeanDomainNaming implements CacheManager {
 	/**
 	 * <pre>
 	 * 自定义的Cache，用于将各类方法都通过asyncCacheExecuter进行异步执行
@@ -99,7 +101,7 @@ public class ASyncCacheManager implements CacheManager {
 	 * 异步执行器
 	 */
 	@Autowired
-	private ASyncCacheExecuter asyncCacheExecuter;
+	private IASyncCacheExecuter asyncCacheExecuter;
 
 	/** 保存了所有 cache 的 map */
 	private final Map<String, MyCache> cacheMap = new HashMap<>();

@@ -12,7 +12,7 @@ import org.springframework.jmx.export.naming.SelfNaming;
  * 
  * @author 梁韦江 2017年4月25日
  */
-public abstract class BaseDomainNameMBean implements SelfNaming {
+public abstract class BaseMBeanDomainNaming implements SelfNaming {
 
 	/** 返回指定的doman名字 */
 	protected abstract String getMBeanDomain();

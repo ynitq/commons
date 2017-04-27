@@ -1,31 +1,30 @@
 package com.cfido.commons.spring.redis;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.support.SimpleValueWrapper;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.jmx.export.naming.SelfNaming;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.utils.TimeLimitMap;
 
 /**
  * <pre>
- * 异步执行Cache动作的执行者
+ * 异步执行Cache动作的执行者，这个因为有@Async注解方法的缘故，会变成代理类，无法变成mbean
  * </pre>
  * 
- * @author 梁韦江
- *  2016年8月25日
+ * @author 梁韦江 2016年8月25日
  */
-@Service
-@ManagedResource(description = "异步Cache执行器，命中率统计", objectName = "Common缓存:name=ASyncCacheExecuter")
-public class ASyncCacheExecuter {
+public class ASyncCacheExecuter implements IASyncCacheExecuter, SelfNaming {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ASyncCacheExecuter.class);
 
@@ -43,25 +42,20 @@ public class ASyncCacheExecuter {
 	/** 二级 cache */
 	private final TimeLimitMap<String, ValueWrapper> level2CacheForValueWrapper;
 
-	private final AtomicLong counterForGet = new AtomicLong();
-	private final AtomicLong counterForPutIfAbsent = new AtomicLong();
-	private final AtomicLong counterForPut = new AtomicLong();
-	private final AtomicLong memoryHit = new AtomicLong();
-	private final AtomicLong memoryMiss = new AtomicLong();
-	private final AtomicLong redisHit = new AtomicLong();
-	private final AtomicLong redisMiss = new AtomicLong();
-	private final AtomicLong timeForGet = new AtomicLong();
-	private final AtomicLong timeForPut = new AtomicLong();
+	@Autowired
+	private ASyncCacheExecuterCounterMBean counterMBean;
 
 	public ASyncCacheExecuter(long expireTimeInSec, int level2CacheSize) {
 		this.level2CacheForValueWrapper = new TimeLimitMap<>(expireTimeInSec, TimeUnit.SECONDS, level2CacheSize);
 	}
 
-	/**
-	 * 实现 {@link Cache#clear()}
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param cache
+	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#asyncClear(org.
+	 * springframework.cache.Cache)
 	 */
+	@Override
 	@Async
 	public void asyncClear(Cache cache) {
 		log.debug("Cache({}).clear()", cache.getName());
@@ -70,12 +64,13 @@ public class ASyncCacheExecuter {
 		cache.clear();
 	}
 
-	/**
-	 * 实现 {@link Cache#evict(Object)}
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param cache
-	 * @param key
+	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#asyncEvict(org.
+	 * springframework.cache.Cache, java.lang.Object)
 	 */
+	@Override
 	@Async
 	public void asyncEvict(Cache cache, Object key) {
 		log.debug("Cache({}).asyncEvict(key={})", cache.getName(), key);
@@ -87,6 +82,13 @@ public class ASyncCacheExecuter {
 		cache.evict(key);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#asyncPut(org.
+	 * springframework.cache.Cache, java.lang.Object, java.lang.Object)
+	 */
+	@Override
 	@Async
 	public void asyncPut(Cache cache, Object key, Object value) {
 
@@ -120,7 +122,8 @@ public class ASyncCacheExecuter {
 	 * @param key
 	 * @return
 	 */
-	ValueWrapper get(Cache cache, Object key) {
+	@Override
+	public ValueWrapper get(Cache cache, Object key) {
 		Assert.notNull(cache, "cache 不能为空");
 		Assert.notNull(key, "key 不能为空");
 
@@ -128,8 +131,8 @@ public class ASyncCacheExecuter {
 
 		String key2 = getLevel2CacheKey(cache, key);
 
-		String type="Redis";
-		
+		String type = "Redis";
+
 		// 先从内容获得
 		ValueWrapper res = this.level2CacheForValueWrapper.get(key2);
 		if (this.isMemeoryMiss(res)) {
@@ -173,8 +176,9 @@ public class ASyncCacheExecuter {
 	 * @param type
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
-	<T> T get(Cache cache, Object key, Class<T> type) {
+	public <T> T get(Cache cache, Object key, Class<T> type) {
 		Assert.notNull(cache, "cache 不能为空");
 		Assert.notNull(key, "key 不能为空");
 		Assert.notNull(type, "type 不能为空");
@@ -194,95 +198,20 @@ public class ASyncCacheExecuter {
 		return res;
 	}
 
-	@ManagedAttribute(description = "get执行次数")
-	public long getCountForGet() {
-		return this.counterForGet.get();
-	}
-
-	@ManagedAttribute(description = "put执行次数")
-	public long getCountForPut() {
-		return this.counterForPut.get();
-	}
-
-	@ManagedAttribute(description = "平均每次get花费时间(毫秒)")
-	public long getAvgTimeForGet() {
-		long times = this.counterForGet.get();
-		if (times == 0) {
-			return 0;
-		}
-
-		long total = this.timeForGet.get();
-		return total / times;
-	}
-
-	@ManagedAttribute(description = "平均每次put花费时间(毫秒)")
-	public long getAvgTimeForPut() {
-		long times = this.counterForPut.get();
-		if (times == 0) {
-			return 0;
-		}
-
-		long total = this.timeForPut.get();
-		return total / times;
-	}
-
-	@ManagedAttribute(description = "内存Cache 命中次数")
-	public long getMemoryHit() {
-		return memoryHit.get();
-	}
-
-	@ManagedAttribute(description = "内存Cache miss次数")
-	public long getMemoryMiss() {
-		return this.memoryMiss.get();
-	}
-
-	@ManagedAttribute(description = "Redis Cache miss次数")
-	public long getRedisMiss() {
-		return this.redisMiss.get();
-	}
-
-	@ManagedAttribute(description = "Redis Cache 命中次数")
-	public long getRedisHit() {
-		return this.redisHit.get();
-	}
-
-	@ManagedAttribute(description = "内存 Cache 已使用的空间")
-	public int getCacheCapacityUsed() {
-		return this.level2CacheForValueWrapper.size();
-	}
-
-	@ManagedAttribute(description = "内存 Cache 超时时间（毫秒）")
-	public long getCacheMaxAge() {
-		return this.level2CacheForValueWrapper.getMaxAge();
-	}
-
-	@ManagedAttribute
-	public void setCacheMaxAge(long maxAge) {
-		this.level2CacheForValueWrapper.setMaxAge(maxAge);
-	}
-
-	@ManagedAttribute(description = "内存 Cache 可用空间总数")
-	public int getCacheCapacityMax() {
-		return this.level2CacheForValueWrapper.getMaxCapacity();
-	}
-
-	/**
-	 * 实现了 {@link Cache#putIfAbsent(Object, Object)}
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * 这个方法需要返回数据，所以没法采用异步调用
-	 * 
-	 * @param cache
-	 * @param key
-	 * @param value
-	 * @return
+	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#putIfAbsent(org.
+	 * springframework.cache.Cache, java.lang.Object, java.lang.Object)
 	 */
+	@Override
 	public ValueWrapper putIfAbsent(Cache cache, Object key, Object value) {
 		Assert.notNull(cache, "cache 不能为空");
 		Assert.notNull(key, "key 不能为空");
 		Assert.notNull(value, "value 不能为空");
 
 		// 计数器+1
-		this.counterForPutIfAbsent.incrementAndGet();
+		this.counterMBean.incrementPutIfAbsent();
 
 		// 先执行原来的方法
 		ValueWrapper vw = cache.putIfAbsent(key, value);
@@ -301,7 +230,8 @@ public class ASyncCacheExecuter {
 	 * @param key
 	 * @param value
 	 */
-	void putToMemoryCache(Cache cache, Object key, Object value) {
+	@Override
+	public void putToMemoryCache(Cache cache, Object key, Object value) {
 		String key2 = getLevel2CacheKey(cache, key);
 		ValueWrapper vw = new SimpleValueWrapper(value);
 		this.level2CacheForValueWrapper.put(key2, vw);
@@ -315,10 +245,10 @@ public class ASyncCacheExecuter {
 	 */
 	private boolean isMemeoryMiss(Object obj) {
 		if (obj == null) {
-			this.memoryMiss.incrementAndGet();
+			this.counterMBean.incrementMemoryMiss();
 			return true;
 		} else {
-			this.memoryHit.incrementAndGet();
+			this.counterMBean.incrementMemoryHit();
 			return false;
 		}
 	}
@@ -330,10 +260,10 @@ public class ASyncCacheExecuter {
 	 */
 	private boolean isRedisHit(Object obj) {
 		if (obj == null) {
-			this.redisMiss.incrementAndGet();
+			this.counterMBean.incrementRedisMiss();
 			return false;
 		} else {
-			this.redisHit.incrementAndGet();
+			this.counterMBean.incrementRedisHit();
 			return true;
 		}
 	}
@@ -344,8 +274,7 @@ public class ASyncCacheExecuter {
 	 * @param time
 	 */
 	private void countGet(long time) {
-		this.counterForGet.incrementAndGet();
-		this.timeForGet.addAndGet(time);
+		this.counterMBean.countGet(time);
 	}
 
 	/**
@@ -354,24 +283,7 @@ public class ASyncCacheExecuter {
 	 * @param time
 	 */
 	private void countPut(long time) {
-		this.timeForPut.addAndGet(time);
-		this.counterForPut.incrementAndGet();
-	}
-
-	@ManagedOperation(description = "重置所有的计数器")
-	public void resetAllCounter() {
-
-		log.debug("重置所有的计数器");
-
-		this.counterForGet.set(0);
-		this.counterForPut.set(0);
-		this.counterForPutIfAbsent.set(0);
-		this.memoryHit.set(0);
-		this.memoryMiss.set(0);
-		this.redisHit.set(0);
-		this.redisMiss.set(0);
-		this.timeForGet.set(0);
-		this.timeForPut.set(0);
+		this.counterMBean.countPut(time);
 	}
 
 	@ManagedOperation(description = "清理内存Cache中已经过时的数据")
@@ -382,5 +294,11 @@ public class ASyncCacheExecuter {
 	@ManagedOperation(description = "清理内存Cache中所有数据")
 	public void clearAllMemeoryData() {
 		this.level2CacheForValueWrapper.clear();
+	}
+
+	@Override
+	public ObjectName getObjectName() throws MalformedObjectNameException {
+		String name = String.format("%s:name=%s", CommonMBeanDomainNaming.DOMAIN, "ASyncCacheExecuter");
+		return new ObjectName(name);
 	}
 }

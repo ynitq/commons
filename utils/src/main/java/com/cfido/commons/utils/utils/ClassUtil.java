@@ -182,8 +182,19 @@ public class ClassUtil {
 					}
 				}
 			}
-
 		}
+
+		// 如果接口中没有，就从父类中找
+		Class<?> superClass = target.getSuperclass();
+		while (superClass != null) {
+			res = superClass.getAnnotation(annotationClass);
+			if (res != null) {
+				break;
+			} else {
+				superClass = superClass.getSuperclass();
+			}
+		}
+
 		return res;
 	}
 
@@ -271,7 +282,6 @@ public class ClassUtil {
 		if (!StringUtils.hasText(className)) {
 			return null;
 		}
-
 
 		String path = className.replace('.', '/') + ".class";
 

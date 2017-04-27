@@ -6,6 +6,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.loginCheck.IWebUser;
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 
 /**
  * <pre>
@@ -24,9 +25,9 @@ import com.cfido.commons.loginCheck.IWebUser;
  * 
  * @author 梁韦江 2016年8月26日
  */
-@ManagedResource(description = "LoginCheck 配置", objectName = "Common配置:name=LoginCheckProperties")
+@ManagedResource(description = "LoginCheck 配置")
 @ConfigurationProperties(prefix = "loginCheck")
-public class LoginCheckProperties {
+public class LoginCheckProperties extends CommonMBeanDomainNaming {
 
 	/**
 	 * <pre>

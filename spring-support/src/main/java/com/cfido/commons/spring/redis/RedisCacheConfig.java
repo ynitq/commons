@@ -37,13 +37,18 @@ public class RedisCacheConfig {
 	@Autowired
 	private RedisCacheProperties prop;
 
+	@Bean
+	public ASyncCacheExecuterCounterMBean asyncCacheExecuterCounterMBean() {
+		return new ASyncCacheExecuterCounterMBean();
+	}
+
 	/**
 	 * 查看异步执行cache功能的的管理器，同时也是二级缓存
 	 * 
 	 * @return
 	 */
 	@Bean
-	public ASyncCacheExecuter asyncCacheExecuter() {
+	public IASyncCacheExecuter asyncCacheExecuter() {
 		return new ASyncCacheExecuter(
 				this.prop.getMemoryCache().getExpireTimeInSec(),
 				this.prop.getMemoryCache().getMaxSize());
