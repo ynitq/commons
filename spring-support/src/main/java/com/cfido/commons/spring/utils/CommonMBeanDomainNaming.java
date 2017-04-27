@@ -13,7 +13,7 @@ import com.cfido.commons.spring.jmxInWeb.BaseMBeanDomainNaming;
 @ADomainOrder(CommonMBeanDomainNaming.ORDER)
 public abstract class CommonMBeanDomainNaming extends BaseMBeanDomainNaming {
 
-	public final static int ORDER = 20;
+	public final static int ORDER = 10;
 
 	public final static String DOMAIN = "Commons通用框架";
 

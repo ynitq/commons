@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.jmxInWeb.JmxInWebProperties;
 import com.cfido.commons.spring.jmxInWeb.controller.InvokeOperationParamInfo;
 import com.cfido.commons.spring.jmxInWeb.exception.MyAttrNotFoundException;
@@ -34,6 +35,7 @@ import com.cfido.commons.spring.jmxInWeb.inf.form.JwChangeAttrForm;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwInvokeOptResponse;
 import com.cfido.commons.spring.jmxInWeb.models.DomainVo;
 import com.cfido.commons.spring.jmxInWeb.models.MBeanVo;
+import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.OpenTypeUtil;
@@ -139,18 +141,20 @@ public class JmxInWebService {
 				if (this.prop.getDomainNameFilter().show(domainName)) {
 					// 如果过滤器认为这个domain该显示
 
+					// 获取这个Mean的信息
+					MBeanInfo info = server.getMBeanInfo(name);
+					MBeanVo vo = new MBeanVo(name, info);
+
 					// 检查Map中是否已经有这个Domain，无故没有就添加
 					DomainVo domainVo = domainMap.get(domainName);
 					if (domainVo == null) {
 						domainVo = new DomainVo(domainName);
+						domainVo.setOrder(this.getDomainOrder(info));// 设置排序的顺序
 						domainMap.put(domainName, domainVo);
 					}
 
-					// 获取这个Mean的信息
-					MBeanInfo info = server.getMBeanInfo(name);
-
 					// 将mbean信息添加到domain的mbean列表中
-					domainVo.addMBean(name, info);
+					domainVo.addMBean(vo);
 				}
 			}
 
@@ -165,6 +169,33 @@ public class JmxInWebService {
 
 		} catch (JMException e) {
 			throw new MyJmException(e);
+		}
+	}
+
+	/**
+	 * 获取domain排序数
+	 * 
+	 * @param info
+	 * @return
+	 * 
+	 * @see ADomainOrder
+	 */
+	private int getDomainOrder(MBeanInfo info) {
+		try {
+			Class<?> clazz = Class.forName(info.getClassName());
+			ADomainOrder ann = ClassUtil.getAnnotation(clazz, ADomainOrder.class);
+			if (ann != null) {
+
+				log.debug("MBean:{}, domain设置排序{}", clazz.getName(), ann.value());
+
+				return ann.value();
+			} else {
+				return 0;
+			}
+
+		} catch (ClassNotFoundException e) {
+			// 理论上这个是不可能发生的事情
+			throw new RuntimeException(e);
 		}
 	}
 

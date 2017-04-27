@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.management.MBeanInfo;
-import javax.management.ObjectName;
-
 /**
  * <pre>
  * 对Mbean进行分类显示用
@@ -16,9 +13,11 @@ import javax.management.ObjectName;
  */
 public class DomainVo implements Comparable<DomainVo> {
 	private final String name;
-	private final List<MBeanVo> beans = new LinkedList<MBeanVo>();
+	private final List<MBeanVo> beans = new LinkedList<>();
 
 	private boolean sorted = false;
+
+	private int order = 0;
 
 	public DomainVo(String name) {
 		super();
@@ -37,14 +36,26 @@ public class DomainVo implements Comparable<DomainVo> {
 		return beans;
 	}
 
-	public void addMBean(ObjectName name, MBeanInfo info) {
-		MBeanVo vo = new MBeanVo(name, info);
+	public void addMBean(MBeanVo vo) {
 		this.beans.add(vo);
 	}
 
 	@Override
 	public int compareTo(DomainVo other) {
-		return this.name.compareTo(other.name);
+		int res = other.order - this.order;
+		if (res == 0) {
+			return this.name.compareTo(other.name);
+		} else {
+			return res;
+		}
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	public int getOrder() {
+		return order;
 	}
 
 }

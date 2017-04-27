@@ -21,8 +21,8 @@ import javax.management.ObjectName;
 public class MBeanVo implements Comparable<MBeanVo> {
 	private final MBeanInfo info;
 	private final ObjectName targetName;
-	private final List<MBeanAttrVo> attrs = new LinkedList<MBeanAttrVo>();
-	private final List<MBeanOpVo> opts = new LinkedList<MBeanOpVo>();
+	private final List<MBeanAttrVo> attrs = new LinkedList<>();
+	private final List<MBeanOpVo> opts = new LinkedList<>();
 
 	private String displayName;// 显示用的名字
 
@@ -49,6 +49,7 @@ public class MBeanVo implements Comparable<MBeanVo> {
 			}
 			Collections.sort(this.opts);
 		}
+
 	}
 
 	public List<MBeanAttrVo> getAttrs() {
