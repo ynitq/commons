@@ -13,7 +13,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.PreDestroy;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedOperation;
 
 import com.cfido.commons.utils.utils.LogUtil;
 
@@ -82,7 +81,7 @@ public abstract class BaseThreadPool {
 		log.info(String.format("初始化线程池:%s, 线程数量:%d", this.getName(), this.getPoolSize()));
 
 		this.executorService = Executors.newFixedThreadPool(this.getPoolSize());
-		this.taskUniqueIdSet = new HashSet<String>(this.getUniqueIdSetInitSize());
+		this.taskUniqueIdSet = new HashSet<>(this.getUniqueIdSetInitSize());
 	}
 
 	/**
@@ -160,7 +159,6 @@ public abstract class BaseThreadPool {
 		return counter.get();
 	}
 
-	@ManagedOperation(description = "停止线程池")
 	@PreDestroy
 	public void shutdown() {
 		int count = this.counter.get();
