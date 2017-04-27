@@ -47,9 +47,9 @@
 				<table class="table table-light table-hover">
 					<thead>
 						<tr>
-							<th width="200">名字</th>
+							<th width="250">名字</th>
 							<th width="150">类型</th>
-							<th width="200">说明</th>
+							<th width="300">说明</th>
 							<th>值</th>
 						</tr>
 					</thead>
