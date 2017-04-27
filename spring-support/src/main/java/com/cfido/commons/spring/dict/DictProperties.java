@@ -5,11 +5,6 @@ import java.util.Date;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
-import com.cfido.commons.loginCheck.IWebUser;
-import com.cfido.commons.spring.dict.core.DictAdminWebUser;
-import com.cfido.commons.spring.security.IUserServiceForRememberMe;
 
 /**
  * <pre>
@@ -42,76 +37,6 @@ public class DictProperties {
 	/** Js的url */
 	public final static String DICT_JS = "/dict/dictJs.js";
 
-	/**
-	 * <pre>
-	 * 默认的管理用户账号
-	 * </pre>
-	 * 
-	 * @author 梁韦江 2016年11月16日
-	 */
-	public static class Admin {
-		private String account = "admin";
-
-		/** 默认密码是 linzi777 **/
-		private String password = "d70623d9b2ea2d300662bf27c75b45bd";
-
-		private String pageTitle = "dict.admin.pageTitle";
-
-		public String getPageTitle() {
-			return pageTitle;
-		}
-
-		public void setPageTitle(String pageTitle) {
-			this.pageTitle = pageTitle;
-		}
-
-		public String getAccount() {
-			return account;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public boolean isValid() {
-			return StringUtils.hasText(account) && StringUtils.hasText(password);
-		}
-
-		public void setAccount(String account) {
-			this.account = account;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-	}
-
-	/**
-	 * <pre>
-	 * 默认的 用户数据供应者，用于记录用户信息到cookie
-	 * </pre>
-	 * 
-	 * @author 梁韦江 2016年11月16日
-	 */
-	public class AdminUserProvider implements IUserServiceForRememberMe {
-
-		@Override
-		public Class<? extends IWebUser> getSupportUserClassNames() {
-			return DictAdminWebUser.class;
-		}
-
-		@Override
-		public IWebUser loadUserByUsername(String username) {
-			Admin admin = DictProperties.this.admin;
-			if (admin.isValid()) {
-				return new DictAdminWebUser(admin.account, admin.password);
-			} else {
-				return null;
-			}
-		}
-
-	}
 
 	/** xml文件名 */
 	private String xmlFile = "dict";
@@ -130,18 +55,6 @@ public class DictProperties {
 
 	public void setDataDir(String dataDir) {
 		this.dataDir = dataDir;
-	}
-
-	private final Admin admin = new Admin();
-
-	private final AdminUserProvider adminUserProvider = new AdminUserProvider();
-
-	public Admin getAdmin() {
-		return admin;
-	}
-
-	public AdminUserProvider getAdminUserProvider() {
-		return adminUserProvider;
 	}
 
 	public long getSavePeriod() {

@@ -15,11 +15,11 @@ import com.alibaba.fastjson.JSON;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.DictProperties;
-import com.cfido.commons.spring.dict.core.DictAdminWebUser;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.dict.core.DictTemplateService;
-import com.cfido.commons.spring.dict.inf.impl.DictAdminUserImpl;
 import com.cfido.commons.spring.dict.schema.DictXml.DictXmlRow;
+import com.cfido.commons.spring.security.CommonAdminWebUser;
+import com.cfido.commons.spring.security.RememberMeUserHandler;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.FileUtil;
@@ -46,14 +46,14 @@ public class DictController {
 	private DictTemplateService templateService;
 
 	@Autowired
-	private DictAdminUserImpl adminUserImpl;
+	private RememberMeUserHandler adminUserHandler;
 
 	@Autowired
 	private DebugModeProperties debugMode;
 
 	@RequestMapping(value = DictProperties.EXPORT_URL)
 	@ResponseBody
-	@ANeedCheckLogin(userClass = DictAdminWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public String export() throws IOException {
 
 		// 导出前，先保存一次文件
@@ -76,16 +76,17 @@ public class DictController {
 	public String manager() throws TemplateException, IOException {
 		Map<String, Object> model = new HashMap<>();
 		model.put("pageTitle", this.coreService.getSystemName());
-		model.put("adminInProp", this.adminUserImpl.isAdminInPorp());
+		model.put("adminInProp", this.adminUserHandler.isAdminInPorp());
 
 		String basePath = WebContextHolderHelper.getAttachmentFullPath(null);
 		model.put("basePath", basePath);
 
 		return this.templateService.process("index", model);
 	}
-	
+
 	/**
 	 * 用于js的数据
+	 * 
 	 * @return String
 	 * @throws TemplateException
 	 * @throws IOException
@@ -94,7 +95,6 @@ public class DictController {
 	@RequestMapping(value = DictProperties.DICT_JS)
 	@ResponseBody
 	public String js() throws TemplateException, IOException {
-		
 
 		// 获得所有数据
 		List<DictXmlRow> srcList = this.coreService.getAllFromMap();

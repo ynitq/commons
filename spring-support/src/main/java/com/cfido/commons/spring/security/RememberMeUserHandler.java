@@ -43,6 +43,9 @@ public class RememberMeUserHandler {
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	/** 管理用户是否是在配置文件中定义的 */
+	private boolean adminInPorp;
+
 	private final Map<Class<? extends IWebUser>, IUserServiceForRememberMe> userProviderMap = new HashMap<>();
 
 	protected static class CookieValue {
@@ -68,6 +71,17 @@ public class RememberMeUserHandler {
 
 		for (IUserServiceForRememberMe userProvider : map.values()) {
 			this.addUserProvider(userProvider);
+		}
+
+		// 检查通用管理用户的认证提供者
+		if (!this.userProviderMap.containsKey(CommonAdminWebUser.class)) {
+			// 如果没有，就使用配置文件中的信息
+			this.addUserProvider(this.prop.getAdminUserProvider());
+			this.adminInPorp = true;
+			log.info("初始化 通用管理用户，账号由配置文件设置");
+		} else {
+			log.info("初始化 通用管理用户，账号由其他服务管理");
+			this.adminInPorp = false;
 		}
 
 		if (this.userProviderMap.isEmpty()) {
@@ -311,5 +325,9 @@ public class RememberMeUserHandler {
 
 		log.debug("找到类型:{} 的用户信息提供者 {}",
 				clazz.getName(), userProvider.getClass().getName());
+	}
+
+	public boolean isAdminInPorp() {
+		return adminInPorp;
 	}
 }

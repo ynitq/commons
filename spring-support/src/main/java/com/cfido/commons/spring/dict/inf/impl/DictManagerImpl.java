@@ -15,7 +15,6 @@ import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.impl.CommonSuccessResponse;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
-import com.cfido.commons.spring.dict.core.DictAdminWebUser;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.dict.inf.IDictManager;
 import com.cfido.commons.spring.dict.inf.form.DictImportForm;
@@ -25,6 +24,7 @@ import com.cfido.commons.spring.dict.inf.form.KeySearchPageForm;
 import com.cfido.commons.spring.dict.inf.responses.DictKeySearchResponse;
 import com.cfido.commons.spring.dict.inf.responses.DictVo;
 import com.cfido.commons.spring.dict.schema.DictXml;
+import com.cfido.commons.spring.security.CommonAdminWebUser;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.db.PageQueryResult;
 import com.cfido.commons.utils.utils.FileUtil;
@@ -39,7 +39,7 @@ import com.cfido.commons.utils.web.BinderUtil;
  * @author 梁韦江 2016年11月16日
  */
 @Service
-@ANeedCheckLogin(userClass = DictAdminWebUser.class)
+@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 @AApiServerImpl
 public class DictManagerImpl implements IDictManager {
 
@@ -74,7 +74,7 @@ public class DictManagerImpl implements IDictManager {
 	}
 
 	@Override
-	@ANeedCheckLogin(userClass = DictAdminWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public DictKeySearchResponse save(DictRowEditForm form) throws BaseApiException {
 
 		if (!StringUtils.hasText(form.getKey())) {
@@ -89,7 +89,7 @@ public class DictManagerImpl implements IDictManager {
 	}
 
 	@Override
-	@ANeedCheckLogin(userClass = DictAdminWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public CommonSuccessResponse importXml(DictImportForm form) throws BaseApiException {
 
 		MultipartFile multipartFile = form.getFile();
