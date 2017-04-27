@@ -20,18 +20,8 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-			<a class="navbar-brand"><label class="system-name">${pageTitle}-JMX</label></a>
+				<a class="navbar-brand"><label class="system-name">${pageTitle}-JMX</label></a>
 			</div>
-
-			<#if isDebug>
-			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav">
-					<li><a href="${jmxUrl}" target="_blank">JMX</a></li>
-					<li><a href="/dev/" target="_blank">开发测试</a></li>
-					<li><a href="/dict/manager" target="_blank">页面字典</a></li>
-				</ul>
-			</div>
-			</#if>
 			<!-- /.navbar-collapse -->
 		</div>
 		<!-- /.container-fluid -->
@@ -66,27 +56,27 @@
 
 		</div>
 	</div>
-	
+
 	<#include "include/js"/>
 	<!-- 自己的js -->
 	<script>
-	$(document).ready(function() {
-		// 页面初始化
-		console.log("初始化 登录表单");
-		$("#login_form").submit(function() {
+		$(document).ready(function() {
+			// 页面初始化
+			console.log("初始化 登录表单");
+			$("#login_form").submit(function() {
 
-			var param = $(this).serialize();
-			var url = "/api/jmxInWeb/login";
+				var param = $(this).serialize();
+				var url = "/api/jmxInWeb/login";
 
-			console.log("登录", param);
+				console.log("登录", param);
 
-			lzUtil.ajax(url, param, function(res) {
-				window.location.href = "/jmxInWeb/";
+				lzUtil.ajax(url, param, function(res) {
+					window.location.href = "/jmxInWeb/";
+				});
+
+				return false;
 			});
-
-			return false;
 		});
-	});
 	</script>
 </body>
 </html>
