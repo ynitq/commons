@@ -19,6 +19,7 @@ import com.cfido.commons.spring.jmxInWeb.inf.response.JwInvokeOptResponse;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwMBeanInfoResponse;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwMBeanListResponse;
 import com.cfido.commons.spring.jmxInWeb.models.MBeanVo;
+import com.cfido.commons.spring.security.CommonAdminWebUser;
 import com.cfido.commons.spring.security.IUserServiceForRememberMe;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.security.RememberMeUserHandler;
@@ -54,7 +55,7 @@ public class JwInfImpl implements IJmxInWeb {
 		log.debug("管理用户 {} 登录后台", form.getAccount());
 
 		// 寻找用户认证供应者
-		IUserServiceForRememberMe userProvider = this.rememberMeUserHandler.getUserProvider(JwWebUser.class);
+		IUserServiceForRememberMe userProvider = this.rememberMeUserHandler.getUserProvider(CommonAdminWebUser.class);
 		if (userProvider != null) {
 			// 如果存在，就尝试获取用户
 			IWebUser user = userProvider.loadUserByUsername(form.getAccount());
@@ -74,12 +75,12 @@ public class JwInfImpl implements IJmxInWeb {
 
 	@Override
 	public CommonSuccessResponse logout() {
-		this.loginContext.onLogout(JwWebUser.class);
+		this.loginContext.onLogout(CommonAdminWebUser.class);
 		return CommonSuccessResponse.DEFAULT;
 	}
 
 	@Override
-	@ANeedCheckLogin(userClass = JwWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public JwMBeanListResponse getMBeanList() throws BaseApiException {
 		// 封装返回结果
 		JwMBeanListResponse res = new JwMBeanListResponse();
@@ -88,7 +89,7 @@ public class JwInfImpl implements IJmxInWeb {
 	}
 
 	@Override
-	@ANeedCheckLogin(userClass = JwWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public CommonSuccessResponse changeAttr(JwChangeAttrForm form) throws BaseApiException {
 
 		this.service.changeAttr(form);
@@ -97,13 +98,13 @@ public class JwInfImpl implements IJmxInWeb {
 	}
 
 	@Override
-	@ANeedCheckLogin(userClass = JwWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public JwInvokeOptResponse invokeOpt(JwInvokeOptForm form) throws BaseApiException {
 		return this.service.invokeOpt(form.getObjectName(), form.getOptName(), form.getParamInfo());
 	}
 
 	@Override
-	@ANeedCheckLogin(userClass = JwWebUser.class)
+	@ANeedCheckLogin(userClass = CommonAdminWebUser.class)
 	public JwMBeanInfoResponse getMBeanInfo(JwObjectNameForm form) throws BaseApiException {
 		MBeanVo vo = this.service.getMBeanInfo(form.getObjectName());
 

@@ -4,19 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.StringUtils;
 
-import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.jmxInWeb.core.IDomainNameFilter;
-import com.cfido.commons.spring.jmxInWeb.core.JwWebUser;
 import com.cfido.commons.spring.security.IUserServiceForRememberMe;
 
 /**
  * <pre>
  * 可配置参数
  * 
- * jmxInWeb.admin.account=admin
- * jmxInWeb.admin.password=linzi777
  * </pre>
  * 
  * @see IUserServiceForRememberMe
@@ -26,66 +21,6 @@ import com.cfido.commons.spring.security.IUserServiceForRememberMe;
  */
 @ConfigurationProperties(prefix = "jmxInWeb")
 public class JmxInWebProperties {
-
-	/**
-	 * <pre>
-	 * 默认的管理用户账号
-	 * </pre>
-	 * 
-	 * @author 梁韦江 2016年11月16日
-	 */
-	public static class Admin {
-		private String account = "admin";
-
-		/** 默认密码是 linzi777 **/
-		private String password = "d70623d9b2ea2d300662bf27c75b45bd";
-
-		public String getAccount() {
-			return account;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public boolean isValid() {
-			return StringUtils.hasText(account) && StringUtils.hasText(password);
-		}
-
-		public void setAccount(String account) {
-			this.account = account;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-	}
-
-	/**
-	 * <pre>
-	 * 默认的 用户数据供应者，用于记录用户信息到cookie
-	 * </pre>
-	 * 
-	 * @author 梁韦江 2016年11月16日
-	 */
-	public class JmxInWebUserProvider implements IUserServiceForRememberMe {
-
-		@Override
-		public Class<? extends IWebUser> getSupportUserClassNames() {
-			return JwWebUser.class;
-		}
-
-		@Override
-		public IWebUser loadUserByUsername(String username) {
-			Admin admin = JmxInWebProperties.this.admin;
-			if (admin.isValid()) {
-				return new JwWebUser(admin.account, admin.password);
-			} else {
-				return null;
-			}
-		}
-	}
 
 	/**
 	 * <pre>
@@ -130,19 +65,7 @@ public class JmxInWebProperties {
 		}
 	}
 
-	private final Admin admin = new Admin();
-
-	private final JmxInWebUserProvider adminUserProvider = new JmxInWebUserProvider();
-
 	private final IDomainNameFilter domainNameFilter = new DefaultDomainNameFilter();
-
-	public Admin getAdmin() {
-		return admin;
-	}
-
-	public JmxInWebUserProvider getAdminUserProvider() {
-		return adminUserProvider;
-	}
 
 	public IDomainNameFilter getDomainNameFilter() {
 		return domainNameFilter;

@@ -171,6 +171,7 @@ a:VISITED {
 			<div class="navbar-collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="/dict/manager" target="_blank">字典管理</a></li>
+					<li><a href="/jmxInWeb/" target="_blank">JMX</a></li>
 				</ul>
 			</div>
 		</div>

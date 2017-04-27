@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.management.Attribute;
 import javax.management.JMException;
 import javax.management.MBeanAttributeInfo;
@@ -21,7 +20,6 @@ import javax.management.ObjectName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
@@ -36,7 +34,7 @@ import com.cfido.commons.spring.jmxInWeb.inf.form.JwChangeAttrForm;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwInvokeOptResponse;
 import com.cfido.commons.spring.jmxInWeb.models.DomainVo;
 import com.cfido.commons.spring.jmxInWeb.models.MBeanVo;
-import com.cfido.commons.spring.security.RememberMeUserHandler;
+import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.OpenTypeUtil;
 
@@ -54,17 +52,11 @@ public class JmxInWebService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JmxInWebService.class);
 
-	/** 管理用户是否是在配置文件中定义的 */
-	private boolean adminInPorp;
-
 	@Autowired
 	private MBeanExporter mBeanExporter;
 
 	@Autowired
 	private JmxInWebProperties prop;
-
-	@Autowired
-	private RememberMeUserHandler rememberMeUserHandler;
 
 	/** 在init() 中初始化 */
 	@Autowired
@@ -112,7 +104,7 @@ public class JmxInWebService {
 	}
 
 	public MBeanVo getMBeanInfo(String objectNameStr) throws BaseApiException {
-		Assert.hasText(objectNameStr, "objectNameStr不能为空");
+		ExceptionUtil.hasText(objectNameStr, "objectName不能为空");
 
 		try {
 			ObjectName objectName = new ObjectName(objectNameStr);
@@ -183,7 +175,8 @@ public class JmxInWebService {
 	 * @return
 	 * @throws BaseApiException
 	 */
-	public JwInvokeOptResponse invokeOpt(String objectName, String optName, InvokeOperationParamInfo paramInfo) throws BaseApiException {
+	public JwInvokeOptResponse invokeOpt(String objectName, String optName, InvokeOperationParamInfo paramInfo)
+			throws BaseApiException {
 		ObjectName name = this.getObjectName(objectName);
 
 		// Find target attribute
@@ -226,10 +219,6 @@ public class JmxInWebService {
 		} catch (JMException e) {
 			throw new MyJmException(e);
 		}
-	}
-
-	public boolean isAdminInPorp() {
-		return adminInPorp;
 	}
 
 	/**
@@ -340,22 +329,4 @@ public class JmxInWebService {
 		}
 	}
 
-	/**
-	 * 初始化
-	 */
-	@PostConstruct
-	protected void init() {
-		// this.server = this.mBeanExporter.getServer();
-
-		// 检查管理用户的认证提供者
-		if (this.rememberMeUserHandler.getUserProvider(JwWebUser.class) == null) {
-			// 如果没有，就使用配置文件中的信息
-			this.rememberMeUserHandler.addUserProvider(this.prop.getAdminUserProvider());
-			this.adminInPorp = true;
-			log.info("初始化 JmxInWeb管理用户，账号由配置文件设置");
-		} else {
-			log.info("初始化 JmxInWeb管理用户，账号由其他服务管理");
-			this.adminInPorp = false;
-		}
-	}
 }

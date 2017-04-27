@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
 import com.cfido.commons.spring.dict.core.DictCoreService;
-import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
-import com.cfido.commons.spring.jmxInWeb.core.JwWebUser;
+import com.cfido.commons.spring.security.CommonAdminWebUser;
 import com.cfido.commons.spring.security.LoginContext;
+import com.cfido.commons.spring.security.RememberMeUserHandler;
 import com.cfido.commons.utils.html.MenuVo;
 
 /**
@@ -33,10 +33,10 @@ abstract class BaseJmxInWebController {
 	protected JwTemplateService templateService;
 
 	@Autowired
-	private JmxInWebService service;
+	private RememberMeUserHandler adminUserHander;
 
 	@Autowired
-	private LoginContext loginContext;
+	protected LoginContext loginContext;
 
 	private MenuVo menuVo;
 
@@ -46,7 +46,7 @@ abstract class BaseJmxInWebController {
 	protected Map<String, Object> createCommonModel() {
 		Map<String, Object> model = new HashMap<>();
 		model.put("pageTitle", this.dictCoreService.getSystemName());
-		model.put("adminInProp", this.service.isAdminInPorp());
+		model.put("adminInProp", this.adminUserHander.isAdminInPorp());
 		return model;
 	}
 
@@ -63,7 +63,7 @@ abstract class BaseJmxInWebController {
 		}
 
 		// 生成该用户有权限的菜单对象
-		JwWebUser user = this.loginContext.getUser(JwWebUser.class);
+		CommonAdminWebUser user = this.loginContext.getUser(CommonAdminWebUser.class);
 		if (user == null) {
 			throw new InvalidLoginStatusException();
 		}
@@ -87,7 +87,7 @@ abstract class BaseJmxInWebController {
 	private MenuVo createMenu() {
 		MenuVo menuVo = new MenuVo();
 
-		menuVo.addMenu(MENU_MBEAN, "MBean", "/");
+		menuVo.addMenu(MENU_MBEAN, "MBean", "index");
 
 		return menuVo;
 

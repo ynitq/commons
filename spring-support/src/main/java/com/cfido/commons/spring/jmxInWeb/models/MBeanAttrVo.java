@@ -78,13 +78,19 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 				return value;
 
 			} else {
-				StringBuffer sb = new StringBuffer();
-				sb.append("<pre>");
-				sb.append(JSON.toJSONString(attributeValue, true));
-				sb.append("</pre>");
-				return sb.toString();
+				// 如果不是简单类型，就变成json格式
+				return JSON.toJSONString(attributeValue, true);
 			}
 		}
+	}
+
+	/**
+	 * 是否json格式的返回值，如果是，需要用pre显示，其实不是常规类型，都需要转为json才能显示清楚
+	 * 
+	 * @return
+	 */
+	public boolean isJsonValue() {
+		return this.valueType != AttributeValueTypeEnum.Normal;
 	}
 
 	/**
