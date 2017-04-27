@@ -35,6 +35,7 @@ import com.cfido.commons.spring.jmxInWeb.inf.form.JwChangeAttrForm;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwInvokeOptResponse;
 import com.cfido.commons.spring.jmxInWeb.models.DomainVo;
 import com.cfido.commons.spring.jmxInWeb.models.MBeanVo;
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.LogUtil;
@@ -145,6 +146,13 @@ public class JmxInWebService {
 					MBeanInfo info = server.getMBeanInfo(name);
 					MBeanVo vo = new MBeanVo(name, info);
 
+					if (log.isDebugEnabled()) {
+						int order = this.getDomainOrder(info);
+						if (order > CommonMBeanDomainNaming.ORDER) {
+							log.debug("MBean:{}, domain排序为{}", info.getClassName(), order);
+						}
+					}
+
 					// 检查Map中是否已经有这个Domain，无故没有就添加
 					DomainVo domainVo = domainMap.get(domainName);
 					if (domainVo == null) {
@@ -185,9 +193,6 @@ public class JmxInWebService {
 			Class<?> clazz = Class.forName(info.getClassName());
 			ADomainOrder ann = ClassUtil.getAnnotation(clazz, ADomainOrder.class);
 			if (ann != null) {
-
-				log.debug("MBean:{}, domain设置排序{}", clazz.getName(), ann.value());
-
 				return ann.value();
 			} else {
 				return 0;
