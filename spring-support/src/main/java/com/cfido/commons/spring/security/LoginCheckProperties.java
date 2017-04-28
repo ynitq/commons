@@ -6,6 +6,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.loginCheck.IWebUser;
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 
 /**
@@ -27,7 +28,8 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  */
 @ManagedResource(description = "LoginCheck 配置")
 @ConfigurationProperties(prefix = "loginCheck")
-public class LoginCheckProperties extends CommonMBeanDomainNaming {
+@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+public class LoginCheckProperties {
 
 	/**
 	 * <pre>

@@ -5,6 +5,7 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 
 /**
@@ -21,7 +22,8 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  */
 @ConfigurationProperties(prefix = "debug")
 @ManagedResource(description = "Debug模式 配置")
-public class DebugModeProperties extends CommonMBeanDomainNaming {
+@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+public class DebugModeProperties {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DebugModeProperties.class);
 
 	public static final String DEBUG_CSS = "debug_css";

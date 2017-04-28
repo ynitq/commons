@@ -17,8 +17,8 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  * @author 梁韦江 2017年4月27日
  */
 @ManagedResource(description = "异步Cache执行器，命中率统计")
-@ADomainOrder(CommonMBeanDomainNaming.ORDER)
-public class ASyncCacheExecuterCounterMBean extends CommonMBeanDomainNaming {
+@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+public class ASyncCacheExecuterCounterMBean {
 	private final AtomicLong counterForGet = new AtomicLong();
 	private final AtomicLong counterForPutIfAbsent = new AtomicLong();
 	private final AtomicLong counterForPut = new AtomicLong();

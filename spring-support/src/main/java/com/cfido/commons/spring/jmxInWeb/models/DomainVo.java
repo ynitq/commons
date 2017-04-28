@@ -17,11 +17,12 @@ public class DomainVo implements Comparable<DomainVo> {
 
 	private boolean sorted = false;
 
-	private int order = 0;
+	private final int order;
 
-	public DomainVo(String name) {
+	public DomainVo(String name, int order) {
 		super();
 		this.name = name;
+		this.order = order;
 	}
 
 	public String getName() {
@@ -48,10 +49,6 @@ public class DomainVo implements Comparable<DomainVo> {
 		} else {
 			return res;
 		}
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
 	}
 
 	public int getOrder() {

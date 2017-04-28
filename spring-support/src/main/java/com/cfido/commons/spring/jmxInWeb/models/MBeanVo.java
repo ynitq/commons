@@ -78,7 +78,12 @@ public class MBeanVo implements Comparable<MBeanVo> {
 			String oname = this.targetName.getCanonicalName();
 			int index = oname.indexOf("name=");
 			if (index >= 0) {
-				this.displayName = oname.substring(index + 5);
+				int endIndex = oname.indexOf(",");
+				if (endIndex > index) {
+					this.displayName = oname.substring(index + 5, endIndex);
+				} else {
+					this.displayName = oname.substring(index + 5);
+				}
 			} else {
 				this.displayName = oname;
 			}

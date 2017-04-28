@@ -20,6 +20,7 @@ import javax.management.ObjectName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
@@ -35,7 +36,6 @@ import com.cfido.commons.spring.jmxInWeb.inf.form.JwChangeAttrForm;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwInvokeOptResponse;
 import com.cfido.commons.spring.jmxInWeb.models.DomainVo;
 import com.cfido.commons.spring.jmxInWeb.models.MBeanVo;
-import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.LogUtil;
@@ -136,28 +136,38 @@ public class JmxInWebService {
 			for (ObjectInstance instance : mbeans) {
 
 				ObjectName name = instance.getObjectName();
+				MBeanInfo info = server.getMBeanInfo(name);
 
-				String domainName = name.getDomain();
+				String domainName = name.getDomain();// 名字
+				int domainOrder = 0;// 排序
+
+				try {
+					// 尝试再注解中寻找 对排序和名字的定义
+					Class<?> clazz = Class.forName(info.getClassName());
+					ADomainOrder ann = ClassUtil.getAnnotation(clazz, ADomainOrder.class);
+					if (ann != null) {
+						// 如果找到注解
+						domainOrder = ann.order();
+						domainName = ann.domainName();
+					}
+				} catch (ClassNotFoundException e) {
+					// 理论上这个是不可能发生的事情
+					throw new RuntimeException(e);
+				}
+
+				Assert.hasText(domainName, "MBean Domain名字不能为空");
 
 				if (this.prop.getDomainNameFilter().show(domainName)) {
 					// 如果过滤器认为这个domain该显示
 
 					// 获取这个Mean的信息
-					MBeanInfo info = server.getMBeanInfo(name);
 					MBeanVo vo = new MBeanVo(name, info);
-
-					if (log.isDebugEnabled()) {
-						int order = this.getDomainOrder(info);
-						if (order > CommonMBeanDomainNaming.ORDER) {
-							log.debug("MBean:{}, domain排序为{}", info.getClassName(), order);
-						}
-					}
 
 					// 检查Map中是否已经有这个Domain，无故没有就添加
 					DomainVo domainVo = domainMap.get(domainName);
 					if (domainVo == null) {
-						domainVo = new DomainVo(domainName);
-						domainVo.setOrder(this.getDomainOrder(info));// 设置排序的顺序
+						domainVo = new DomainVo(domainName, domainOrder);
+
 						domainMap.put(domainName, domainVo);
 					}
 
@@ -177,30 +187,6 @@ public class JmxInWebService {
 
 		} catch (JMException e) {
 			throw new MyJmException(e);
-		}
-	}
-
-	/**
-	 * 获取domain排序数
-	 * 
-	 * @param info
-	 * @return
-	 * 
-	 * @see ADomainOrder
-	 */
-	private int getDomainOrder(MBeanInfo info) {
-		try {
-			Class<?> clazz = Class.forName(info.getClassName());
-			ADomainOrder ann = ClassUtil.getAnnotation(clazz, ADomainOrder.class);
-			if (ann != null) {
-				return ann.value();
-			} else {
-				return 0;
-			}
-
-		} catch (ClassNotFoundException e) {
-			// 理论上这个是不可能发生的事情
-			throw new RuntimeException(e);
 		}
 	}
 

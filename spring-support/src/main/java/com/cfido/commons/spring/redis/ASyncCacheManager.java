@@ -16,6 +16,7 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 
 /**
@@ -27,7 +28,8 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  *  2016年8月24日
  */
 @ManagedResource(description = "异步Cache管理器")
-public class ASyncCacheManager extends CommonMBeanDomainNaming implements CacheManager {
+@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+public class ASyncCacheManager implements CacheManager {
 	/**
 	 * <pre>
 	 * 自定义的Cache，用于将各类方法都通过asyncCacheExecuter进行异步执行

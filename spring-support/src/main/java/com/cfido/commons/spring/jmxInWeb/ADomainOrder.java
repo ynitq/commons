@@ -17,6 +17,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ADomainOrder {
-	// 从大到小排序
-	int value();
+	/** 排序序号，从大到小排序 */
+	int order();
+
+	/** domain的名字 */
+	String domainName();
 }

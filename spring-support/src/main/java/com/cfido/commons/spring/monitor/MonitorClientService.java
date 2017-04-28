@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.ClientMsgForm;
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.threadPool.BaseThreadPool;
 import com.cfido.commons.utils.threadPool.IMyTask;
@@ -37,7 +38,8 @@ import com.cfido.commons.utils.utils.LogUtil;
  */
 @Service
 @ManagedResource(description = "监控系统客户端服务")
-public class MonitorClientService extends CommonMBeanDomainNaming {
+@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+public class MonitorClientService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientService.class);
 
