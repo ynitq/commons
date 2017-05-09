@@ -78,7 +78,7 @@ public class MockDataCreater {
 
 			return this.enhancer.create();
 		} catch (Exception e) {
-			log.warn("类型 {} 没有无参数的构造方法，无法生成模拟数据", clazz.getName());
+			log.debug("类型 {} 没有无参数的构造方法，无法生成模拟数据", clazz.getName());
 			return null;
 		}
 
