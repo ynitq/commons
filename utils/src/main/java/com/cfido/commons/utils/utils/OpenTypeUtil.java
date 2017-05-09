@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.util.StringUtils;
+
 /**
  * <pre>
  * 用于将字符串转换成为对应的类型
@@ -33,7 +35,7 @@ public class OpenTypeUtil {
 		@Override
 		public BigDecimal toValue(String text, String defaultValue) {
 			String temp = text == null ? defaultValue : text;
-			if (StringUtils.isNotEmpty(temp)) {
+			if (StringUtils.hasText(temp)) {
 				try {
 					return new BigDecimal(temp);
 				} catch (NumberFormatException e) {
@@ -55,7 +57,7 @@ public class OpenTypeUtil {
 		@Override
 		public BigInteger toValue(String text, String defaultValue) {
 			String temp = text == null ? defaultValue : text;
-			if (StringUtils.isNotEmpty(temp)) {
+			if (StringUtils.hasText(temp)) {
 				try {
 					return new BigInteger(temp);
 				} catch (NumberFormatException e) {
@@ -132,7 +134,7 @@ public class OpenTypeUtil {
 
 		@Override
 		public Character toValue(String text, String defaultValue) {
-			if (StringUtils.isNotEmpty(text)) {
+			if (StringUtils.hasText(text)) {
 				return text.charAt(0);
 			} else {
 				if (this.nullable) {
@@ -381,7 +383,7 @@ public class OpenTypeUtil {
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:ss");
 
-	private final Map<String, BaseConverter<?>> converterMap = new HashMap<String, BaseConverter<?>>();
+	private final Map<String, BaseConverter<?>> converterMap = new HashMap<>();
 
 	private OpenTypeUtil() {
 		this.addConverter(Date.class, new ToDate());

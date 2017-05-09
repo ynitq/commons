@@ -50,7 +50,7 @@ public abstract class BaseColumnVo implements IColumnBean {
 
 		// 驼峰结构的属性名
 		this.propName = StringUtils.toUpperCamelCase(info.getColumnName(), false);
-		this.propNameU = StringUtils.upFirstChar(propName);
+		this.propNameU = StringUtils.capitalize(propName);
 
 		// 根据数据库信息，将字段属性转换为java的类
 		this.javaClass = dataTypeConvertor.convert(this.info);
@@ -174,7 +174,7 @@ public abstract class BaseColumnVo implements IColumnBean {
 	 * 是否有备注
 	 */
 	public boolean isHasComment() {
-		return StringUtils.isNotEmpty(this.comment);
+		return StringUtils.hasText(this.comment);
 	}
 
 	/**

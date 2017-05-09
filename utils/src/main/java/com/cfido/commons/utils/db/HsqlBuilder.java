@@ -14,7 +14,7 @@ import com.cfido.commons.utils.utils.StringUtils;
 public class HsqlBuilder {
 	private final StringBuffer sql = new StringBuffer(100);
 	private boolean hasWhere;
-	private final List<Object> paramList = new LinkedList<Object>();
+	private final List<Object> paramList = new LinkedList<>();
 
 	public HsqlBuilder(String baseSql) {
 		this.sql.append(baseSql);
@@ -27,7 +27,7 @@ public class HsqlBuilder {
 	}
 
 	public void addNoEmpty(String str, String param) {
-		if (StringUtils.isNotEmpty(param)) {
+		if (StringUtils.hasText(param)) {
 			this.checkWhere();
 			sql.append(str);
 			this.paramList.add(param);
@@ -74,10 +74,11 @@ public class HsqlBuilder {
 			this.paramList.add(param);
 		}
 	}
+
 	public void addBoolean(String str, boolean param) {
-			this.checkWhere();
-			sql.append(str);
-			this.paramList.add(param);
+		this.checkWhere();
+		sql.append(str);
+		this.paramList.add(param);
 	}
 
 	public void checkWhere() {

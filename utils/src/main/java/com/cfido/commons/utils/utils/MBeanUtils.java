@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * <pre>
@@ -48,9 +49,9 @@ public class MBeanUtils {
 	 */
 	public static Map<String, Object> objectToMap(Object obj) throws Exception {
 
-		Assert.notNull(obj,"要转换的对象不能为空");
+		Assert.notNull(obj, "要转换的对象不能为空");
 
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 
 		BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
 		PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
@@ -67,7 +68,7 @@ public class MBeanUtils {
 
 				IgnoreWhenObjectToMap anno = getter.getAnnotation(IgnoreWhenObjectToMap.class);
 				if (anno != null) {
-					if (StringUtils.isNotEmpty(anno.value())) {
+					if (StringUtils.hasText(anno.value())) {
 						// 如果注解上有备注就用备注
 						value = anno.value();
 					} else {

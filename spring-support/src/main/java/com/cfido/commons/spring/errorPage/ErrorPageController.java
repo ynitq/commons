@@ -1,5 +1,6 @@
 package com.cfido.commons.spring.errorPage;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import com.cfido.commons.beans.apiServer.impl.CommonErrorResponse;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.LogUtil;
+
+import freemarker.template.TemplateException;
 
 /**
  * 通用的错误处理器，自带模板
@@ -44,7 +47,8 @@ public class ErrorPageController implements ErrorController {
 	@Autowired
 	private ErrorAttributes errorAttributes;
 
-	private final ErrorPageTemplateService templateService = new ErrorPageTemplateService();
+	@Autowired
+	private ErrorPageTemplateService templateService;
 
 	@Autowired
 	private ErrorPageProperties prop;
@@ -99,8 +103,10 @@ public class ErrorPageController implements ErrorController {
 	 * @param errorInfo
 	 *            errorInfo
 	 * @return 页面内容
+	 * @throws IOException
+	 * @throws TemplateException
 	 */
-	private String getErrorPage(ErrorInfoBean errorInfo) {
+	private String getErrorPage(ErrorInfoBean errorInfo) throws TemplateException, IOException {
 		Map<String, Object> model = new HashMap<>();
 		model.put(ERROR_INFO_ATTR_NAME, errorInfo);
 

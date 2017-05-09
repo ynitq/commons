@@ -17,6 +17,8 @@ import java.util.jar.JarFile;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Id;
 
+import org.springframework.util.StringUtils;
+
 /**
  * <pre>
  * 分析class结构的工具，主要和泛型相关
@@ -245,7 +247,7 @@ public class ClassUtil {
 		if (idField != null) {
 			log.debug("找到 id 字段:{}", idField.getName());
 
-			String name = "get" + StringUtils.upFirstChar(idField.getName());
+			String name = "get" + StringUtils.capitalize(idField.getName());
 
 			try {
 				method = clazz.getMethod(name);

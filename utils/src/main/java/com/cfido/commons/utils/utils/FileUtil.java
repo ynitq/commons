@@ -208,4 +208,28 @@ public class FileUtil {
 		return randomFileName;
 	}
 
+	/**
+	 * 从classpath中，将文件读入到byte[]
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	public static byte[] loadFileFromClassPath(String fileName) throws IOException {
+		// InputStream is = ClassLoader.getSystemResourceAsStream(fileName);
+		InputStream is = StringUtils.class.getClassLoader().getResourceAsStream(fileName);
+		if (is != null) {
+			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+			byte[] buf = new byte[4096];
+			int len;
+			while ((len = is.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+			out.close();
+			byte[] bytes = out.toByteArray();
+			return bytes;
+		} else {
+			return null;
+		}
+	}
 }

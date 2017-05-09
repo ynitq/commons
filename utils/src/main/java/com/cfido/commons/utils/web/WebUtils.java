@@ -13,10 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
-
-import com.cfido.commons.utils.utils.StringUtils;
 
 public class WebUtils {
 	private final static Log log = LogFactory.getLog(WebUtils.class);
@@ -72,7 +71,7 @@ public class WebUtils {
 		}
 
 		Map<String, String> params = getParamsFromRequest(request);
-		List<Entry<String, String>> list = new LinkedList<Map.Entry<String, String>>(params.entrySet());
+		List<Entry<String, String>> list = new LinkedList<>(params.entrySet());
 		Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
 			@Override
 			public int compare(Entry<String, String> o1, Entry<String, String> o2) {
@@ -85,9 +84,9 @@ public class WebUtils {
 		}
 
 		if (request instanceof StandardMultipartHttpServletRequest) {
-			
+
 			StandardMultipartHttpServletRequest mreq = (StandardMultipartHttpServletRequest) request;
-			
+
 			Map<String, MultipartFile> fileMap = mreq.getFileMap();
 			for (Entry<String, MultipartFile> en : fileMap.entrySet()) {
 				buff.append("\n\t有上传文件 ");
@@ -113,7 +112,7 @@ public class WebUtils {
 	 */
 	public static Map<String, String> getParamsFromRequest(HttpServletRequest request) {
 		// 获取支付宝POST过来反馈信息
-		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> params = new HashMap<>();
 		Enumeration<String> e = request.getParameterNames();
 
 		while (e.hasMoreElements()) {

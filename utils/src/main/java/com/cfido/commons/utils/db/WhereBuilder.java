@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.annotation.form.ABuildWhereExclude;
 import com.cfido.commons.annotation.form.ABuildWhereFieldName;
@@ -14,8 +15,6 @@ import com.cfido.commons.annotation.form.ABuildWhereOptStr;
 import com.cfido.commons.annotation.form.ABuildWhereTimeField;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
-
 /**
  * <pre>
  * 通过反射的办法生成where sql
@@ -64,7 +63,7 @@ public class WhereBuilder {
 		super();
 		this.timeField = timeField;
 		this.asName = asName;
-		this.isSetAsName = StringUtils.isNotEmpty(asName);
+		this.isSetAsName = StringUtils.hasText(asName);
 		this.form = form;
 		this.wherePrefix = wherePrefix;
 		this.build();
@@ -151,7 +150,7 @@ public class WhereBuilder {
 		if (m.isAnnotationPresent(ABuildWhereTimeField.class)) {
 			// 如果声明了时时间类型，需要特别处理一下
 			ABuildWhereTimeField ano = m.getAnnotation(ABuildWhereTimeField.class);
-			if (ano != null && StringUtils.isNotEmpty(ano.filed())) {
+			if (ano != null && StringUtils.hasText(ano.filed())) {
 				// 最高优先级为注解里定义的字段名
 				return ano.filed();
 			}
@@ -159,7 +158,7 @@ public class WhereBuilder {
 
 		if (m.getReturnType().equals(Date.class)) {
 			ABuildWhereTimeField ano = m.getAnnotation(ABuildWhereTimeField.class);
-			if (ano != null && StringUtils.isNotEmpty(timeField)) {
+			if (ano != null && StringUtils.hasText(timeField)) {
 				// 外面设置的时间字段作为字段名的优先级最高--降一级(●'◡'●)
 				return this.timeField;
 			}
@@ -176,9 +175,9 @@ public class WhereBuilder {
 		} else {
 			// 如果没用发现任何用注解的定义，就直接用getter名作为字段名
 			if (m.getName().startsWith("is")) {
-				return StringUtils.lowerFirstChar(m.getName().substring(2));
+				return StringUtils.uncapitalize(m.getName().substring(2));
 			} else {
-				return StringUtils.lowerFirstChar(m.getName().substring(3));
+				return StringUtils.uncapitalize(m.getName().substring(3));
 			}
 		}
 	}

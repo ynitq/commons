@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
@@ -14,7 +15,6 @@ import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
-import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.WebUtils;
 
 /**

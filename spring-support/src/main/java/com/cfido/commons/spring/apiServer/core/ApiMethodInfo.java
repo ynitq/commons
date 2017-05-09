@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.annotation.api.AForm;
 import com.cfido.commons.annotation.api.AMethod;
@@ -16,7 +18,6 @@ import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.utils.MockDataCreater;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.BinderUtil;
 
 /**

@@ -7,12 +7,12 @@ import java.util.List;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.annotation.api.AMock;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.OpenTypeUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -191,7 +191,7 @@ public class MockDataCreater {
 
 		if (propName != null) {
 			// 如果是getter，则返回
-			return StringUtils.lowerFirstChar(propName);
+			return StringUtils.uncapitalize(propName);
 		} else {
 			return null;
 		}

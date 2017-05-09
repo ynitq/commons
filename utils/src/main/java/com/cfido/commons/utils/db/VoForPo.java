@@ -51,7 +51,7 @@ public class VoForPo<T> {
 					if(m.getReturnType().getName().contains("com.linzi.shh.orm")
 							||m.getReturnType().getName().contains(".entity")){
 						String mName = m.getReturnType().getSimpleName();
-						String fieldName = StringUtils.lowerFirstChar(m.getName().substring(3));
+						String fieldName = StringUtils.uncapitalize(m.getName().substring(3));
 						int order = -1;
 						String className = "";
 						boolean hasant = clazz.getDeclaredField(fieldName).isAnnotationPresent(AVoForPoOrder.class);

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.apiExceptions.IdNotFoundException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
@@ -16,7 +17,6 @@ import com.cfido.commons.utils.db.PageQueryResult;
 import com.cfido.commons.utils.db.WhereBuilder;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.ConverterUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -188,7 +188,7 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 		}
 
 		sql.append(" order by ");
-		if (StringUtils.isNotEmpty(orderStr)) {
+		if (StringUtils.hasText(orderStr)) {
 			// 如果有排序字段，就按排序字段
 			sql.append(orderStr);
 		} else {

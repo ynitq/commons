@@ -64,7 +64,7 @@ public class ApiServerUtils {
 				if (paramTypes.length == 1) {
 					// 并且只有一个参数
 					Class<?> paramClass = paramTypes[0];
-					String propName = StringUtils.lowerFirstChar(methodName.substring(3));// 参数名
+					String propName = StringUtils.uncapitalize(methodName.substring(3));// 参数名
 
 					MethodParamVo vo = new MethodParamVo();
 					vo.setName(propName);

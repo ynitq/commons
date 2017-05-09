@@ -113,7 +113,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			if (methodName.startsWith("get") && methodName.length() > 3) {
 
 				if (m.getAnnotation(Id.class) != null) {
-					this.idName = StringUtils.lowerFirstChar(methodName.substring(3));
+					this.idName = StringUtils.uncapitalize(methodName.substring(3));
 				}
 
 				if (m.getAnnotation(ManyToOne.class) != null) {
@@ -748,9 +748,9 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			String methodName = m.getName();
 			String prop = null;
 			if (methodName.startsWith("get") && methodName.length() > 3) {
-				prop = StringUtils.lowerFirstChar(methodName.substring(3));
+				prop = StringUtils.uncapitalize(methodName.substring(3));
 			} else if (methodName.startsWith("is") && methodName.length() > 2) {
-				prop = StringUtils.lowerFirstChar(methodName.substring(2));
+				prop = StringUtils.uncapitalize(methodName.substring(2));
 			}
 			if (prop != null) {
 				if (!needAddAnd) {
@@ -833,7 +833,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			StringBuffer sql = new StringBuffer(100);
 			for (String str : this.foreignKeyList) {
 				sql.append(String.format(" left join fetch %s.%s", tableShortName,
-						com.cfido.commons.utils.utils.StringUtils.lowerFirstChar(str)));
+						com.cfido.commons.utils.utils.StringUtils.uncapitalize(str)));
 			}
 			return sql.toString();
 		}

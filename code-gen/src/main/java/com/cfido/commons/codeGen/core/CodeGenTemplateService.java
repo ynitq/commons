@@ -8,12 +8,12 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.codeGen.config.CodeGenProperties;
 import com.cfido.commons.codeGen.config.CodeGenProperties.FileSaveOption;
 import com.cfido.commons.utils.utils.FileUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -49,7 +49,7 @@ public class CodeGenTemplateService {
 		@Override
 		public Object findTemplateSource(String fileName) throws IOException {
 			if (fileName != null) {
-				byte[] bytes = StringUtils.loadFileFromClassPath(fileName);
+				byte[] bytes = FileUtil.loadFileFromClassPath(fileName);
 				if (bytes != null) {
 					if (log.isDebugEnabled()) {
 						log.debug(LogUtil.format("Read template from %s", fileName));

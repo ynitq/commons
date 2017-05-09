@@ -7,8 +7,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
-
-import com.cfido.commons.utils.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * <pre>
@@ -164,9 +163,9 @@ public class CodeGenProperties {
 		public String buildTableJavaName(String tableName) {
 			String res = this.tableNameMap.get(tableName);
 			if (res != null) {
-				return StringUtils.upFirstChar(res);
+				return StringUtils.capitalize(res);
 			} else {
-				String name = StringUtils.toUpperCamelCase(tableName, true);
+				String name = com.cfido.commons.utils.utils.StringUtils.toUpperCamelCase(tableName, true);
 				// if (name.endsWith("s")) {
 				// name = name.substring(0, name.length() - 1);
 				// }

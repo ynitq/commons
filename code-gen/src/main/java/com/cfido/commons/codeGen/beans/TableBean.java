@@ -145,14 +145,14 @@ public class TableBean {
 	 * 属性名
 	 */
 	public String getPropName() {
-		return StringUtils.lowerFirstChar(this.javaClassName);
+		return StringUtils.uncapitalize(this.javaClassName);
 	}
 
 	/**
 	 * 首字母消息的类名，通常用于作为jsp、js文件名
 	 */
 	public String getOtherFileName() {
-		return StringUtils.lowerFirstChar(this.javaClassName);
+		return StringUtils.uncapitalize(this.javaClassName);
 	}
 
 	/**

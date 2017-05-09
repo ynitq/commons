@@ -10,9 +10,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.others.IFilter;
-
 /**
  * 日志帮助类
  * 

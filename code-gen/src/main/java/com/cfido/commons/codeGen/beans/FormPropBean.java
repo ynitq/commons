@@ -40,7 +40,7 @@ public class FormPropBean {
 	protected String parserComment(String str) {
 		String comment = null;
 
-		if (StringUtils.isNotEmpty(str)) {
+		if (StringUtils.hasText(str)) {
 
 			StringTokenizer tokenizer = new StringTokenizer(str, SEP, false);
 

@@ -184,7 +184,7 @@ public class BinderEditorSupport {
 
 			String methodName = m.getName();
 			if (methodName.startsWith("set") && methodName.length() > 3) {
-				String propName = StringUtils.lowerFirstChar(methodName.substring(3));// 参数名
+				String propName = StringUtils.uncapitalize(methodName.substring(3));// 参数名
 
 				// 必须是setXXX的方法
 				Class<?>[] paramTypes = m.getParameterTypes();

@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import com.cfido.commons.utils.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * <pre>

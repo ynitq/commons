@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,7 +20,6 @@ import com.cfido.commons.spring.apiServer.core.ApiMethodInfo;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.BinderUtil;
 import com.cfido.commons.utils.web.WebUtils;
 

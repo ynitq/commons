@@ -13,8 +13,7 @@ import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
-
-import com.cfido.commons.utils.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * <pre>

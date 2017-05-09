@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.oauth.TokenBean;
@@ -13,7 +14,6 @@ import com.cfido.commons.beans.oauth.WeChatUserInfoBean;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
 import com.cfido.commons.utils.utils.HttpUtilException;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -95,7 +95,7 @@ public class WeChatOAuthClient {
 				.append("&")
 				.append("scope=").append(scope.toString());
 
-		if (StringUtils.isNotEmpty(state)) {
+		if (StringUtils.hasText(state)) {
 			b.append("&")
 					.append("state=").append(EncodeUtil.url(state));
 		}

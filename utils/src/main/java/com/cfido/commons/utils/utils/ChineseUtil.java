@@ -3,6 +3,7 @@ package com.cfido.commons.utils.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.util.StringUtils;
 /**
  * <pre>
  * 中文判断及转换工具

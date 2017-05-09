@@ -42,6 +42,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 

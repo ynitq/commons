@@ -7,11 +7,11 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.appServer.UserResponse;
 import com.cfido.commons.beans.oauth.TokenBean;
 import com.cfido.commons.utils.utils.HttpUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -72,7 +72,7 @@ public abstract class BaseOAuthClient {
 		param.put("password", password);
 		param.put("username", username);
 
-		if (StringUtils.isNotEmpty(scope)) {
+		if (StringUtils.hasText(scope)) {
 			param.put("scope", scope);
 		}
 

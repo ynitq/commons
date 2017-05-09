@@ -5,8 +5,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
+
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * web项目中，要从session检查的用户对象的基类
@@ -38,12 +39,12 @@ public abstract class AbstractWebUser {
 	 * @return
 	 */
 	public static Set<Integer> strToSet(String rightStr) {
-		Set<Integer> res = new HashSet<Integer>();
+		Set<Integer> res = new HashSet<>();
 
-		if (StringUtils.isNotEmpty(rightStr)) {
+		if (StringUtils.hasText(rightStr)) {
 			String[] sa = rightStr.split(",");
 			for (String str : sa) {
-				if (StringUtils.isNotEmpty(str)) {
+				if (StringUtils.hasText(str)) {
 					try {
 						Integer optId = Integer.parseInt(str);
 						res.add(optId);

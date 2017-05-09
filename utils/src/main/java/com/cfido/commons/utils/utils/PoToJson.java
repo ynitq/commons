@@ -160,7 +160,7 @@ public class PoToJson {
 			return "";
 		}
 		String srcType = obj.getClass().getName();
-		srcType = StringUtils.lowerFirstChar(srcType.substring(srcType.lastIndexOf(".T")+1));
+		srcType = StringUtils.uncapitalize(srcType.substring(srcType.lastIndexOf(".T")+1));
 		if(objNames.containsKey(srcType)){
 			Integer index = Integer.parseInt(objNames.get(String.format("%s_index", srcType)).toString()) + 1;
 			objNames.put(String.format("%s_index", srcType), index);
@@ -198,21 +198,21 @@ public class PoToJson {
 										JSONObject jop = new JSONObject();
 										doPo2Json(val, jop, isopenLazy);
 										jo.put(StringUtils
-												.lowerFirstChar(method
+												.uncapitalize(method
 														.getName().substring(3)),
 												jop);
 									}
 									if(isPoNotNull(val)){
 										JSONObject jop = new JSONObject();
 										doPo2Json(val, jop, isopenLazy);
-										jo.put(StringUtils.lowerFirstChar(method.getName().substring(3)), jop);
+										jo.put(StringUtils.uncapitalize(method.getName().substring(3)), jop);
 									}
 								} else {
 									if (method.getReturnType() == Date.class) {
 										val = DateUtil.dateFormat((Date) val,
 												"yyyy-MM-dd HH:mm:ss");
 									}
-									jo.put(StringUtils.lowerFirstChar(method
+									jo.put(StringUtils.uncapitalize(method
 											.getName().substring(3)), val);
 								}
 							}
@@ -220,7 +220,7 @@ public class PoToJson {
 						if (method.getName().equals("isBol")) {
 							// 给异步分页用的
 							Object val = method.invoke(po);
-							jo.put(StringUtils.lowerFirstChar(method.getName()
+							jo.put(StringUtils.uncapitalize(method.getName()
 									.substring(2)), val);
 						}
 					}

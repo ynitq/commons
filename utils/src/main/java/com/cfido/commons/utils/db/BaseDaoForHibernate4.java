@@ -19,12 +19,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.annotation.other.AQCache;
 import com.cfido.commons.beans.form.IPageForm;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * Hibernate4 DAO实现基类
@@ -59,7 +59,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 	protected final Class<E> entityClass;
 	protected final Class<PK> idClass;
 	protected String idName;
-	protected final List<String> foreignKeyList = new LinkedList<String>();
+	protected final List<String> foreignKeyList = new LinkedList<>();
 	private final String fetchSql;
 
 	/** id是否是复合类型 */
@@ -68,7 +68,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 	/** 是否开启查询缓存 */
 	protected final boolean isUseCache;
 
-	protected final List<StringGetterEn> getterList = new LinkedList<StringGetterEn>();
+	protected final List<StringGetterEn> getterList = new LinkedList<>();
 
 	/**
 	 * 构造函数--用于初始化相关参数
@@ -80,7 +80,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 		this.idClass = (Class<PK>) ClassUtil.getGenericType(this.getClass(), 1);
 		this.embeddableId = idClass.getAnnotation(Embeddable.class) != null;
 
-		Map<String, Field> fieldMap = new HashMap<String, Field>();
+		Map<String, Field> fieldMap = new HashMap<>();
 		for (Field f : this.entityClass.getFields()) {
 			String fieldName = f.getName();
 			fieldMap.put(fieldName, f);
@@ -106,7 +106,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 			}
 		}
 
-		Map<String, Method> methodMap = new HashMap<String, Method>();
+		Map<String, Method> methodMap = new HashMap<>();
 		for (Method m : this.entityClass.getMethods()) {
 			String methodName = m.getName();
 			methodMap.put(methodName, m);
@@ -267,7 +267,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 		List<E> items = createQuery(sql, pageNo * pageSize + 1, pageSize, null,
 				params).list();
 		int total = this.getCount("select count(*) " + sql, params);
-		return new PageQueryResult<E>(total, items, pageNo, pageSize);
+		return new PageQueryResult<>(total, items, pageNo, pageSize);
 	}
 
 	/**
@@ -300,7 +300,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 				"select count(*) from %s %s %s",
 				this.entityClass.getSimpleName(), tableShortName,
 				sqlStartWithWhere), params);
-		return new PageQueryResult<E>(total, items, form.getPageNo(),
+		return new PageQueryResult<>(total, items, form.getPageNo(),
 				form.getPageSize());
 	}
 
@@ -311,7 +311,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 	 * @return
 	 */
 	public E get(PK id) {
-		return (E) getSession().get(entityClass, id);
+		return getSession().get(entityClass, id);
 	}
 
 	/**
@@ -388,7 +388,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 				sql.append(String.format(" p.id.%s=?", fieldName));
 				try {
 					Method m = entityClass.getMethod(
-							"get" + StringUtils.upperFirstChar(fieldName),
+							"get" + StringUtils.capitalize(fieldName),
 							new Class[0]);
 					params.add(m.invoke(id));
 				} catch (Exception e) {
@@ -423,7 +423,7 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 	 */
 	@SuppressWarnings("unchecked")
 	private E getEmbedId(PK id) {
-		final List<Object> params = new LinkedList<Object>();
+		final List<Object> params = new LinkedList<>();
 		final String sql = buildGetSql(id, params);
 
 		Query q = getSession().createQuery(sql);
@@ -600,14 +600,14 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 
 				String value = (String) en.getter.invoke(pojo);
 				if (value != null && value.length() > en.length) {
-					String newvalue = StringUtils
+					String newvalue = com.cfido.commons.utils.utils.StringUtils
 							.substring(value, 0, en.length);
 					en.setter.invoke(pojo, newvalue);
 
 					log.warn(LogUtil.format(
 							"存储对象 %s 时，字段%s的值的长度过长，自动将长度截取到%d, 新的值为:%s",
 							this.entityClass.getSimpleName(),
-							StringUtils.substring(en.getter.getName(), 3, 100),
+							com.cfido.commons.utils.utils.StringUtils.substring(en.getter.getName(), 3, 100),
 							en.length,
 							newvalue));
 				}

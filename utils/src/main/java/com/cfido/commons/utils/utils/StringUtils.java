@@ -1,8 +1,5 @@
 package com.cfido.commons.utils.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,13 +24,8 @@ public class StringUtils {
 	 * @param str
 	 * @return
 	 */
-	public static String upFirstChar(String str) {
-		if (str != null && !str.equals("")) {
-			char[] ch = str.toCharArray();
-			ch[0] = Character.toUpperCase(ch[0]);
-			return new String(ch);
-		}
-		return str;
+	public static String capitalize(String str) {
+		return org.springframework.util.StringUtils.capitalize(str);
 	}
 
 	/**
@@ -46,11 +38,11 @@ public class StringUtils {
 			String result = "";
 			String[] classNameList = className.split("_");
 			for (String s : classNameList) {
-				result += upFirstChar(s);
+				result += capitalize(s);
 			}
 			return result;
 		}
-		return upFirstChar(className);
+		return capitalize(className);
 	}
 
 	/**
@@ -59,7 +51,7 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String setName(String className) {
-		return lowerFirstChar(setClassName(className));
+		return uncapitalize(setClassName(className));
 	}
 
 	/**
@@ -96,11 +88,11 @@ public class StringUtils {
 		return true;
 	}
 
-	public static boolean isEmpty(String str) {
+	private static boolean isEmpty(String str) {
 		return !hasText(str);
 	}
 
-	public static boolean isNotEmpty(String str) {
+	private static boolean isNotEmpty(String str) {
 		return hasText(str);
 	}
 
@@ -120,13 +112,9 @@ public class StringUtils {
 		}
 	}
 
-	public static String lowerFirstChar(String str) {
-		if (str == null || str.length() == 0) {
-			return null;
-		}
-		char[] ca = str.toCharArray();
-		ca[0] = Character.toLowerCase(ca[0]);
-		return new String(ca);
+	/** 首字母小写 */
+	public static String uncapitalize(String str) {
+		return org.springframework.util.StringUtils.uncapitalize(str);
 	}
 
 	public static String upperFirstChar(String str) {
@@ -179,7 +167,7 @@ public class StringUtils {
 	}
 
 	public static ArrayList<String> getMarkStringList(String Str, String LeftMark, String RightMark) {
-		ArrayList<String> al = new ArrayList<String>();
+		ArrayList<String> al = new ArrayList<>();
 		String tempstr = new String(Str);
 		String tempv = "";
 		while (getMarkString(tempstr, LeftMark, RightMark) != null) {
@@ -309,31 +297,6 @@ public class StringUtils {
 			}
 		}
 		return sb.toString();
-	}
-
-	/**
-	 * 从classpath中，将文件读入到byte[]
-	 * 
-	 * @param fileName
-	 * @return
-	 * @throws IOException
-	 */
-	public static byte[] loadFileFromClassPath(String fileName) throws IOException {
-		// InputStream is = ClassLoader.getSystemResourceAsStream(fileName);
-		InputStream is = StringUtils.class.getClassLoader().getResourceAsStream(fileName);
-		if (is != null) {
-			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-			byte[] buf = new byte[4096];
-			int len;
-			while ((len = is.read(buf)) > 0) {
-				out.write(buf, 0, len);
-			}
-			out.close();
-			byte[] bytes = out.toByteArray();
-			return bytes;
-		} else {
-			return null;
-		}
 	}
 
 	public static String substring(String value, int i, int length) {

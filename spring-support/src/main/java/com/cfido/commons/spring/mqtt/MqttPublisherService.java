@@ -9,10 +9,10 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.serverEvent.BaseServerEvent;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>

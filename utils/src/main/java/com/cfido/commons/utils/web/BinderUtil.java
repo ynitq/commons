@@ -12,12 +12,12 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.annotation.form.AFormValidateMethod;
 import com.cfido.commons.beans.apiServer.impl.FormValidateErrorInfoBean;
 import com.cfido.commons.beans.exceptions.ValidateFormException;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * FORM绑定工具
@@ -156,7 +156,7 @@ public class BinderUtil {
 				request.getSession().setAttribute(sessionName, form);
 			}
 
-			Map<String, String[]> map = new HashMap<String, String[]>();
+			Map<String, String[]> map = new HashMap<>();
 			Enumeration<String> en = request.getParameterNames();
 			while (en.hasMoreElements()) {
 				String key = en.nextElement();

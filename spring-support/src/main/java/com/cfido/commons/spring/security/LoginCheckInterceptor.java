@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,7 +22,6 @@ import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.monitor.MonitorClientContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * 认证安全拦截器
@@ -216,7 +216,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 			String[] paramValues = request.getParameterValues(paramName);
 			if (paramValues.length == 1) {
 				String paramValue = paramValues[0];
-				if (StringUtils.isNotEmpty(paramValue)) {
+				if (StringUtils.hasText(paramValue)) {
 					if (paramValue.trim().contains("<script")) {
 						CommonErrorResponse res = new CommonErrorResponse();
 						res.setErrorMsg("您好，表单中不允许输入script非法字符！");

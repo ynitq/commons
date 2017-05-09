@@ -7,9 +7,9 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.cfido.commons.utils.utils.EncryptUtil;
-import com.cfido.commons.utils.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
+import com.cfido.commons.utils.utils.EncryptUtil;
 /**
  * <pre>
  * 常见的cookie操作
@@ -65,7 +65,7 @@ public class CookieUtils {
 		}
 
 		Cookie cookie = new Cookie(cookieName, saveString);
-		if (StringUtils.isNotEmpty(cookieDomain)) {
+		if (StringUtils.hasText(cookieDomain)) {
 			cookie.setDomain(cookieDomain);
 		}
 		cookie.setPath(cookiePath);
@@ -173,7 +173,7 @@ public class CookieUtils {
 	 */
 	public static void removeCookie(HttpServletResponse response, String cookiePath, String cookieName, String cookieDomain) {
 		Cookie cookie = new Cookie(cookieName, null);
-		if (StringUtils.isNotEmpty(cookieDomain)) {
+		if (StringUtils.hasText(cookieDomain)) {
 			cookie.setDomain(cookieDomain);
 		}
 		cookie.setPath(cookiePath);

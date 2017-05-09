@@ -8,8 +8,8 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cfido.commons.utils.utils.FileUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -36,7 +36,7 @@ public abstract class BaseTemplateService {
 	 */
 	private class ResourceTemplateLoader implements TemplateLoader {
 
-		private final Map<String, TemplateSource> sourceMap = new HashMap<String, TemplateSource>();
+		private final Map<String, TemplateSource> sourceMap = new HashMap<>();
 
 		@Override
 		public void closeTemplateSource(Object templateSource) throws IOException {
@@ -47,7 +47,7 @@ public abstract class BaseTemplateService {
 			if (fileName != null) {
 				TemplateSource source = this.sourceMap.get(fileName);
 				if (source == null) {
-					byte[] bytes = StringUtils.loadFileFromClassPath(getTemplatePath(fileName));
+					byte[] bytes = FileUtil.loadFileFromClassPath(getTemplatePath(fileName));
 					if (bytes != null) {
 						source = new TemplateSource(fileName, bytes);
 						// TODO 暂时关闭模板缓存

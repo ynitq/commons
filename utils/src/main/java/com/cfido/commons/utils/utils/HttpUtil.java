@@ -35,9 +35,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
 import org.apache.http.util.EntityUtils;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
-
 /**
  * 通过http协议抓起页面的工具类
  * 

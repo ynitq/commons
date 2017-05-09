@@ -1,8 +1,9 @@
 package com.cfido.commons.spring.apiServer.core;
 
+import org.springframework.util.StringUtils;
+
 import com.cfido.commons.annotation.api.AClass;
 import com.cfido.commons.annotation.bean.AComment;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>

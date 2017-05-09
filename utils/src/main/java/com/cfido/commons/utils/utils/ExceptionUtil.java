@@ -4,13 +4,14 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.util.StringUtils;
+
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.impl.CommonErrorResponse;
 import com.cfido.commons.beans.apiServer.impl.FormVaildateErrorResponse;
 import com.cfido.commons.beans.exceptions.ValidateFormException;
-
 /**
  * <pre>
  * 用于抛错的工具
@@ -102,7 +103,7 @@ public class ExceptionUtil {
 			// 如果是开发模式，将调查错误过程回馈给客户端
 			String str = LogUtil.getTraceString(null, ex);
 			// 过滤掉中间 \t \r \n 之类的字符
-			res.setDebugMsg(StringUtils.trimMiddleWhitespace(str));
+			res.setDebugMsg(com.cfido.commons.utils.utils.StringUtils.trimMiddleWhitespace(str));
 		}
 		return res;
 

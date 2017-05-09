@@ -3,9 +3,9 @@ package com.cfido.commons.spring.weChat;
 import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.utils.oauth.WeChatOAuthClient;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -46,6 +46,7 @@ public class WeChatProperties {
 
 	@PostConstruct
 	public void check() {
+
 		if (StringUtils.isEmpty(appId)) {
 			throw new RuntimeException("请配置 wechat.appId 参数");
 		}
