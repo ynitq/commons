@@ -6,7 +6,7 @@
     </encoder>   
   </appender>   
    
-  <logger name="com.linzi.framework" level="debug" additivity="false">  
+  <logger name="com.cfido.commons.utils" level="debug" additivity="false">  
     <appender-ref ref="STDOUT"/>  
   </logger>   
     
