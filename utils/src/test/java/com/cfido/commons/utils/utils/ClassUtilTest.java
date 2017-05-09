@@ -1,11 +1,12 @@
 package com.cfido.commons.utils.utils;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.util.Assert;
 
-import com.cfido.commons.utils.utils.ClassUtil;
+import com.cfido.commons.utils.utils.ClassUtil.MethodInfo;
 
 /**
  * <pre>
@@ -26,7 +27,7 @@ public class ClassUtilTest {
 
 		Date date = ClassUtil.getClassBuildTime(clazz.getName());
 
-		Assert.notNull(date,"应该能获取类文件的时间");
+		Assert.notNull(date, "应该能获取类文件的时间");
 	}
 
 	@Test
@@ -38,7 +39,45 @@ public class ClassUtilTest {
 
 		Date date = ClassUtil.getClassBuildTime(clazz.getName());
 
-		Assert.notNull(date,"应该能获取jar文件的时间");
+		Assert.notNull(date, "应该能获取jar文件的时间");
+	}
+
+	public class MyTestCLass {
+
+		/** 这个是 getter */
+		public String getName() {
+			return null;
+		}
+
+		public String isBoolean() {
+			return null;
+		}
+
+		public void getErrorName1() {
+
+		}
+
+		/** 这个是 getter */
+		public Boolean getBoolean1() {
+			return true;
+		}
+
+		/** 这个是 getter */
+		public boolean isBoolean1() {
+			return true;
+		}
+	}
+
+	@Test
+	public void test_findGetter() {
+		log.debug("测试 findGetter方法");
+
+		Class<?> clazz = MyTestCLass.class;
+
+		List<MethodInfo> list = ClassUtil.findGetter(clazz);
+		log.debug("在类 {} 中，找到 {} 个 getter", clazz.getName(), list.size());
+
+		Assert.isTrue(list.size() == 3, "共3个getter");
 	}
 
 }

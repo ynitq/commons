@@ -12,12 +12,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.jar.JarFile;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Id;
 
 import org.springframework.util.StringUtils;
+
+import com.cfido.commons.annotation.api.AMock;
+import com.cfido.commons.annotation.bean.AComment;
 
 /**
  * <pre>
@@ -29,6 +35,29 @@ import org.springframework.util.StringUtils;
 public class ClassUtil {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassUtil.class);
+
+	private static java.util.Set<Class<?>> classSet = new HashSet<>();
+	static {
+		classSet.add(String.class);
+		classSet.add(Integer.class);
+		classSet.add(Long.class);
+		classSet.add(Float.class);
+		classSet.add(Double.class);
+		classSet.add(Boolean.class);
+	}
+
+	/**
+	 * 是否是内置的类型，例如int Integer等
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static boolean isInnerClass(Class<?> c) {
+		if (c.isPrimitive() || classSet.contains(c)) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * 返回xmlbean类接口中工厂类中指定的方法
@@ -294,24 +323,170 @@ public class ClassUtil {
 			// 不管是文件类型还是jar，都可以通过这个方法获取时间
 			URLConnection uc = url.openConnection();
 
-			if (log.isDebugEnabled()) {
-				String protocol = url.getProtocol();
-				if ("file".equals(protocol)) {
-					date = new Date(uc.getLastModified());
-					log.debug("{}存在文件系统中，文件的最后更改时间是{}", className, date);
-				} else if ("jar".equals(protocol)) {
-					JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
-					String jarFileName = jar.getName();
-					File file = new File(jarFileName);
-					date = new Date(file.lastModified());
-					log.debug("{}存在jar文件{}中，jar文件的最后更改时间是{}", className, jarFileName, date);
-				} else {
-					log.warn("获取{}的BuildTime失败，无法解析protocol:{}", path, protocol);
-				}
+			String protocol = url.getProtocol();
+			if ("file".equals(protocol)) {
+				date = new Date(uc.getLastModified());
+				log.debug("{}存在文件系统中，文件的最后更改时间是{}", className, date);
+			} else if ("jar".equals(protocol)) {
+				JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile();
+				String jarFileName = jar.getName();
+				File file = new File(jarFileName);
+				date = new Date(file.lastModified());
+				log.debug("{}存在jar文件{}中，jar文件的最后更改时间是{}", className, jarFileName, date);
+			} else {
+				log.warn("获取{}的BuildTime失败，无法解析protocol:{}", path, protocol);
 			}
 		} else {
 			log.error("无法获得 {} 的资源", path);
 		}
 		return date;
 	}
+
+	/**
+	 * 判断一个方法是否是getter，如果是, 就返回属性名字，例如 String getName() 返回 name
+	 * 
+	 * @param method
+	 * @return
+	 */
+	public static String getGetterName(Method method) {
+		if (method.getParameterTypes() != null && method.getParameterTypes().length > 0) {
+			// 不能有参数
+			return null;
+		}
+
+		if (method.getDeclaringClass() == Object.class) {
+			// 不处理 Object基类中的方法
+			return null;
+		}
+
+		Class<?> returnType = method.getReturnType();
+		if (returnType == void.class) {
+			// 必须有返回类型
+			return null;
+		}
+
+		String name = method.getName();
+		String attrName = null;
+
+		// 分析方法名
+		if (name.startsWith("is")) {
+			// 可以是is开头
+			attrName = name.substring(2);
+			if (returnType != boolean.class && returnType != Boolean.class) {
+				// is开头的，返回类型必须是boolean类型
+				return null;
+			}
+		} else if (name.startsWith("get")) {
+			// 可以是 get开头
+			attrName = name.substring(3);
+		} else {
+			// 如果都不是
+			return null;
+		}
+
+		if (StringUtils.isEmpty(attrName)) {
+			// 截取出来的名字不能为空，方面名可能就只是is 或者 get
+			return null;
+		}
+
+		return StringUtils.uncapitalize(attrName);
+	}
+
+	public static class MethodInfo {
+
+		private boolean array;// 是否数组或者list
+		private String name;// 字段名
+		private boolean innerReturnType; // 返回的类型是否是内部类型
+		private Class<?> returnTypeClass; // 返回的类型
+		private String memo;// 备注
+
+		private final Method method;
+		private boolean isGetter = false;
+
+		private MethodInfo(Method method) {
+			this.method = method;
+
+			this.name = getGetterName(method);
+			if (this.name == null) {
+				// 必须是getter
+				return;
+			}
+
+			// 检查是否有备注
+			AComment am = method.getAnnotation(AComment.class);
+			if (am != null) {
+				this.memo = am.comment();
+			}
+			if (StringUtils.isEmpty(this.memo)) {
+				// 因为历史原因，有些备注是写在AMock注解上的，所以如果无法从AComment获取，就尝试从AMock中获取
+				AMock mock = method.getAnnotation(AMock.class);
+				if (mock != null) {
+					this.memo = mock.value();
+				}
+			}
+
+			// 判断返回的对象是否集合类型
+			Class<?> compClass = ClassUtil.getMethodReturnComponentType(method);
+			if (compClass != null) {
+				// 如果是数组或者list，这用数组结构的类型作为返回类型
+				this.array = true;
+				this.returnTypeClass = compClass;
+			} else {
+				this.array = false;
+				this.returnTypeClass = method.getReturnType();
+			}
+
+			// 返回类型是否是内部类型
+			this.innerReturnType = ClassUtil.isInnerClass(this.returnTypeClass);
+
+			// 标志一下分析成功
+			this.isGetter = true;
+		}
+
+		public boolean isArray() {
+			return array;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public boolean isInnerReturnType() {
+			return innerReturnType;
+		}
+
+		public Class<?> getReturnTypeClass() {
+			return returnTypeClass;
+		}
+
+		public String getMemo() {
+			return memo;
+		}
+
+		/**
+		 * 原始的Method
+		 */
+		public Method getOriginMethod() {
+			return method;
+		}
+
+	}
+
+	/**
+	 * 在一个类中，寻找所有的getter
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static List<MethodInfo> findGetter(Class<?> clazz) {
+		List<MethodInfo> list = new LinkedList<>();
+		for (Method method : clazz.getMethods()) {
+			MethodInfo info = new MethodInfo(method);
+			if (info.isGetter) {
+				list.add(info);
+			}
+		}
+		return list;
+	}
+
 }
