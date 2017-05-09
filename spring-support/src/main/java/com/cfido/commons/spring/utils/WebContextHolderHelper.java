@@ -133,6 +133,10 @@ public class WebContextHolderHelper {
 		return getRequestURL(true);
 	}
 
+	public static String getBasePath() {
+		return getAttachmentFullPath(null);
+	}
+
 	/**
 	 * 获得附件的全路径
 	 * 
@@ -170,10 +174,9 @@ public class WebContextHolderHelper {
 			url.append(contextPath);
 		}
 
-		if (attachmentPath != null) {
+		if (StringUtils.hasText(attachmentPath)) {
 			if (!attachmentPath.startsWith("/")) {
-				// 如果相对路径不是以/开头，就手动增加 /
-				url.append("/");
+				url.append('/');
 			}
 			url.append(attachmentPath);
 		}
