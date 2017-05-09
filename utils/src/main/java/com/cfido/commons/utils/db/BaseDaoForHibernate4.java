@@ -600,14 +600,14 @@ public abstract class BaseDaoForHibernate4<E, PK extends Serializable> {
 
 				String value = (String) en.getter.invoke(pojo);
 				if (value != null && value.length() > en.length) {
-					String newvalue = com.cfido.commons.utils.utils.StringUtils
+					String newvalue = com.cfido.commons.utils.utils.StringUtilsEx
 							.substring(value, 0, en.length);
 					en.setter.invoke(pojo, newvalue);
 
 					log.warn(LogUtil.format(
 							"存储对象 %s 时，字段%s的值的长度过长，自动将长度截取到%d, 新的值为:%s",
 							this.entityClass.getSimpleName(),
-							com.cfido.commons.utils.utils.StringUtils.substring(en.getter.getName(), 3, 100),
+							com.cfido.commons.utils.utils.StringUtilsEx.substring(en.getter.getName(), 3, 100),
 							en.length,
 							newvalue));
 				}

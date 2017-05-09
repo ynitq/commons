@@ -103,7 +103,7 @@ public class ExceptionUtil {
 			// 如果是开发模式，将调查错误过程回馈给客户端
 			String str = LogUtil.getTraceString(null, ex);
 			// 过滤掉中间 \t \r \n 之类的字符
-			res.setDebugMsg(com.cfido.commons.utils.utils.StringUtils.trimMiddleWhitespace(str));
+			res.setDebugMsg(com.cfido.commons.utils.utils.StringUtilsEx.trimMiddleWhitespace(str));
 		}
 		return res;
 

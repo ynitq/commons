@@ -6,11 +6,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.codeGen.convertor.MysqlDataTypeConvertor;
 import com.cfido.commons.codeGen.core.MetadataReader.ColumnInfo;
 import com.cfido.commons.utils.utils.MBeanUtils.IgnoreWhenObjectToMap;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>
@@ -49,7 +49,7 @@ public abstract class BaseColumnVo implements IColumnBean {
 		this.info = info;
 
 		// 驼峰结构的属性名
-		this.propName = StringUtils.toUpperCamelCase(info.getColumnName(), false);
+		this.propName = com.cfido.commons.utils.utils.StringUtilsEx.toUpperCamelCase(info.getColumnName(), false);
 		this.propNameU = StringUtils.capitalize(propName);
 
 		// 根据数据库信息，将字段属性转换为java的类

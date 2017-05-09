@@ -4,8 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.springframework.util.StringUtils;
+
 import com.cfido.commons.codeGen.constants.FormPropEnum;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>

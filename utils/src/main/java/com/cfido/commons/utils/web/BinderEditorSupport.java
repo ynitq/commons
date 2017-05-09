@@ -9,13 +9,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import com.cfido.commons.annotation.form.AFormValidateMethod;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 public class BinderEditorSupport {
 

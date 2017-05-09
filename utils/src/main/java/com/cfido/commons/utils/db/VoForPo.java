@@ -1,15 +1,15 @@
 package com.cfido.commons.utils.db;
 
-import com.cfido.commons.annotation.form.AVoForPoOrder;
-import com.cfido.commons.utils.utils.ClassUtil;
-import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
-
-import org.springframework.beans.BeanUtils;
-
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
+
+import com.cfido.commons.annotation.form.AVoForPoOrder;
+import com.cfido.commons.utils.utils.ClassUtil;
+import com.cfido.commons.utils.utils.LogUtil;
 
 /**
  * <pre>
@@ -98,7 +98,7 @@ public class VoForPo<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> getORMList(Object obj){
-		List<T> list = new LinkedList<T>();
+		List<T> list = new LinkedList<>();
 		if(obj.getClass().getSimpleName().contains("List")){
 			List<Object> o = (List<Object>)obj;
 			if(o!=null&&o.size()>0){

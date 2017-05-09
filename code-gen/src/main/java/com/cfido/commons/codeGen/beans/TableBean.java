@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.codeGen.core.CodeGenContext;
@@ -25,7 +26,6 @@ import com.cfido.commons.codeGen.core.ImportClassSet;
 import com.cfido.commons.codeGen.core.MetadataReader.ColumnInfo;
 import com.cfido.commons.codeGen.core.MetadataReader.ForeignKeyInfo;
 import com.cfido.commons.codeGen.core.MetadataReader.TableInfo;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>

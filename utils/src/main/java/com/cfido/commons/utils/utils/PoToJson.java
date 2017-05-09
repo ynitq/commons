@@ -10,11 +10,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cfido.commons.utils.db.PageQueryResult;
-
 /**
  * <pre>
  * PO2JSON 不完整版
@@ -115,7 +115,7 @@ public class PoToJson {
 	 * @return
 	 */
 	public JSONObject poObj2Json(Object o) {
-		objNames = new HashMap<String, Object>();
+		objNames = new HashMap<>();
 		Object[] obj = (Object[])o;
 		JSONObject json = new JSONObject();
 		if (obj != null && obj.length > 0) {

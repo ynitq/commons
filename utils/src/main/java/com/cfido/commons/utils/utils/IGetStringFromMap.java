@@ -5,7 +5,7 @@ package com.cfido.commons.utils.utils;
  * 用于StringUtil中的getStringFromMap方法
  * </pre>
  * 
- * @see StringUtils#getStringFromMap(String, IGetStringFromMap)
+ * @see StringUtilsEx#getStringFromMap(String, IGetStringFromMap)
  * 
  * @author 梁韦江 2015年8月4日
  */

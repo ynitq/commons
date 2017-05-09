@@ -1,6 +1,5 @@
 package com.cfido.commons.utils.utils;
 
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,121 +9,17 @@ import java.util.regex.Pattern;
 
 /**
  * <pre>
- * 常用字符串操作工具，比apache common包的好用一点
+ * 扩展字符串操作工具集，我们常用的是Spring的StringUtil
+ * 
+ * 和Spring重复了好多方法：
+ * 
+ * 首字母大写 : {@linkplain org.springframework.util.StringUtils#capitalize(String)}
+ * 首字母小写 : {@linkplain org.springframework.util.StringUtils#uncapitalize(String)}
  * </pre>
  * 
  * @author 梁韦江 2015年5月15日
  */
-public class StringUtils {
-	private final static char[] hexDigits = "0123456789abcdef".toCharArray();
-
-	/**
-	 * 首字母转大写
-	 * 
-	 * @param str
-	 * @return
-	 */
-	public static String capitalize(String str) {
-		return org.springframework.util.StringUtils.capitalize(str);
-	}
-
-	/**
-	 * 按驼峰命名方式构建类名
-	 * 
-	 * @return
-	 */
-	public static String setClassName(String className) {
-		if (StringUtils.isNotEmpty(className) && className.contains("_")) {
-			String result = "";
-			String[] classNameList = className.split("_");
-			for (String s : classNameList) {
-				result += capitalize(s);
-			}
-			return result;
-		}
-		return capitalize(className);
-	}
-
-	/**
-	 * 按驼峰命名方式构建，首字母是小写
-	 * 
-	 * @return
-	 */
-	public static String setName(String className) {
-		return uncapitalize(setClassName(className));
-	}
-
-	/**
-	 * 字节数组 -- 十六进制字符串
-	 * 
-	 * @param byteArray
-	 * @return
-	 */
-	public static String byteArray2String(byte[] byteArray) {
-		StringBuffer resultSb = new StringBuffer(33);
-		for (int i = 0; i < byteArray.length; i++) {
-
-			int value = byteArray[i];
-			if (value < 0) {
-				value += 256;
-			}
-			int d1 = value / 16;
-			int d2 = value % 16;
-			resultSb.append(hexDigits[d1]).append(hexDigits[d2]);
-		}
-		return resultSb.toString();
-	}
-
-	public static boolean isBlank(String str) {
-		int strLen;
-		if ((str == null) || ((strLen = str.length()) == 0)) {
-			return true;
-		}
-		for (int i = 0; i < strLen; i++) {
-			if (!Character.isWhitespace(str.charAt(i))) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	private static boolean isEmpty(String str) {
-		return !hasText(str);
-	}
-
-	private static boolean isNotEmpty(String str) {
-		return hasText(str);
-	}
-
-	/**
-	 * MD5, 按utf-8格式编码
-	 * 
-	 * @param origin
-	 * @return
-	 */
-	public static String md5(String origin) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] byteArray = md.digest(origin.getBytes("utf-8"));
-			return byteArray2String(byteArray);
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-
-	/** 首字母小写 */
-	public static String uncapitalize(String str) {
-		return org.springframework.util.StringUtils.uncapitalize(str);
-	}
-
-	public static String upperFirstChar(String str) {
-		if (str == null || str.length() == 0) {
-			return null;
-		}
-		char[] ca = str.toCharArray();
-		ca[0] = Character.toUpperCase(ca[0]);
-		return new String(ca);
-	}
+public class StringUtilsEx {
 
 	/**
 	 * 为目标字符串左补某个字符串到目标长度
@@ -273,7 +168,7 @@ public class StringUtils {
 	 * @return
 	 */
 	public static String markKeyword(String text, String keyword, String htmlClassName) {
-		if (StringUtils.isEmpty(text) || StringUtils.isEmpty(keyword)) {
+		if (!hasText(text) || !hasText(keyword)) {
 			return text;
 		}
 
@@ -324,7 +219,7 @@ public class StringUtils {
 		if (str != null) {
 			String[] ary = str.split(",");
 			for (String str1 : ary) {
-				if (isNotEmpty(str1)) {
+				if (hasText(str1)) {
 					set.add(str1);
 				}
 			}
@@ -343,7 +238,7 @@ public class StringUtils {
 		StringBuffer sb = new StringBuffer();
 
 		for (String str : set) {
-			if (isNotEmpty(str)) {
+			if (hasText(str)) {
 				if (sb.length() > 0) {
 					sb.append(',');
 				}
@@ -430,7 +325,7 @@ public class StringUtils {
 	 * 
 	 * @return
 	 */
-	public static boolean hasText(String str) {
+	private static boolean hasText(String str) {
 		return org.springframework.util.StringUtils.hasText(str);
 	}
 

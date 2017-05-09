@@ -93,7 +93,7 @@ public class DictVo {
 			return "";
 		} else {
 			// 先删除html标签
-			String noHtmlValue = com.cfido.commons.utils.utils.StringUtils.delHTMLTag(this.value);
+			String noHtmlValue = com.cfido.commons.utils.utils.StringUtilsEx.delHTMLTag(this.value);
 			if (noHtmlValue.length() > STRING_LEN_LIMIT) {
 				noHtmlValue = noHtmlValue.substring(0, STRING_LEN_LIMIT) + "...";
 			}

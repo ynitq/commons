@@ -165,7 +165,7 @@ public class CodeGenProperties {
 			if (res != null) {
 				return StringUtils.capitalize(res);
 			} else {
-				String name = com.cfido.commons.utils.utils.StringUtils.toUpperCamelCase(tableName, true);
+				String name = com.cfido.commons.utils.utils.StringUtilsEx.toUpperCamelCase(tableName, true);
 				// if (name.endsWith("s")) {
 				// name = name.substring(0, name.length() - 1);
 				// }

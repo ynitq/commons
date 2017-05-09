@@ -3,7 +3,7 @@ package com.cfido.commons.utils.db;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.cfido.commons.utils.utils.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * 用于构建hsql的帮助类，更加参数数量的不同，生成带和参数数量一样的？的hsql

@@ -4,13 +4,13 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cfido.commons.annotation.api.AClass;
 import com.cfido.commons.annotation.api.AMock;
 import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.utils.utils.OpenTypeUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 
 /**
  * <pre>

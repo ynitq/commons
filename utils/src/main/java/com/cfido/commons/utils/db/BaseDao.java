@@ -27,12 +27,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.form.IPageForm;
 import com.cfido.commons.utils.cache.RedisGo;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.utils.StringUtils;
 import com.cfido.commons.utils.web.PageForm;
 
 /**
@@ -84,10 +84,10 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 	protected final Class<T> entityClass;
 
 	/** 存储所有的外键 */
-	protected final List<String> foreignKeyList = new LinkedList<String>();
+	protected final List<String> foreignKeyList = new LinkedList<>();
 
 	/** 存储所有有长度现在的字段 */
-	protected final List<StringGetterEn> getterList = new LinkedList<StringGetterEn>();
+	protected final List<StringGetterEn> getterList = new LinkedList<>();
 
 	/** id的类型 */
 	protected final Class<K> idClass;
@@ -106,7 +106,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 
 		this.embeddableId = idClass.getAnnotation(Embeddable.class) != null;
 
-		Map<String, Method> methodMap = new HashMap<String, Method>();
+		Map<String, Method> methodMap = new HashMap<>();
 		for (Method m : this.entityClass.getMethods()) {
 			String methodName = m.getName();
 			methodMap.put(methodName, m);
@@ -315,7 +315,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			IPageForm form) {
 		List<L> items = this.findForClassBySql(sql, form, voClass, params);
 		int total = this.getCountBySql(csql, params);
-		return new PageQueryResult<L>(total, items, form);
+		return new PageQueryResult<>(total, items, form);
 	}
 
 	/**
@@ -406,7 +406,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 
 		PageQueryResult<T> temp = this.findInPageForClass(fromSql, countSql, this.entityClass, params, form);
 
-		List<L> newList = new LinkedList<L>();
+		List<L> newList = new LinkedList<>();
 		for (T po : temp.getList()) {
 			try {
 				L vo = voClazz.newInstance();
@@ -417,7 +417,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			}
 		}
 
-		PageQueryResult<L> res = new PageQueryResult<L>(temp.getItemTotal(), newList, form);
+		PageQueryResult<L> res = new PageQueryResult<>(temp.getItemTotal(), newList, form);
 		return res;
 	}
 
@@ -448,7 +448,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			IPageForm form) {
 		List<L> items = this.findForClass(sql, form, voClass, params);
 		int total = this.getCount(countHsql, params);
-		return new PageQueryResult<L>(total, items, form);
+		return new PageQueryResult<>(total, items, form);
 	}
 
 	/**
@@ -483,7 +483,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 		List<T> items = this.findForClass(sql.toString(), form, this.entityClass, params);
 		int total = this.getCount(String.format("select count(*) from %s %s %s", this.entityClass.getSimpleName(),
 				tableShortName, sqlStartWithWhere), params);
-		return new PageQueryResult<T>(total, items, form.getPageNo(), form.getPageSize());
+		return new PageQueryResult<>(total, items, form.getPageNo(), form.getPageSize());
 	}
 
 	/**
@@ -660,7 +660,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 		}
 		try {
 			log.debug(String.format("===========delete cache：", po.getClass().getSimpleName()));
-			String poName = com.cfido.commons.utils.utils.StringUtils.setName(po.getClass().getSimpleName());
+			String poName = com.cfido.commons.utils.utils.StringUtilsEx.toUpperCamelCase(po.getClass().getSimpleName(), false);
 			Method[] ms = po.getClass().getMethods();
 			for (Method m : ms) {
 				if (m.getName().equals("getId")) {
@@ -718,11 +718,12 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 
 				String value = (String) en.getter.invoke(po);
 				if (value != null && value.length() > en.length) {
-					String newvalue = StringUtils.substring(value, 0, en.length);
+					String newvalue = com.cfido.commons.utils.utils.StringUtilsEx.substring(value, 0, en.length);
 					en.setter.invoke(po, newvalue);
 
 					log.warn(LogUtil.format("存储对象 %s 时，字段%s的值的长度过长，自动将长度截取到%d, 新的值为:%s", this.entityClass.getSimpleName(),
-							StringUtils.substring(en.getter.getName(), 3, 100), en.length, newvalue));
+							com.cfido.commons.utils.utils.StringUtilsEx.substring(en.getter.getName(), 3, 100), en.length,
+							newvalue));
 				}
 			}
 		} catch (Exception e) {
@@ -772,7 +773,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 	}
 
 	private T getEmbedId(K id) {
-		final List<Object> params = new LinkedList<Object>();
+		final List<Object> params = new LinkedList<>();
 		final String sql = buildGetSql(id, params);
 
 		T po = this.getHibernateTemplate().execute(new HibernateCallback<T>() {
@@ -833,7 +834,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 			StringBuffer sql = new StringBuffer(100);
 			for (String str : this.foreignKeyList) {
 				sql.append(String.format(" left join fetch %s.%s", tableShortName,
-						com.cfido.commons.utils.utils.StringUtils.uncapitalize(str)));
+						StringUtils.uncapitalize(str)));
 			}
 			return sql.toString();
 		}

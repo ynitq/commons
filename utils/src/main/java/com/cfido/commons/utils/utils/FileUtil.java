@@ -217,7 +217,7 @@ public class FileUtil {
 	 */
 	public static byte[] loadFileFromClassPath(String fileName) throws IOException {
 		// InputStream is = ClassLoader.getSystemResourceAsStream(fileName);
-		InputStream is = StringUtils.class.getClassLoader().getResourceAsStream(fileName);
+		InputStream is = FileUtil.class.getClassLoader().getResourceAsStream(fileName);
 		if (is != null) {
 			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
 			byte[] buf = new byte[4096];
