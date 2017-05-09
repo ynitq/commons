@@ -16,6 +16,7 @@
 <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.min.js"></script>
 <script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
 </head>
 <style>
 .msgWin {
@@ -88,7 +89,7 @@ pre {
 }
 
 .my-panel-heading {
-	background-color:#e6e6e6;
+	background-color: #e6e6e6;
 	border-bottom: 1px solid #ddd;
 	line-height: 20px;
 	padding-bottom: 10px;
@@ -97,12 +98,15 @@ pre {
 	padding-top: 10px;
 	display: block;
 }
+
 a:HOVER {
 	text-decoration: none;
 }
+
 a:LINK {
 	text-decoration: none;
 }
+
 a:VISITED {
 	text-decoration: none;
 }
@@ -126,16 +130,21 @@ a:VISITED {
 		}
 	};
 
+	var confVm = {};
+
 	$(document).ready(function() {
 		$(".js_form").submit(function() {
 			var that = $(this);
-			var url = $(this).attr("action")
+			var url = confVm.basePath + $(this).attr("action")
 			console.log("post to " + url);
 
 			that.ajaxSubmit({
 				type : "post", //提交方式  
 				dataType : "html", //如果是要上传文件,只能用html
 				url : url, //请求url  
+				headers : {
+					"x-auth-token" : confVm.sessionId,
+				},
 				success : function(data) { //提交成功的回调函数
 					var res = eval("(" + data + ")");
 					if (!res.success) {
@@ -158,6 +167,15 @@ a:VISITED {
 				'error' : '对不起，你上传的文件太大了'
 			}
 		});
+
+		confVm = new Vue({
+			el : "#coll-other-conf",
+
+			data : {
+				sessionId : "${sessionId}",
+				basePath : "${basePath}",
+			},
+		});
 	});
 </script>
 </head>
@@ -176,22 +194,42 @@ a:VISITED {
 			</div>
 		</div>
 	</nav>
+
 	<div id="testDiv">
 		测试结果
 		<pre id="testResult"></pre>
 	</div>
+
 	<div id="leftDiv">
 		<div class="panel-group" role="tablist" aria-multiselectable="true">
+
+			<div class="panel panel-default">
+				<a class="my-panel-heading " data-toggle="collapse" href="#coll-other-conf" aria-expanded="false"
+					aria-controls="coll-other-conf}">服务器配置 </a>
+				<div id="coll-other-conf" class="panel-collapse collapse" role="tabpanel" style="padding: 5px;">
+					<div class="form-group">
+						<label> x-auth-token:</label>
+						<input type="text" class="form-control" v-model="sessionId" />
+						<p class="help-block">用ajax进行跨域请求，因为没有cookie，所以只能通过header传sessionId。只需要在ajax中增加这个
+						<code>x-auth-token</code>的header，服务器就可以找回认证状态
+						</p>
+					</div>
+					<div class="form-group">
+						<label> Server: </label>
+						<input type="text" class="form-control" v-model="basePath" />
+						<p class="help-block">默认的ajax请求是对当前服务器，但我们可以修改一下ip，调用其他服务器的api, 测试一下ajax跨域调用。</p>
+					</div>
+				</div>
+			</div>
 
 			<#list vo.infGroup as group>
 			<div class="panel panel-default">
 				<a class="my-panel-heading btn-default" data-toggle="collapse" href="#coll-${group.infKey}" aria-expanded="false"
-					aria-controls="#coll-${group.infKey}">${group.memo} ${group.infKey}
-				</a>
+					aria-controls="#coll-${group.infKey}">${group.memo} ${group.infKey} </a>
 				<div id="coll-${group.infKey}" class="panel-collapse collapse" role="tabpanel">
 					<div class="list-group">
 						<#list group.methods as m> <a href="#" onclick="show('${m.key}Div');return false" class="list-group-item">
-							${m.methodKey} <#if !m.needLogin><span class="label label-danger">open</span></#if>
+							${m.methodKey} <#if !m.needLogin> <span class="label label-danger">open</span></#if>
 						</a> </#list>
 					</div>
 				</div>
@@ -207,42 +245,33 @@ a:VISITED {
 			<div class="panel-body">
 				<h4>
 					URL :
-					<span class="text-info">${apiServerUrl}${vo.apiUrlPrefix}/${m.url}</span>
+					<span class="text-info">${vo.apiUrlPrefix}/${m.url}</span>
 				</h4>
 				<p>
-					<#if m.needLogin> 登录用户 :
-					<span class="label label-success"> ${m.webUserClasses}</span>
-					${m.optId} <#else>
-					<span class="label label-danger">无需登录</span>
-					</#if>
+					<#if m.needLogin> 登录用户 : <span class="label label-success"> ${m.webUserClasses}</span> ${m.optId} <#else> <span
+						class="label label-danger">无需登录</span></#if>
 				</p>
-				<form method="post" action="${apiServerUrl}${vo.apiUrlPrefix}/${m.url}"
-					<#if m.uploadFile>enctype="multipart/form-data"</#if> class="js_form">
-						<table width="100%" class="table">
-<#list m.paramVoList as pp>
-								<tr>
-									<td width="120" valign="top">${pp.name}:</td>
-									<td>
-									<#if pp.uploadFile>
-										<input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false"/>
-									<#else>
-										<#if pp.className == "boolean">
-											<input name="${pp.name}" type="checkbox" value="true" />
-										<#else>
-											<input name="${pp.name}" type="text" value="${pp.value}" />
-										</#if>
-									</#if>
-										<div class="text-muted">${pp.memo}</div></td>
-								</tr>
-</#list>
-							<tr>
-								<td>&nbsp;</td>
-								<td>
-									<button class="btn btn-primary w-m100" type="submit">测试</button>
-								</td>
-							</tr>
-						</table>
-					</form>
+				<form method="post" action="${vo.apiUrlPrefix}/${m.url}"
+					<#if m.uploadFile>enctype="multipart/form-data"</#if>
+					class="js_form">
+					<table width="100%" class="table">
+						<#list m.paramVoList as pp>
+						<tr>
+							<td width="120" valign="top">${pp.name}:</td>
+							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
+								<#if pp.className=="boolean"> <input name="${pp.name}" type="checkbox" value="true" /> <#else> <input
+									name="${pp.name}" type="text" value="${pp.value}" /></#if></#if>
+								<div class="text-muted">${pp.memo}</div></td>
+						</tr>
+						</#list>
+						<tr>
+							<td>&nbsp;</td>
+							<td>
+								<button class="btn btn-primary w-m100" type="submit">测试</button>
+							</td>
+						</tr>
+					</table>
+				</form>
 
 				<hr />
 				<h4>返回的结果</h4>

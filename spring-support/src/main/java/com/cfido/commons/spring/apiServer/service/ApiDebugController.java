@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cfido.commons.spring.apiServer.core.DebugPageVo;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
+import com.cfido.commons.spring.utils.WebContextHolderHelper;
 
 import freemarker.template.TemplateException;
 
@@ -49,13 +50,17 @@ public class ApiDebugController {
 
 	@RequestMapping("/")
 	@ResponseBody
-	public String index(ModelMap model, String token) throws TemplateException, IOException {
+	public String index(ModelMap model, HttpServletRequest request) throws TemplateException, IOException {
 
 		// 调试页面的vo
 		DebugPageVo vo = this.apiMapContainer.getDebugPageVo(apiUtlPrefix);
 
-		model.addAttribute("vo", vo);
-		model.addAttribute("token", token);
+		model.addAttribute("vo", vo); // 根据反射接口实现类生成的 页面vo
+
+		// 其他通用的内容
+		model.addAttribute("sessionId", request.getSession().getId());
+		model.addAttribute("basePath", WebContextHolderHelper.getBasePath());
+
 		if (this.dictCoreService != null) {
 			model.addAttribute("pageTitle", this.dictCoreService.getSystemName());
 			this.dictCoreService.addToModel(model);
