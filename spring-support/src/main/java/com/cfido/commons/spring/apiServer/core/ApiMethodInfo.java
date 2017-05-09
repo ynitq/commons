@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import com.alibaba.fastjson.JSON;
 import com.cfido.commons.annotation.api.AForm;
 import com.cfido.commons.annotation.api.AMethod;
 import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
@@ -16,8 +15,8 @@ import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.apiServer.service.ApiController;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.utils.MockDataCreater;
+import com.cfido.commons.utils.utils.ClassDescriber;
 import com.cfido.commons.utils.utils.ClassUtil;
-import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.web.BinderUtil;
 
 /**
@@ -217,12 +216,13 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * @return String
 	 */
 	public String getDefaultMockData() {
-		try {
-			BaseResponse res = this.createMockData();
-			return JSON.toJSONString(res, true);
-		} catch (Exception ex) {
-			return LogUtil.getTraceString("生成样例数据时出错了", ex);
-		}
+		return ClassDescriber.create(this.returnClass);
+		// try {
+		// BaseResponse res = this.createMockData();
+		// return JSON.toJSONString(res, true);
+		// } catch (Exception ex) {
+		// return LogUtil.getTraceString("生成样例数据时出错了", ex);
+		// }
 	}
 
 	/**
