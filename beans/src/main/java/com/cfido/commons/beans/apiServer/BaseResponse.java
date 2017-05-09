@@ -1,6 +1,7 @@
 package com.cfido.commons.beans.apiServer;
 
 import com.cfido.commons.annotation.api.AMock;
+import com.cfido.commons.annotation.bean.AComment;
 
 /**
  * 响应返回结果基类
@@ -26,7 +27,7 @@ public abstract class BaseResponse {
 	 */
 	private String message;
 
-	@AMock(value = ApiCommonCode.RESPONSE_OK)
+	@AComment(comment = "成功的时候是200，不成功的时候是Exception的类名")
 	public String getCode() {
 		return code;
 	}
@@ -40,11 +41,12 @@ public abstract class BaseResponse {
 	 * 
 	 * @return success
 	 */
+	@AComment(comment = "是否调用成功")
 	public boolean isSuccess() {
 		return ApiCommonCode.RESPONSE_OK.equals(code) || "1".equals(code);
 	}
 
-	@AMock(value = "调试模式才有的信息")
+	@AComment(comment = "调试模式才有的信息")
 	public String getDebugMsg() {
 		return debugMsg;
 	}
