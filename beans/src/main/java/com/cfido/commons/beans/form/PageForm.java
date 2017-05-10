@@ -50,13 +50,13 @@ public class PageForm implements IPageForm, Serializable {
 		return pageSize;
 	}
 
-	@AComment(comment = "页码")
+	@AComment(value = "页码")
 	@AMock("1")
 	public void setPageNo(int pageNo) {
 		this.pageNo = pageNo;
 	}
 
-	@AComment(comment = "每页的大小")
+	@AComment(value = "每页的大小")
 	@AMock("5")
 	public void setPageSize(int pageSize) {
 		this.pageSize = pageSize;

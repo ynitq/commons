@@ -8,17 +8,16 @@ import java.lang.annotation.Target;
 
 /**
  * <pre>
- * 标识字段注释
+ * 写注释，用于生成代码时，生成帮助文字
  * </pre>
  * 
- * @author 黄云
- * 2015年12月14日
+ * @author 黄云 2015年12月14日
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE , ElementType.FIELD, ElementType.METHOD })
 @Documented
 public @interface AComment {
 	
-	public abstract String comment() default "";//字段注释
+	String value() default "";// 字段注释
 	
 }

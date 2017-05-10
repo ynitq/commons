@@ -24,7 +24,7 @@ public class CreatePasswordForm {
 		return password;
 	}
 
-	@AComment(comment = "生成这个密码的加密字符串")
+	@AComment(value = "生成这个密码的加密字符串")
 	public void setPassword(String password) {
 		this.password = password;
 	}

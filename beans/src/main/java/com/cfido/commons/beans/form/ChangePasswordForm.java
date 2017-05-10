@@ -42,7 +42,7 @@ public class ChangePasswordForm {
 		return newPassword;
 	}
 
-	@AComment(comment = "密码不能少于6位")
+	@AComment(value = "密码不能少于6位")
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
 	}

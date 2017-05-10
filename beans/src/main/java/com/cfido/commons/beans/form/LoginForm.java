@@ -29,7 +29,7 @@ public class LoginForm {
 	}
 
 	@AMock("admin")
-	@AComment(comment = "账号")
+	@AComment(value = "账号")
 	public void setAccount(String account) {
 		this.account = account;
 	}
@@ -42,12 +42,12 @@ public class LoginForm {
 		return rememberMe;
 	}
 
-	@AComment(comment = "是否记住密码")
+	@AComment(value = "是否记住密码")
 	public void setRememberMe(boolean rememberMe) {
 		this.rememberMe = rememberMe;
 	}
 
-	@AComment(comment = "密码")
+	@AComment(value = "密码")
 	public void setPassword(String password) {
 		this.password = password;
 	}

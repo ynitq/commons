@@ -22,7 +22,7 @@ public class DictKeyForm {
 		return key;
 	}
 
-	@AComment(comment = "关键词")
+	@AComment(value = "关键词")
 	public void setKey(String key) {
 		this.key = key;
 	}

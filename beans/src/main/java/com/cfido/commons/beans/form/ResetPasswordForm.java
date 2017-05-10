@@ -25,7 +25,7 @@ public class ResetPasswordForm extends IdForm {
 		return newPassword;
 	}
 
-	@AComment(comment = "新密码，长度不能小于6位")
+	@AComment(value = "新密码，长度不能小于6位")
 	public void setNewPassword(String newPassword) {
 		this.newPassword = newPassword;
 	}

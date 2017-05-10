@@ -73,7 +73,7 @@ public class ApiServerUtils {
 					AComment comment = m.getAnnotation(AComment.class);
 					if (comment != null) {
 						// 如果setter上有备注，就用这个备注
-						vo.setMemo(comment.comment());
+						vo.setMemo(comment.value());
 					}
 
 					if (OpenTypeUtil.isOpenType(paramClass)) {

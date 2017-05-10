@@ -30,7 +30,7 @@ public class FindInferfaceResult {
 	public String getInfMemo() {
 		AComment ann = this.infClass.getAnnotation(AComment.class);
 		if (ann != null) {
-			return ann.comment();
+			return ann.value();
 		}
 		return null;
 	}

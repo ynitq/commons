@@ -31,7 +31,7 @@ public class DictImportForm {
 		return cleanOld;
 	}
 
-	@AComment(comment = "导入时，是否清空原有数据")
+	@AComment(value = "导入时，是否清空原有数据")
 	public void setCleanOld(boolean cleanOld) {
 		this.cleanOld = cleanOld;
 	}

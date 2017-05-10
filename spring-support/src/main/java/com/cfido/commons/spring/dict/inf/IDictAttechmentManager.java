@@ -18,7 +18,7 @@ import com.cfido.commons.spring.dict.inf.responses.DictAttachmentSearchResponse;
  * @author 梁韦江 2016年11月16日
  */
 @AClass("dictAttachments")
-@AComment(comment = "附件文件管理")
+@AComment(value = "附件文件管理")
 public interface IDictAttechmentManager {
 
 	@AMethod(comment = "获取所有附件")

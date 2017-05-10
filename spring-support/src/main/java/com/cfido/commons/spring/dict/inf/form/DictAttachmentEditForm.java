@@ -40,12 +40,12 @@ public class DictAttachmentEditForm {
 		this.file = file;
 	}
 
-	@AComment(comment = "键值")
+	@AComment(value = "键值")
 	public void setKey(String key) {
 		this.key = key;
 	}
 
-	@AComment(comment = "备注")
+	@AComment(value = "备注")
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}

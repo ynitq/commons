@@ -45,23 +45,23 @@ public class DictRowEditForm {
 		return value;
 	}
 
-	@AComment(comment = "是否是直接输出为html")
+	@AComment(value = "是否是直接输出为html")
 	@AMock("false")
 	public void setHtml(boolean html) {
 		this.html = html;
 	}
 
-	@AComment(comment = "键值")
+	@AComment(value = "键值")
 	public void setKey(String key) {
 		this.key = key;
 	}
 
-	@AComment(comment = "备注")
+	@AComment(value = "备注")
 	public void setMemo(String memo) {
 		this.memo = memo;
 	}
 
-	@AComment(comment = "值")
+	@AComment(value = "值")
 	public void setValue(String value) {
 		this.value = value;
 	}

@@ -415,7 +415,7 @@ public class ClassUtil {
 			// 检查是否有备注
 			AComment am = method.getAnnotation(AComment.class);
 			if (am != null) {
-				this.memo = am.comment();
+				this.memo = am.value();
 			}
 			if (StringUtils.isEmpty(this.memo)) {
 				// 因为历史原因，有些备注是写在AMock注解上的，所以如果无法从AComment获取，就尝试从AMock中获取

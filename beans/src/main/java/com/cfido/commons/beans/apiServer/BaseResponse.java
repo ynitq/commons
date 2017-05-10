@@ -27,7 +27,7 @@ public abstract class BaseResponse {
 	 */
 	private String message;
 
-	@AComment(comment = "成功的时候是200，不成功的时候是Exception的类名")
+	@AComment(value = "成功的时候是200，不成功的时候是Exception的类名")
 	public String getCode() {
 		return code;
 	}
@@ -41,12 +41,12 @@ public abstract class BaseResponse {
 	 * 
 	 * @return success
 	 */
-	@AComment(comment = "是否调用成功")
+	@AComment(value = "是否调用成功")
 	public boolean isSuccess() {
 		return ApiCommonCode.RESPONSE_OK.equals(code) || "1".equals(code);
 	}
 
-	@AComment(comment = "调试模式才有的信息")
+	@AComment(value = "调试模式才有的信息")
 	public String getDebugMsg() {
 		return debugMsg;
 	}
