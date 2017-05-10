@@ -22,7 +22,7 @@ import com.cfido.commons.spring.jmxInWeb.inf.response.JwMBeanListResponse;
  * @author 梁韦江 2016年11月16日
  */
 @AClass("jmxInWeb")
-@AComment(value = "JmxInWeb相关")
+@AComment(value = "JmxInWeb-JMX管理")
 public interface IJmxInWeb {
 
 	@AMethod(comment = "登录")

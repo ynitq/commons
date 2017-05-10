@@ -19,7 +19,7 @@ import com.cfido.commons.spring.dict.inf.responses.DictKeySearchResponse;
  * @author 梁韦江 2016年11月16日
  */
 @AClass("dictManager")
-@AComment(value = "字典词条管理")
+@AComment(value = "字典-词条管理")
 public interface IDictManager {
 
 	@AMethod(comment = "根据关键字搜索", saveFormToSession = true)
