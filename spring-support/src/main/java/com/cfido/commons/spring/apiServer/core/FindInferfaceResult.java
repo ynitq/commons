@@ -62,7 +62,12 @@ public class FindInferfaceResult {
 				if (classname.startsWith("I") && classname.length() > 1) {
 					// 如果是I开头，就将i去掉
 					prefix = classname.substring(1);
+				} else {
+					// 否则就直接用类名
+					prefix = classname;
 				}
+				// 首字母小写
+				prefix = StringUtils.uncapitalize(prefix);
 			}
 
 		}
