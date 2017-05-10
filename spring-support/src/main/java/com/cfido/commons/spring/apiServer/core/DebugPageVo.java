@@ -22,7 +22,7 @@ public class DebugPageVo {
 		private String memo;// 备注
 
 		/** 这个分组下的所有api */
-		private final List<ApiMethodInfo> methods = new LinkedList<ApiMethodInfo>();
+		private final List<ApiMethodInfo> methods = new LinkedList<>();
 
 		public String getInfKey() {
 			return infKey;
@@ -82,7 +82,7 @@ public class DebugPageVo {
 			@Override
 			public int compare(InfGroup o1, InfGroup o2) {
 				// 分组按key字母顺序排序
-				return o1.infKey.compareToIgnoreCase(o2.infKey);
+				return o1.infKey.compareTo(o2.infKey);
 			}
 		});
 
