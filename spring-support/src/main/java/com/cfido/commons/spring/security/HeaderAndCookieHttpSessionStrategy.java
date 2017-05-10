@@ -30,7 +30,7 @@ import org.springframework.util.StringUtils;
 public class HeaderAndCookieHttpSessionStrategy implements HttpSessionStrategy {
 	public static final String HEADER_NAME = "x-auth-token";
 
-	public static final String ID_ATTR_NAME = "sessionId";
+	public static final String ID_ATTR_NAME = HeaderAndCookieHttpSessionStrategy.class.getName() + ".sessionId";
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HeaderAndCookieHttpSessionStrategy.class);
 
