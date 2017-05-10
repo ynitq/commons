@@ -17,7 +17,7 @@ import com.cfido.commons.spring.dict.inf.responses.UserInfoResponse;
  * @author 梁韦江 2016年11月16日
  */
 @AClass("dictAdmin")
-@AComment(value = "字典用户相关")
+@AComment(value = "字典-用户")
 public interface IDictAdminUser {
 
 	@AMethod(comment = "获得当前用户的信息，返回内容中包含是是否已登录的信息")
