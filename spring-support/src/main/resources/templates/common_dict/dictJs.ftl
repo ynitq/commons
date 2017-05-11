@@ -31,3 +31,5 @@ var lzDict = {
 		});
 	},
 }
+
+window.lzDict = lzDict;
