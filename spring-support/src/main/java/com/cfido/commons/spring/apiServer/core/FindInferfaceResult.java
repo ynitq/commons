@@ -16,7 +16,7 @@ public class FindInferfaceResult {
 	private final AClass aclass;
 	private final Class<?> infClass;// 一个实现类是可以实现多个接口的
 
-	private String prefix;
+	private String infKey;
 
 	public FindInferfaceResult(AClass aclass, Class<?> infClass) {
 		super();
@@ -54,23 +54,23 @@ public class FindInferfaceResult {
 	 * @return
 	 */
 	public String getInfKey() {
-		if (this.prefix == null) {
-			prefix = this.aclass.value();
-			if (StringUtils.isEmpty(prefix)) {
+		if (this.infKey == null) {
+			infKey = this.aclass.value();
+			if (StringUtils.isEmpty(infKey)) {
 				// 如果注解中没有什么前缀，就用类名
 				String classname = this.infClass.getSimpleName();
 				if (classname.startsWith("I") && classname.length() > 1) {
 					// 如果是I开头，就将i去掉
-					prefix = classname.substring(1);
+					infKey = classname.substring(1);
 				} else {
 					// 否则就直接用类名
-					prefix = classname;
+					infKey = classname;
 				}
 				// 首字母小写
-				prefix = StringUtils.uncapitalize(prefix);
+				infKey = StringUtils.uncapitalize(infKey);
 			}
 
 		}
-		return prefix;
+		return infKey;
 	}
 }
