@@ -45,6 +45,8 @@ public class LoginCheckAutoConfig extends WebMvcConfigurerAdapter {
 	/** 我们用map来保存session，所以要限制一下map的大小 */
 	public static final int SESSION_MAP_LIMIT = 10000;
 
+	private final LRULinkedHashMap<String, ExpiringSession> sessionMap = new LRULinkedHashMap<>(SESSION_MAP_LIMIT);
+
 	public LoginCheckAutoConfig() {
 		log.debug("自动配置 LoginCheckAutoConfig");
 	}
@@ -72,12 +74,15 @@ public class LoginCheckAutoConfig extends WebMvcConfigurerAdapter {
 	public MapSessionRepository sessionRepository() {
 		// TODO 这里写死了用Map来保存session，以后要修改为可以使用Redis
 
-		LRULinkedHashMap<String, ExpiringSession> map = new LRULinkedHashMap<>(SESSION_MAP_LIMIT);
-		
-		MapSessionRepository sessionRepository = new MapSessionRepository(map);
+		MapSessionRepository sessionRepository = new MapSessionRepository(sessionMap);
 		sessionRepository.setDefaultMaxInactiveInterval(SESSION_MAX_INACTIVE_INTERVAL_SECONDS);
 
 		return sessionRepository;
+	}
+
+	@Bean
+	public MapSessionRepositoryMBean mapSessionRepositoryMBean() {
+		return new MapSessionRepositoryMBean(this.sessionMap);
 	}
 
 	@Bean
