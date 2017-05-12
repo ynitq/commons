@@ -94,4 +94,12 @@ public class LRULinkedHashMap<K, V> extends LinkedHashMap<K, V> {
 		}
 	}
 
+	public Lock getLock() {
+		return lock;
+	}
+
+	public int getMaxCapacity() {
+		return maxCapacity;
+	}
+
 }
