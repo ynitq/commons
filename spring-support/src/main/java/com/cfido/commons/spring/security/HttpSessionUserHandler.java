@@ -51,9 +51,8 @@ public class HttpSessionUserHandler {
 	 * @return
 	 */
 	private String getSessionName(HttpServletRequest request, Class<? extends IWebUser> clazz) {
-		int port = request.getServerPort();
 
-		String sessionName = port + ":user:" + clazz.getName();
+		String sessionName = "user_" + clazz.getName();
 		return sessionName;
 	}
 
