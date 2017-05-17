@@ -166,7 +166,11 @@ public class BinderEditorSupport {
 
 		@Override
 		public String toValue(String propName, String text) {
-			return text;
+			if (text != null) {
+				return text.trim();
+			} else {
+				return null;
+			}
 		}
 	}
 
