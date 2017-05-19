@@ -101,8 +101,6 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 
 		this.methodKey = this.buildMethodKey();
 		this.url = createKey(this.getInfaceKey(), this.methodKey);
-
-		this.checkCreateMockData();
 	}
 
 	private ANeedCheckLogin buildLoginCheck() {
@@ -382,25 +380,6 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 		}
 
 		return sb.toString();
-	}
-
-	/**
-	 * 检查该方法是否能生成模拟数据
-	 * 
-	 * @throws ApiServerInitException
-	 *             ApiServerInitException
-	 */
-	private void checkCreateMockData() throws ApiServerInitException {
-
-		// 返回的类型必须能生成实例
-		try {
-			this.returnClass.newInstance();
-		} catch (Exception e) {
-			String msg = String.format("接口%s 中 %s的返回类型%s 无法创建实例，必须有无参数的构造方法",
-					this.infClass.getSimpleName(),
-					this.apiMethod.getName(), this.returnClass.getName());
-			throw new ApiServerInitException(msg);
-		}
 	}
 
 	/**

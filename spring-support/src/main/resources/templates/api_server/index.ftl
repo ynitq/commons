@@ -261,7 +261,8 @@ a:VISITED {
 							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
 								<#if pp.className=="boolean"> <input name="${pp.name}" type="checkbox" value="true" /> <#else> <input
 									name="${pp.name}" type="text" value="${pp.value}" /></#if></#if>
-								<div class="text-muted">${pp.memo}</div></td>
+									<span class="text-muted">${pp.memo}</span>
+								</td>
 						</tr>
 						</#list>
 						<tr>
