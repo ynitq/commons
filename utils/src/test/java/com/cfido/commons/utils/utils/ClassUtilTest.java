@@ -2,10 +2,13 @@ package com.cfido.commons.utils.utils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.annotation.bean.AComment;
+import com.cfido.commons.beans.apiServer.BaseResponse;
 import com.cfido.commons.utils.utils.ClassUtil.MethodInfo;
 
 /**
@@ -42,7 +45,10 @@ public class ClassUtilTest {
 		Assert.notNull(date, "应该能获取jar文件的时间");
 	}
 
-	public class MyTestCLass {
+	public class MyTestCLass extends BaseResponse {
+
+		@AComment("在属性name上的一个注解")
+		private String name;
 
 		/** 这个是 getter */
 		public String getName() {
@@ -77,7 +83,18 @@ public class ClassUtilTest {
 		List<MethodInfo> list = ClassUtil.findGetter(clazz);
 		log.debug("在类 {} 中，找到 {} 个 getter", clazz.getName(), list.size());
 
-		Assert.isTrue(list.size() == 3, "共3个getter");
+		Assert.isTrue(list.size() == 7, "共7个getter");
+	}
+
+	@Test
+	public void test_getAllAnnoFromField() {
+		log.debug("测试 getAllAnnoFromField方法");
+		Class<?> clazz = MyTestCLass.class;
+		Map<String, AComment> map = ClassUtil.getAllAnnoFromField(clazz, AComment.class);
+
+		for (Map.Entry<String, AComment> en : map.entrySet()) {
+			log.debug("属性 {} = {}", en.getKey(), en.getValue().value());
+		}
 	}
 
 }

@@ -12,14 +12,17 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarFile;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Id;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.annotation.api.AMock;
@@ -489,4 +492,37 @@ public class ClassUtil {
 		return list;
 	}
 
+	/**
+	 * 获取target中所有字段上指定的注解
+	 * 
+	 * @param target
+	 * @param annoClass
+	 * @return
+	 */
+	public static <A extends Annotation> Map<String, A> getAllAnnoFromField(Class<?> target, Class<A> annoClass) {
+		Assert.notNull(target, "target");
+		Assert.notNull(annoClass, "annoClass");
+
+		Map<String, A> map = new HashMap<>();
+		addFieldAnnoToMap(target, annoClass, map);
+
+		return map;
+	}
+
+	private static <A extends Annotation> void addFieldAnnoToMap(Class<?> target, Class<A> annoClass, Map<String, A> map) {
+		Field[] fields = target.getDeclaredFields();
+		for (Field f : fields) {
+			if (!map.containsKey(f.getName())) {
+				// 如果map中不存在这个属性的，才需要寻找
+				A anno = f.getAnnotation(annoClass);
+				if (anno != null) {
+					map.put(f.getName(), anno);
+				}
+			}
+		}
+		Class<?> superClass = target.getSuperclass();
+		if (superClass != null) {
+			addFieldAnnoToMap(superClass, annoClass, map);
+		}
+	}
 }

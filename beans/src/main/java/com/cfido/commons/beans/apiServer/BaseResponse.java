@@ -20,6 +20,7 @@ public abstract class BaseResponse {
 	/**
 	 * 开发时，调试用
 	 */
+	@AComment("调试信息")
 	private String debugMsg;
 
 	/**
