@@ -62,7 +62,7 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	 * @param po
 	 * @return
 	 */
-	protected OBJ convertToObj(PO po) {
+	public OBJ convertToObj(PO po) {
 		if (po == null) {
 			return null;
 		}
