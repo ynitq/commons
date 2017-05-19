@@ -10,9 +10,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.cfido.commons.codeGen.CodeGenProperties;
 import com.cfido.commons.codeGen.beans.EmbeddedIdBean;
 import com.cfido.commons.codeGen.beans.TableBean;
-import com.cfido.commons.codeGen.config.CodeGenProperties;
 import com.cfido.commons.codeGen.core.MetadataReader.TableInfo;
 import com.cfido.commons.utils.utils.MBeanUtils.IgnoreWhenObjectToMap;
 

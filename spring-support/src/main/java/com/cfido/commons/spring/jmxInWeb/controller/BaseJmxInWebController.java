@@ -26,7 +26,7 @@ abstract class BaseJmxInWebController {
 	/** 菜单：MBean */
 	public final static String MENU_MBEAN = "MBean";
 
-	@Autowired
+	@Autowired(required = false)
 	private DictCoreService dictCoreService;
 
 	@Autowired
@@ -45,7 +45,7 @@ abstract class BaseJmxInWebController {
 	 */
 	protected Map<String, Object> createCommonModel() {
 		Map<String, Object> model = new HashMap<>();
-		model.put("pageTitle", this.dictCoreService.getSystemName());
+		model.put("pageTitle", this.dictCoreService != null ? this.dictCoreService.getSystemName() : "JmxInWeb");
 		model.put("adminInProp", this.adminUserHander.isAdminInPorp());
 		return model;
 	}

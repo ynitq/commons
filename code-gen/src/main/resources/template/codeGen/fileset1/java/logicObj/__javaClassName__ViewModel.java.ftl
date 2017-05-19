@@ -14,10 +14,6 @@ import ${prop.entityPackage}.${table.javaClassName};
  */
 public class ${table.javaClassName}ViewModel extends BaseViewModel<${table.javaClassName}Obj, ${table.javaClassName}> {
 
-	public ${table.javaClassName}ViewModel() {
-		super();
-	}
-
 	public ${table.javaClassName}ViewModel(${table.javaClassName}Obj obj) {
 		super(obj);
 	}

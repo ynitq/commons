@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
 /**
  * <pre>
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
  * 
  * @author 梁韦江 2016年9月11日
  */
+@Service
 public class MetadataReader {
 
 	/**

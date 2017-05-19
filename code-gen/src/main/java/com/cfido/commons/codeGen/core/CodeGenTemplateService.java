@@ -8,10 +8,11 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.cfido.commons.codeGen.config.CodeGenProperties;
-import com.cfido.commons.codeGen.config.CodeGenProperties.FileSaveOption;
+import com.cfido.commons.codeGen.CodeGenProperties;
+import com.cfido.commons.codeGen.CodeGenProperties.FileSaveOption;
 import com.cfido.commons.utils.utils.FileUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 
@@ -26,6 +27,7 @@ import freemarker.template.Template;
  * 
  * @author<a href="https://github.com/liangwj72">Alex (梁韦江)</a> 2015年9月13日
  */
+@Service
 public class CodeGenTemplateService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeGenTemplateService.class);

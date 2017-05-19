@@ -51,7 +51,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	@Autowired
 	private DebugModeProperties debugModeProperties;
 
-	@Autowired
+	@Autowired(required = false)
 	private MonitorClientContext monitorClientContext;
 
 	private final Map<String, Object> commonModel = new HashMap<>();
@@ -83,7 +83,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		this.context.saveActionInfo(info);
 
 		// 如果这个方法需要统计访问次数并汇报给监控系统
-		if (info.isNeedMonitorRequest()) {
+		if (this.monitorClientContext != null && info.isNeedMonitorRequest()) {
 			this.monitorClientContext.addRequest();
 		}
 
@@ -140,7 +140,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		// http://xxx.com
 		basePath.append(request.getScheme()).append("://").append(request.getServerName());
 
-		if (request.getServerPort()!=80) {
+		if (request.getServerPort() != 80) {
 			// 如果端口是80，就不需要加上 ":80"的字样
 			basePath.append(":").append(request.getServerPort());
 		}

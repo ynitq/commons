@@ -14,11 +14,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.cfido.commons.codeGen.CodeGenProperties;
 import com.cfido.commons.codeGen.beans.TableBean;
-import com.cfido.commons.codeGen.config.CodeGenProperties;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.ResourceScaner;
 
@@ -30,6 +31,7 @@ import com.cfido.commons.utils.utils.ResourceScaner;
  * @author 梁韦江 2016年9月14日
  */
 @ManagedResource(description = "CodeGen代码生成器", objectName = "CodeGen代码生成器: name=CodeGenMainService")
+@Service
 public class CodeGenMainService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeGenMainService.class);

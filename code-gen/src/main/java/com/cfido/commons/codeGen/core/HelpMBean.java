@@ -8,9 +8,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.stereotype.Service;
 
+import com.cfido.commons.codeGen.CodeGenProperties;
 import com.cfido.commons.codeGen.beans.TableBean;
-import com.cfido.commons.codeGen.config.CodeGenProperties;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.MBeanUtils;
 
@@ -22,6 +23,7 @@ import com.cfido.commons.utils.utils.MBeanUtils;
  * @author 梁韦江 2016年10月12日
  */
 @ManagedResource(description = "帮助文档", objectName = "CodeGen代码生成器: name=HelpMBean")
+@Service
 public class HelpMBean {
 
 	/**

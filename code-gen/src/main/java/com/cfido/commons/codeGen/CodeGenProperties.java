@@ -1,4 +1,4 @@
-package com.cfido.commons.codeGen.config;
+package com.cfido.commons.codeGen;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
@@ -54,7 +55,8 @@ import org.springframework.util.StringUtils;
  * 
  * @author 梁韦江 2016年9月12日
  */
-@PropertySource("classpath:codeGen.properties")
+@Component
+@PropertySource("classpath:codeGen.properties") // 自定义配置文件时，必须有@Component，否则无法读取文件
 @ConfigurationProperties(prefix = "codeGen")
 public class CodeGenProperties {
 

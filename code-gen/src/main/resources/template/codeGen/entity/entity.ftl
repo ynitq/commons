@@ -34,7 +34,7 @@ public class ${table.javaClassName} implements Serializable ${table.implementsSt
 	//--------------- 属性 ---------------
 <#list table.columns as column>
 	<#if column.hasComment>/** ${column.comment} */
-	@AComment(comment="${column.comment}")</#if><#if column.hasNotNull>
+	@AComment("${column.comment}")</#if><#if column.hasNotNull>
 	@NotNull</#if><#if column.temporal>
 	${column.temporalStr}</#if>
 	@Column(name = "${column.name}"${column.nullableStr} ${column.lengthStr})

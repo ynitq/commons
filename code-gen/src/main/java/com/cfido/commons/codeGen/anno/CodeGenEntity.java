@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import com.cfido.commons.codeGen.config.CodeGenAutoConfig;
+import com.cfido.commons.codeGen.CodeGenAutoConfig;
 import com.cfido.commons.spring.jmxInWeb.JmxInWebAutoConfig;
 
 /**
