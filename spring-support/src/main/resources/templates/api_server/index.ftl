@@ -150,7 +150,7 @@ a:VISITED {
 					if (!res.success) {
 						console.log("错误信息:" + res.message);
 					}
-					$("#testResult").text(data);
+					$("#testResult").text("url:" + url + "\n返回结果:\n" + data);
 				},
 				error : function(xhr, status, error) {
 					$("#testResult").text("错误码:" + xhr.status + "\n" + xhr.responseText);
@@ -167,6 +167,10 @@ a:VISITED {
 				'error' : '对不起，你上传的文件太大了'
 			}
 		});
+
+		$("#js_clear").click(function() {
+			$("#testResult").text('')
+		})
 
 		confVm = new Vue({
 			el : "#coll-other-conf",
@@ -196,8 +200,10 @@ a:VISITED {
 	</nav>
 
 	<div id="testDiv">
-		测试结果
+		<div style="padding-bottom: 5px;height: 30px;line-height: 30px;">测试结果 <a class='btn btn-default btn-sm pull-right' id="js_clear"><i class="glyphicon glyphicon-trash"></i> 清空</a></div	>
+		<div style="clear: both;">
 		<pre id="testResult"></pre>
+		</div>
 	</div>
 
 	<div id="leftDiv">
@@ -210,8 +216,10 @@ a:VISITED {
 					<div class="form-group">
 						<label> x-auth-token:</label>
 						<input type="text" class="form-control" v-model="sessionId" />
-						<p class="help-block">用ajax进行跨域请求，因为没有cookie，所以只能通过header传sessionId。只需要在ajax中增加这个
-						<code>x-auth-token</code>的header，服务器就可以找回认证状态
+						<p class="help-block">
+							用ajax进行跨域请求，因为没有cookie，所以只能通过header传sessionId。只需要在ajax中增加这个
+							<code>x-auth-token</code>
+							的header，服务器就可以找回认证状态
 						</p>
 					</div>
 					<div class="form-group">
@@ -260,9 +268,7 @@ a:VISITED {
 							<td width="120" valign="top">${pp.name}:</td>
 							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
 								<#if pp.className=="boolean"> <input name="${pp.name}" type="checkbox" value="true" /> <#else> <input
-									name="${pp.name}" type="text" value="${pp.value}" /></#if></#if>
-									<span class="text-muted">${pp.memo}</span>
-								</td>
+									name="${pp.name}" type="text" value="${pp.value}" /></#if></#if> <span class="text-muted">${pp.memo}</span></td>
 						</tr>
 						</#list>
 						<tr>
