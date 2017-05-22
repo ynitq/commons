@@ -83,8 +83,6 @@ public class CodeGenProperties {
 		/** 保存文件时，如果原来的文件已经存在，是否覆盖原文件 */
 		private boolean override;
 
-		private boolean sample;
-
 		public FileSaveOption() {
 		}
 
@@ -124,10 +122,6 @@ public class CodeGenProperties {
 
 		public void setOverride(boolean override) {
 			this.override = override;
-		}
-
-		public boolean isSample() {
-			return sample;
 		}
 
 	}
@@ -275,12 +269,10 @@ public class CodeGenProperties {
 		// 源码目录的默认配置是：生成文件，但不覆盖原文件
 		this.output.save = true;
 		this.output.override = false;
-		this.output.sample = false;
 
 		// 样例目录的默认配置是：生成文件，并覆盖原文件
 		this.sample.save = true;
-		this.sample.override = false;
-		this.sample.sample = true;
+		this.sample.override = true;
 	}
 
 	public Map<String, String> getAutorun() {
