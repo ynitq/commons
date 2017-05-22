@@ -22,7 +22,7 @@ public class BaseViewModel<T extends BasePoObj<PO>, PO> {
 		this.init(obj);
 	}
 
-	public void init(T obj) {
+	protected void init(T obj) {
 		this.obj = obj;
 		this.po = obj.getPo();
 
@@ -33,9 +33,18 @@ public class BaseViewModel<T extends BasePoObj<PO>, PO> {
 			this.po = poClass.newInstance();
 			BeanUtils.copyProperties(obj.getPo(), this.po);
 			// 必须拷贝一份po, 业务model层为了数据安全，就修改一些值，防止数据泄露
+
+			this.afterInit();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * 用于给子类继承，在init以后干些其他事情
+	 */
+	protected void afterInit() {
+
 	}
 
 	public PO getPo() {
