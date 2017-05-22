@@ -222,6 +222,23 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	}
 
 	/**
+	 * 根据查询条件，获取一个对象
+	 * 
+	 * @param sqlStartWithFrom
+	 *            以from开头的sql，不能有 select字样
+	 * @param params
+	 *            参数
+	 * @return 对象列表
+	 */
+	public OBJ findOne(String sqlStartWithFrom, Object... params) {
+		List<PO> poList = this.getDaoForObjFactory().find(sqlStartWithFrom, params);
+		if (poList != null && poList.size() > 0) {
+			return this.convertToObj(poList.get(0));
+		}
+		return null;
+	}
+
+	/**
 	 * 更新对象
 	 * 
 	 * @param obj
