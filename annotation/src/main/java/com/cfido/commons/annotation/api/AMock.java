@@ -16,7 +16,9 @@ import java.lang.annotation.Target;
  * @author 梁韦江
  *  2016年6月22日
  */
-@Target({ ElementType.METHOD })
+@Target({
+		ElementType.METHOD, ElementType.FIELD
+})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AMock {
