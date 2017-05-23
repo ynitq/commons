@@ -209,18 +209,12 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	}
 
 	/**
-	 * 根据返回类型，生成模拟返回数据
+	 * 返回类型的说明
 	 * 
 	 * @return String
 	 */
-	public String getDefaultMockData() {
+	public String getReturnClassDesc() {
 		return ClassDescriber.create(this.returnClass);
-		// try {
-		// BaseResponse res = this.createMockData();
-		// return JSON.toJSONString(res, true);
-		// } catch (Exception ex) {
-		// return LogUtil.getTraceString("生成样例数据时出错了", ex);
-		// }
 	}
 
 	/**

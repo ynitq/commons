@@ -483,12 +483,25 @@ public class ClassUtil {
 	 */
 	public static List<MethodInfo> findGetter(Class<?> clazz) {
 		List<MethodInfo> list = new LinkedList<>();
+
+		// 找出所有属性上的说明
+		Map<String, AComment> memoInField = ClassUtil.getAllAnnoFromField(clazz, AComment.class);
+
 		for (Method method : clazz.getMethods()) {
 			MethodInfo info = new MethodInfo(method);
 			if (info.isGetter) {
 				list.add(info);
+
+				if (StringUtils.isEmpty(info.memo)) {
+					// 如果getter中没有备注，就尝试从属性上去找
+					AComment comment = memoInField.get(info.name);
+					if (comment != null) {
+						info.memo = comment.value();
+					}
+				}
 			}
 		}
+
 		return list;
 	}
 

@@ -317,7 +317,7 @@ a:VISITED {
 				<h4>返回的结果</h4>
 				<span class="text-info">${m.returnClass.name}</span>
 				<pre>
-${m.defaultMockData}
+${m.returnClassDesc}
 		  </pre>
 
 			</div>
