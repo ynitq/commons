@@ -126,7 +126,7 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	private List<MethodParamVo> buildParamVoList() {
 		List<MethodParamVo> list;
 		if (this.hasParam()) {
-			list = ApiServerUtils.getParamFromFormClass(formClass);
+			list = ApiServerUtils.getSetters(formClass);
 		} else {
 			list = new LinkedList<>();
 		}

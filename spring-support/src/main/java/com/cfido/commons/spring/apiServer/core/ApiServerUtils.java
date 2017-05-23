@@ -1,10 +1,15 @@
 package com.cfido.commons.spring.apiServer.core;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,18 +51,34 @@ public class ApiServerUtils {
 		return list;
 	}
 
+	/** 找出一个类中所有标准了不允许空的属性 */
+	private static Set<String> findNotNull(Class<?> formClass) {
+
+		Set<String> set = new HashSet<>();
+
+		// NotNull和 NotBlank 都是不允许空的
+		set.addAll(ClassUtil.getAllAnnoFromField(formClass, NotNull.class).keySet());
+		set.addAll(ClassUtil.getAllAnnoFromField(formClass, NotBlank.class).keySet());
+
+		return set;
+
+	}
+
 	/**
-	 * 只管setter,必须有setter，才可能通过界面设置值
+	 * 获取所有的setter
 	 * 
 	 * @param formClass
 	 * @return
 	 */
-	public static List<MethodParamVo> getParamFromFormClass(Class<?> formClass) {
+	public static List<MethodParamVo> getSetters(Class<?> formClass) {
 		List<MethodParamVo> list = new LinkedList<>();
 
 		// 先在属性上找到所有的注解
 		Map<String, AComment> commentInFieldMap = ClassUtil.getAllAnnoFromField(formClass, AComment.class);
 		Map<String, AMock> mockInFieldMap = ClassUtil.getAllAnnoFromField(formClass, AMock.class);
+
+		// 找到所有不允许空的属性
+		Set<String> notNullFieldSet = findNotNull(formClass);
 
 		Method[] methods = formClass.getMethods();
 		for (Method m : methods) {
@@ -68,13 +89,21 @@ public class ApiServerUtils {
 				Class<?>[] paramTypes = m.getParameterTypes();
 				if (paramTypes.length == 1) {
 					// 并且只有一个参数
-					Class<?> paramClass = paramTypes[0];
 					String propName = StringUtils.uncapitalize(methodName.substring(3));// 参数名
 
 					MethodParamVo vo = new MethodParamVo();
-					vo.setName(propName);
-					vo.setClassName(paramClass.getSimpleName());
+					vo.setName(propName);// 设置名字
+					vo.setNotNull(notNullFieldSet.contains(propName)); // 设置是否不允许空
 
+					Class<?> paramClass = paramTypes[0];
+					if (paramClass.isArray()) {
+						// 如果是数组，就用数组的成员类作为参数类
+						paramClass = paramClass.getComponentType();
+						vo.setArray(true); // 设置参数是否是数组
+					}
+					vo.setClassName(paramClass.getSimpleName());// 设置类名
+
+					// 设置备注
 					AComment comment = m.getAnnotation(AComment.class);
 					if (comment == null) {
 						comment = commentInFieldMap.get(propName);
@@ -87,6 +116,7 @@ public class ApiServerUtils {
 					if (OpenTypeUtil.isOpenType(paramClass)) {
 						// 如果是普通参数
 
+						// 设置默认值
 						AMock mock = m.getAnnotation(AMock.class);
 						if (mock == null) {
 							mock = mockInFieldMap.get(propName);

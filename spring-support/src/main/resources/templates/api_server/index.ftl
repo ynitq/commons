@@ -17,6 +17,7 @@
 <script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
+
 </head>
 <style>
 .msgWin {
@@ -172,6 +173,24 @@ a:VISITED {
 			$("#testResult").text('')
 		})
 
+		$('[data-toggle="tooltip"]').tooltip()
+
+		$(".js_add_input").click(function() {
+			var div = $(this).parent().clone();
+			
+			var icon = div.find(".glyphicon-plus")
+			icon.removeClass("glyphicon-plus");
+			icon.addClass("glyphicon-minus");
+
+			div.find("a").click(function() {
+				$(this).parent().remove();
+			})
+			
+			var parent = $(this).parent().parent(); 
+			console.debug('点击增加')
+			parent.append(div);
+		})
+		
 		confVm = new Vue({
 			el : "#coll-other-conf",
 
@@ -200,9 +219,11 @@ a:VISITED {
 	</nav>
 
 	<div id="testDiv">
-		<div style="padding-bottom: 5px;height: 30px;line-height: 30px;">测试结果 <a class='btn btn-default btn-sm pull-right' id="js_clear"><i class="glyphicon glyphicon-trash"></i> 清空</a></div	>
+		<div style="padding-bottom: 5px; height: 30px; line-height: 30px;">
+			测试结果 <a class='btn btn-default btn-sm pull-right' id="js_clear"><i class="glyphicon glyphicon-trash"></i> 清空</a>
+		</div>
 		<div style="clear: both;">
-		<pre id="testResult"></pre>
+			<pre id="testResult"></pre>
 		</div>
 	</div>
 
@@ -265,10 +286,22 @@ a:VISITED {
 					<table width="100%" class="table">
 						<#list m.paramVoList as pp>
 						<tr>
-							<td width="120" valign="top">${pp.name}:</td>
+							<td width="120" valign="top"><#if pp.notNull>
+								<span class="text-danger">
+									<i class="glyphicon glyphicon-asterisk"></i>
+								</span></#if> <a data-toggle="tooltip" data-placement="right" title="${pp.className}">${pp.name}</a>: <#if pp.array>[]</#if></td>
 							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
-								<#if pp.className=="boolean"> <input name="${pp.name}" type="checkbox" value="true" /> <#else> <input
-									name="${pp.name}" type="text" value="${pp.value}" /></#if></#if> <span class="text-muted">${pp.memo}</span></td>
+									<#if pp.checkBox>
+										<input name="${pp.name}" type="checkbox" value="true" />
+									<#else> 
+										<div style="padding-bottom: 2px;">
+											<input name="${pp.name}" type="text" value="${pp.value}" <#if pp.notNull>required="required"</#if>/>
+											<#if pp.array><a class="btn btn-xs btn-default js_add_input"><i class="glyphicon glyphicon-plus"></i></a></#if>
+										</div>
+									</#if>
+								</#if> 
+								<span class="text-muted">${pp.memo}</span>
+							</td>
 						</tr>
 						</#list>
 						<tr>
@@ -291,5 +324,6 @@ ${m.defaultMockData}
 		</div>
 		</#list>
 	</div>
+
 </body>
 </html>
