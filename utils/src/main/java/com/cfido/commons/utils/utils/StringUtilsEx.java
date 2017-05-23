@@ -2,7 +2,10 @@ package com.cfido.commons.utils.utils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -247,6 +250,50 @@ public class StringUtilsEx {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * 将set转换成为用逗号分隔的字符串
+	 * 
+	 * @param ary
+	 *            字符串set
+	 * @return 用逗号分隔的字符串
+	 */
+	public static String arry2Str(Integer[] ary) {
+		StringBuffer sb = new StringBuffer();
+
+		if (ary != null) {
+			for (Integer str : ary) {
+				if (str != null) {
+					if (sb.length() > 0) {
+						sb.append(',');
+					}
+					sb.append(str);
+				}
+			}
+		}
+
+		return sb.toString();
+	}
+
+	/**
+	 * 将字符串解析为整形数组
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static Integer[] str2array(String str) {
+		StringTokenizer st = new StringTokenizer(str, ",");
+		List<Integer> list = new LinkedList<>();
+		while (st.hasMoreTokens()) {
+			String s = st.nextToken();
+			try {
+				Integer value = Integer.parseInt(s);
+				list.add(value);
+			} catch (NumberFormatException e) {
+			}
+		}
+		return list.toArray(new Integer[0]);
 	}
 
 	public static String randomUUID() {
