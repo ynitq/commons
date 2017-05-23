@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.util.StringUtils;
+
 /**
  * <pre>
  * 扩展字符串操作工具集，我们常用的是Spring的StringUtil
@@ -171,7 +173,7 @@ public class StringUtilsEx {
 	 * @return
 	 */
 	public static String markKeyword(String text, String keyword, String htmlClassName) {
-		if (!hasText(text) || !hasText(keyword)) {
+		if (!StringUtils.hasText(text) || !StringUtils.hasText(keyword)) {
 			return text;
 		}
 
@@ -222,7 +224,7 @@ public class StringUtilsEx {
 		if (str != null) {
 			String[] ary = str.split(",");
 			for (String str1 : ary) {
-				if (hasText(str1)) {
+				if (StringUtils.hasText(str1)) {
 					set.add(str1);
 				}
 			}
@@ -241,7 +243,7 @@ public class StringUtilsEx {
 		StringBuffer sb = new StringBuffer();
 
 		for (String str : set) {
-			if (hasText(str)) {
+			if (StringUtils.hasText(str)) {
 				if (sb.length() > 0) {
 					sb.append(',');
 				}
@@ -283,14 +285,16 @@ public class StringUtilsEx {
 	 * @return
 	 */
 	public static Integer[] str2array(String str) {
-		StringTokenizer st = new StringTokenizer(str, ",");
 		List<Integer> list = new LinkedList<>();
-		while (st.hasMoreTokens()) {
-			String s = st.nextToken();
-			try {
-				Integer value = Integer.parseInt(s);
-				list.add(value);
-			} catch (NumberFormatException e) {
+		if (StringUtils.hasText(str)) {
+			StringTokenizer st = new StringTokenizer(str, ",");
+			while (st.hasMoreTokens()) {
+				String s = st.nextToken();
+				try {
+					Integer value = Integer.parseInt(s);
+					list.add(value);
+				} catch (NumberFormatException e) {
+				}
 			}
 		}
 		return list.toArray(new Integer[0]);
@@ -365,15 +369,6 @@ public class StringUtilsEx {
 
 		String r = result.toString();
 		return r;
-	}
-
-	/**
-	 * 与spring的springUtil同名方法，方便日后直接使用spring的工具集
-	 * 
-	 * @return
-	 */
-	private static boolean hasText(String str) {
-		return org.springframework.util.StringUtils.hasText(str);
 	}
 
 	private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>"; // 定义script的正则表达式
