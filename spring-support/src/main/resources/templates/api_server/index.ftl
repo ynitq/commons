@@ -287,9 +287,7 @@ a:VISITED {
 						<#list m.paramVoList as pp>
 						<tr>
 							<td width="120" valign="top"><#if pp.notNull>
-								<span class="text-danger">
-									<i class="glyphicon glyphicon-asterisk"></i>
-								</span></#if> <a data-toggle="tooltip" data-placement="right" title="${pp.className}">${pp.name}</a>: <#if pp.array>[]</#if></td>
+								<span class="text-danger">*</span></#if><a data-toggle="tooltip" data-placement="right" title="${pp.className}">${pp.name}</a><#if pp.array> []</#if></td>
 							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
 									<#if pp.checkBox>
 										<input name="${pp.name}" type="checkbox" value="true" />
