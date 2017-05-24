@@ -3,6 +3,8 @@ package com.cfido.commons.utils.logicObj;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.annotation.bean.AComment;
+
 /**
  * <pre>
  * 各类info bean的基类，主要功能就是自动获取createBy， createDate等数据
@@ -47,6 +49,7 @@ public class BaseViewModel<T extends BasePoObj<PO>, PO> {
 
 	}
 
+	@AComment("数据库对象")
 	public PO getPo() {
 		return po;
 	}
