@@ -18,6 +18,9 @@ public class BaseViewModel<T extends BasePoObj<PO>, PO> {
 	protected T obj;
 	protected PO po;
 
+	public BaseViewModel() {
+	}
+
 	public BaseViewModel(T obj) {
 		Assert.notNull(obj,"逻辑对象不能为空");
 		Assert.notNull(obj.getPo(),"逻辑对象的po不能为空");
