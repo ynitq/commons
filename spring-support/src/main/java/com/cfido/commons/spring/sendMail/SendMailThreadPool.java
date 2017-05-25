@@ -3,6 +3,8 @@ package com.cfido.commons.spring.sendMail;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.threadPool.BaseThreadPool;
 
 /**
@@ -13,7 +15,8 @@ import com.cfido.commons.utils.threadPool.BaseThreadPool;
  * @author 梁韦江 2015年7月21日
  */
 @Service
-@ManagedResource(description = "发邮件线程池", objectName = "Common配置:name=SendMailThreadPool")
+@ManagedResource(description = "发邮件线程池")
+@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN_MAIL)
 public class SendMailThreadPool extends BaseThreadPool {
 
 	@Override

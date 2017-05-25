@@ -13,4 +13,6 @@ public interface CommonMBeanDomainNaming {
 
 	public final static String DOMAIN = "Commons通用框架";
 
+	public final static String DOMAIN_MAIL = "Commons邮件";
+
 }

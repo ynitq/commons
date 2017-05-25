@@ -1,11 +1,15 @@
 package com.cfido.commons.spring.sendMail;
 
+import java.util.Date;
+
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.cfido.commons.spring.sendMail.SendMailAccountPool.MailAccount;
 import com.cfido.commons.utils.threadPool.IMyTask;
 import com.cfido.commons.utils.utils.LogUtil;
 
@@ -20,11 +24,9 @@ import com.cfido.commons.utils.utils.LogUtil;
 public class SendMailService {
 
 	public final static SendMailService instance = new SendMailService();
-	
-	@Autowired
-	private SendMailAutoConfig mailConfig;
 
-	private SendMailProperties prop = SendMailProperties.getInstance();
+	@Autowired
+	private SendMailAccountPool accountPool;
 
 	private class SendMailTask implements IMyTask {
 		private final String from;
@@ -66,49 +68,31 @@ public class SendMailService {
 		this.sendMailThreadPool.addNewTask(tsk);
 	}
 
-	/**
-	 * 获取发送者
-	 */
-	private JavaMailSender getMailSender() {
-		
-		JavaMailSenderImpl mailSender;
-		if (this.prop.isSsl()) {
-			mailSender = this.mailConfig.javaMailSenderSsl();
-		} else {
-			mailSender = this.mailConfig.javaMailSender();
+	protected void doSendMail(String from, String to, String subject, String text) {
+		MailAccount mailAccount = this.accountPool.getMailAccount();
+		if (mailAccount == null) {
+			log.warn("发送邮件时，发现发送邮箱账号池为空，没有账号可用于发送邮件");
 		}
 
-		// 因为我们可以通过jmx修改配置，所有我们需要在每次发送邮件时都重新设置最新的参数
-		String[] userArray = prop.getUserArray();
-		String[] passwordArray = prop.getPasswordArray();
-		mailSender.setHost(this.prop.getHost());
-		mailSender.setPort(this.prop.getPort());
-		mailSender.setUsername(userArray[0]);
-		mailSender.setPassword(passwordArray[0]);
-		
-		// 将用户名数组和密码数组循环向前移动一位
-		SendMailProperties.reUserAndPwd();
-
-		return mailSender;
-
-	}
-
-	protected void doSendMail(String from, String to, String subject, String text) {
-		JavaMailSender mailSender = this.getMailSender();
+		JavaMailSender mailSender = mailAccount.getSender();
+		MimeMessage message = mailSender.createMimeMessage();
 
 		try {
 
-			SimpleMailMessage message = new SimpleMailMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
-			message.setFrom(this.prop.getFrom(from));// 发送者.
-			message.setTo(to);// 接收者.
-			message.setSubject(subject);// 邮件主题.
-			message.setText(text);// 邮件内容.
+			helper.setFrom(mailAccount.getFrom(from));// 发送者.
+			helper.setTo(to);// 接收者.
+			helper.setSubject(subject);// 邮件主题.
+			helper.setText(text, true);// 邮件内容,HTML格式发送
+			helper.setSentDate(new Date());
 
-			mailSender.send(message);// 发送邮件
+			mailSender.send(message);// message
 
 			log.info(LogUtil.format("发送邮件 to:%s title:%s", to, subject));
+			mailAccount.incCounter(true);
 		} catch (Exception e) {
+			mailAccount.incCounter(false);
 			log.info(LogUtil.format("发送邮件失败from:%s to:%s title:%s", from, to, subject));
 			if (log.isDebugEnabled()) {
 				LogUtil.traceError(log, e);

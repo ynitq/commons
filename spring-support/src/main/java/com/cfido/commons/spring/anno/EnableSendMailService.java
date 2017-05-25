@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 import com.cfido.commons.spring.sendMail.SendMailAutoConfig;
-import com.cfido.commons.spring.sendMail.SendMailProperties;
+import com.cfido.commons.spring.sendMail.SendMailAccountPool;
 import com.cfido.commons.spring.sendMail.SendMailService;
 
 /**
@@ -19,7 +19,7 @@ import com.cfido.commons.spring.sendMail.SendMailService;
  * 
  * @author 梁韦江 2016年12月19日
  * 
- * @see SendMailProperties 可配置参数
+ * @see SendMailAccountPool 可配置参数
  * @see SendMailService#sendMail(String, String, String, String) 发送邮件
  */
 @Target(ElementType.TYPE)
