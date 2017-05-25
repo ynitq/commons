@@ -247,6 +247,8 @@ public class JmxInWebService {
 			}
 		} catch (JMException e) {
 			throw new MyJmException(e);
+		} catch (Throwable e) {
+			throw new SystemErrorException(e);
 		}
 	}
 

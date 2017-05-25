@@ -171,7 +171,7 @@
 					</button>
 					<h4 class="modal-title">执行返回的结果</h4>
 				</div>
-				<div class="modal-body" id="invodeResult_body">Modal body goes here</div>
+				<div class="modal-body"><pre id="invodeResult_body"></pre></div>
 			</div>
 			<!-- /.modal-content -->
 		</div>
