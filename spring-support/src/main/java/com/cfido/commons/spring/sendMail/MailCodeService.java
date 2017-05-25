@@ -98,7 +98,9 @@ public class MailCodeService {
 		this.redisTemplate.opsForValue().set(key, value, codeExpireTimeInMin, TimeUnit.MINUTES);
 
 		// 用系统名字作为邮件标题发送邮件
-		this.sendMailService.sendMail(this.dictCoreService.getSystemName(), email, subject, text);
+		this.sendMailService.sendMail(this.dictCoreService.getSystemName(),
+				email, subject,
+				"<html><body>" + text + "</body></html>");
 	}
 
 	private String createKey(String mailType, String email) {

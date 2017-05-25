@@ -2,6 +2,10 @@ package com.cfido.commons.spring.dict.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -50,6 +54,11 @@ import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.JaxbUtil;
 
+import freemarker.cache.TemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+
 /**
  * <pre>
  * 字典项目的核心服务
@@ -59,6 +68,42 @@ import com.cfido.commons.utils.utils.JaxbUtil;
  */
 @Service
 public class DictCoreService {
+
+	/**
+	 * <pre>
+	 * freemarker引擎用的模板加载器，我们这里是从字典中根据key获取模板
+	 * </pre>
+	 * 
+	 * @author 梁韦江 2017年5月25日
+	 * 
+	 */
+	private class DictTemplateLoader implements TemplateLoader {
+
+		@Override
+		public void closeTemplateSource(Object templateSource) throws IOException {
+		}
+
+		@Override
+		public Object findTemplateSource(String name) throws IOException {
+			DictXmlRow row = DictCoreService.this.map.get(name);
+			if (row != null) {
+				return row.getValue();
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public long getLastModified(Object templateSource) {
+			return 0;
+		}
+
+		@Override
+		public Reader getReader(Object templateSource, String encoding) throws IOException {
+			return new StringReader((String) templateSource);
+		}
+
+	}
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictCoreService.class);
 
@@ -92,6 +137,22 @@ public class DictCoreService {
 
 	/** 主线程池，处理游戏的各类事件、聊天、发送系统信息等 */
 	private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+	private final Configuration freemarkerCfg;
+
+	public DictCoreService() {
+		freemarkerCfg = new Configuration(Configuration.getVersion());
+		// 防止freemarker渲染时对value=null的key 解析出错
+		freemarkerCfg.setClassicCompatible(true);
+		freemarkerCfg.setTemplateLoader(new DictTemplateLoader());
+	}
+
+	/**
+	 * 将当前对象放入freemark的model用于非request请求
+	 */
+	public void addToModel(ModelMap model) {
+		model.addAttribute(VO_NAME, this);
+	}
 
 	/**
 	 * 删除一个附件
@@ -150,6 +211,38 @@ public class DictCoreService {
 	}
 
 	/**
+	 * 实际的保存数据
+	 */
+	public void doSaveAll() {
+
+		if (!this.isNeedSave) {
+			return;
+		}
+
+		log.debug("有字典数据发生了变化，需要保存到文件");
+
+		// 执行保存时，取消需要保存的标志位
+		this.isNeedSave = false;
+
+		DictXml xml = new DictXml();
+
+		this.lockForMap.lock();
+		try {
+			// 从map中获取数据的时候，需要锁一下
+			xml.getDictXmlRow().addAll(this.map.values());
+			xml.getDictAttachmentRow().addAll(this.attahcmentMap.values());
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		try {
+			this.saveXml(xml);
+		} catch (JAXBException e) {
+			log.error("保存字典数据到xml文件的时候出错了", e);
+		}
+	}
+
+	/**
 	 * 根据表单查询数据库，并返回封装好的分页结果集
 	 * 
 	 * @param form
@@ -185,6 +278,78 @@ public class DictCoreService {
 	}
 
 	/**
+	 * 根据key返回key对于的html代码。这个方法是在模板中调用的。例如 dict["hi"]
+	 */
+	public String get(String key) {
+		return this.getStringByKey(key, true, false, null);
+	}
+
+	/**
+	 * 获取所有附件
+	 */
+	public List<DictAttachmentVo> getAllAttechmentsFromMap() {
+		List<DictAttachmentRow> listAll = new LinkedList<>();
+		this.lockForMap.lock();
+		try {
+			listAll.addAll(this.attahcmentMap.values());
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		// 对两list进行按key排序
+		Comparator<DictAttachmentRow> comparator = new Comparator<DictAttachmentRow>() {
+			@Override
+			public int compare(DictAttachmentRow row1, DictAttachmentRow row2) {
+				return row1.getKey().compareTo(row2.getKey());
+			}
+		};
+		Collections.sort(listAll, comparator);
+
+		List<DictAttachmentVo> voList = new LinkedList<>();
+		for (DictAttachmentRow row : listAll) {
+			String basePath = WebContextHolderHelper.getAttachmentFullPath(null);
+			String thumbPostfix = this.imageUploadService.getThumbPostfix();
+
+			DictAttachmentVo vo = new DictAttachmentVo();
+			vo.updateFromXml(row, basePath, thumbPostfix);
+			voList.add(vo);
+		}
+
+		return voList;
+	}
+
+	/**
+	 * 获得所有的内容,并排好序
+	 * 
+	 * @return
+	 */
+	public List<DictXmlRow> getAllFromMap() {
+		List<DictXmlRow> listAll = new LinkedList<>();
+		this.lockForMap.lock();
+		try {
+			listAll.addAll(this.map.values());
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		// 对两list进行按key排序,先按todo排序，再按名字排序
+		Comparator<DictXmlRow> comparator = new Comparator<DictXmlRow>() {
+			@Override
+			public int compare(DictXmlRow row1, DictXmlRow row2) {
+				if (row1.isTodo() == row2.isTodo()) {
+					return row1.getKey().compareTo(row2.getKey());
+
+				} else {
+					return row1.isTodo() ? -1 : 1;
+				}
+			}
+		};
+		Collections.sort(listAll, comparator);
+
+		return listAll;
+	}
+
+	/**
 	 * 根据key返回key对应的原始文本，不做html转化
 	 * 
 	 * @return
@@ -203,72 +368,74 @@ public class DictCoreService {
 	}
 
 	/**
-	 * 根据key返回key对于的html代码。这个方法是在模板中调用的。例如 dict["hi"]
+	 * 我们用一个key来保存当前应用的名字，这个名字用于字典页面、api测试页面等地方
 	 */
-	public String get(String key) {
-		return this.getStringByKey(key, true, false, null);
+	public String getSystemName() {
+		return this.getRawText("system.name");
 	}
 
 	/**
-	 * 根据key返回key对于的html代码。这个方法是在模板中调用的。例如 dict["hi"]
+	 * 从xml文件导入内容，并覆盖原来的数据
 	 * 
-	 * @param key
-	 *            键值
-	 * @param incCounter
-	 *            是否在计数器中+1
-	 * @param onlyRawText
-	 *            是否只返回原始文本
-	 * @return
+	 * @throws BaseApiException
 	 */
-	private String getStringByKey(String key, boolean incCounter, boolean onlyRawText, String defaultValue) {
+	public void importXml(DictXml xml, boolean cleanOld) throws BaseApiException {
 
-		if (!StringUtils.hasText(key)) {
-			return null;
+		Assert.notNull(xml, "字典xml不能为空");
+		Assert.notEmpty(xml.getDictXmlRow(), "字典必须有数据不能为空");
+
+		// 导入前先备份
+		try {
+			this.backup();
+		} catch (JAXBException e) {
+			log.error("备份字典文件时，发生了错误", e);
+
+			throw new SystemErrorException(e);
 		}
-
-		DictXmlRow row;
 
 		this.lockForMap.lock();
 		try {
+			if (cleanOld) {
+				// 如果不保留原来的数据，就清空
+				this.map.clear();
+			}
 
-			row = this.map.get(key);
-			if (row == null) {
-
-				log.debug("发现新的键值 {}", key);
-
-				// 如果原来不存在这个key，就创建一条记录
-				row = this.newDefaultEntity(key, defaultValue, true);
-
-				// 在备注里面说明这个是自动添加的，需要处理
-				if (defaultValue != null) {
-					row.setMemo(String.format("第一次发现于: %s (%s)",
-							WebContextHolderHelper.getRequestURL(false),
-							DateUtil.dateFormat(new Date())));
-				}
-
-				// 同时将key放到map中
+			List<DictXmlRow> list = xml.getDictXmlRow();
+			int todo = 0;
+			for (DictXmlRow row : list) {
 				this.map.put(row.getKey(), row);
+				if (row.isTodo()) {
+					todo++;
+				}
 			}
-
-			if (incCounter) {
-				// 这个key的使用次数+1，
-				row.setUsedCount(row.getUsedCount() + 1);
-			}
+			log.info("导入数据完成，共 {} 条记录，其中 {} 条待处理中", list.size(), todo);
 
 		} finally {
 			this.lockForMap.unlock();
 		}
 
-		if (incCounter) {
-			// 每一次get，其实都导致了计数器发生了变化，所以都需要异步保存一下
-			this.asyncSave();
-		}
+		this.asyncSave();
+	}
 
-		if (onlyRawText) {
-			return row.getValue();
-		} else {
-			return this.getRowOutputHtml(row, this.debugMode.isDebugMode());
-		}
+	/**
+	 * 根据key寻找模板，并数据生成字符串
+	 * 
+	 * @param key
+	 *            模板的key
+	 * @param dataModel
+	 *            数据
+	 * @return
+	 * @throws TemplateException
+	 * @throws IOException
+	 */
+	public String processTemplate(String key, Map<String, Object> dataModel) throws TemplateException, IOException {
+
+		Template template = this.freemarkerCfg.getTemplate(key);
+		StringWriter w = new StringWriter();
+		PrintWriter out = new PrintWriter(w);
+		template.process(dataModel, out);
+
+		return w.toString();
 	}
 
 	/**
@@ -380,101 +547,14 @@ public class DictCoreService {
 		this.isNeedSave = true;
 	}
 
-	/**
-	 * 实际的保存数据
-	 */
-	public void doSaveAll() {
+	private void backup() throws JAXBException {
+		String backupFile = this.prop.getBackupFileFullPath();
 
-		if (!this.isNeedSave) {
-			return;
-		}
+		DictXml backupXml = new DictXml();
+		backupXml.getDictXmlRow().addAll(this.getAllFromMap());
 
-		log.debug("有字典数据发生了变化，需要保存到文件");
-
-		// 执行保存时，取消需要保存的标志位
-		this.isNeedSave = false;
-
-		DictXml xml = new DictXml();
-
-		this.lockForMap.lock();
-		try {
-			// 从map中获取数据的时候，需要锁一下
-			xml.getDictXmlRow().addAll(this.map.values());
-			xml.getDictAttachmentRow().addAll(this.attahcmentMap.values());
-		} finally {
-			this.lockForMap.unlock();
-		}
-
-		try {
-			this.saveXml(xml);
-		} catch (JAXBException e) {
-			log.error("保存字典数据到xml文件的时候出错了", e);
-		}
-	}
-
-	/**
-	 * 获取所有附件
-	 */
-	public List<DictAttachmentVo> getAllAttechmentsFromMap() {
-		List<DictAttachmentRow> listAll = new LinkedList<>();
-		this.lockForMap.lock();
-		try {
-			listAll.addAll(this.attahcmentMap.values());
-		} finally {
-			this.lockForMap.unlock();
-		}
-
-		// 对两list进行按key排序
-		Comparator<DictAttachmentRow> comparator = new Comparator<DictAttachmentRow>() {
-			@Override
-			public int compare(DictAttachmentRow row1, DictAttachmentRow row2) {
-				return row1.getKey().compareTo(row2.getKey());
-			}
-		};
-		Collections.sort(listAll, comparator);
-
-		List<DictAttachmentVo> voList = new LinkedList<>();
-		for (DictAttachmentRow row : listAll) {
-			String basePath = WebContextHolderHelper.getAttachmentFullPath(null);
-			String thumbPostfix = this.imageUploadService.getThumbPostfix();
-
-			DictAttachmentVo vo = new DictAttachmentVo();
-			vo.updateFromXml(row, basePath, thumbPostfix);
-			voList.add(vo);
-		}
-
-		return voList;
-	}
-
-	/**
-	 * 获得所有的内容,并排好序
-	 * 
-	 * @return
-	 */
-	public List<DictXmlRow> getAllFromMap() {
-		List<DictXmlRow> listAll = new LinkedList<>();
-		this.lockForMap.lock();
-		try {
-			listAll.addAll(this.map.values());
-		} finally {
-			this.lockForMap.unlock();
-		}
-
-		// 对两list进行按key排序,先按todo排序，再按名字排序
-		Comparator<DictXmlRow> comparator = new Comparator<DictXmlRow>() {
-			@Override
-			public int compare(DictXmlRow row1, DictXmlRow row2) {
-				if (row1.isTodo() == row2.isTodo()) {
-					return row1.getKey().compareTo(row2.getKey());
-
-				} else {
-					return row1.isTodo() ? -1 : 1;
-				}
-			}
-		};
-		Collections.sort(listAll, comparator);
-
-		return listAll;
+		File file = new File(backupFile);
+		JaxbUtil.save(backupXml, file);
 	}
 
 	/**
@@ -493,6 +573,86 @@ public class DictCoreService {
 			return value;
 		}
 
+	}
+
+	/**
+	 * 根据key返回key对于的html代码。这个方法是在模板中调用的。例如 dict["hi"]
+	 * 
+	 * @param key
+	 *            键值
+	 * @param incCounter
+	 *            是否在计数器中+1
+	 * @param onlyRawText
+	 *            是否只返回原始文本
+	 * @return
+	 */
+	private String getStringByKey(String key, boolean incCounter, boolean onlyRawText, String defaultValue) {
+
+		if (!StringUtils.hasText(key)) {
+			return null;
+		}
+
+		DictXmlRow row;
+
+		this.lockForMap.lock();
+		try {
+
+			row = this.map.get(key);
+			if (row == null) {
+
+				log.debug("发现新的键值 {}", key);
+
+				// 如果原来不存在这个key，就创建一条记录
+				row = this.newDefaultEntity(key, defaultValue, true);
+
+				// 在备注里面说明这个是自动添加的，需要处理
+				if (defaultValue != null) {
+					row.setMemo(String.format("第一次发现于: %s (%s)",
+							WebContextHolderHelper.getRequestURL(false),
+							DateUtil.dateFormat(new Date())));
+				}
+
+				// 同时将key放到map中
+				this.map.put(row.getKey(), row);
+			}
+
+			if (incCounter) {
+				// 这个key的使用次数+1，
+				row.setUsedCount(row.getUsedCount() + 1);
+			}
+
+		} finally {
+			this.lockForMap.unlock();
+		}
+
+		if (incCounter) {
+			// 每一次get，其实都导致了计数器发生了变化，所以都需要异步保存一下
+			this.asyncSave();
+		}
+
+		if (onlyRawText) {
+			return row.getValue();
+		} else {
+			return this.getRowOutputHtml(row, this.debugMode.isDebugMode());
+		}
+	}
+
+	private DictXml getXml() throws JAXBException {
+		DictXml xml;
+
+		String fileName = this.prop.getXmlFullPath();
+
+		File file = new File(fileName);
+		if (!file.exists()) {
+			// 如果文件不存在，就创建默认文件
+			file.getParentFile().mkdirs();
+
+			xml = new DictXml();
+			JaxbUtil.save(xml, file);
+		} else {
+			xml = JaxbUtil.parserXml(DictXml.class, file);
+		}
+		return xml;
 	}
 
 	/**
@@ -535,6 +695,12 @@ public class DictCoreService {
 		vo.setPreview(this.getRowOutputHtml(row, true));
 
 		return vo;
+	}
+
+	private void saveXml(DictXml xml) throws JAXBException {
+		String fileName = this.prop.getXmlFullPath();
+		File file = new File(fileName);
+		JaxbUtil.save(xml, file);
 	}
 
 	@PostConstruct
@@ -587,96 +753,4 @@ public class DictCoreService {
 		this.doSaveAll();
 
 	}
-
-	private DictXml getXml() throws JAXBException {
-		DictXml xml;
-
-		String fileName = this.prop.getXmlFullPath();
-
-		File file = new File(fileName);
-		if (!file.exists()) {
-			// 如果文件不存在，就创建默认文件
-			file.getParentFile().mkdirs();
-
-			xml = new DictXml();
-			JaxbUtil.save(xml, file);
-		} else {
-			xml = JaxbUtil.parserXml(DictXml.class, file);
-		}
-		return xml;
-	}
-
-	private void saveXml(DictXml xml) throws JAXBException {
-		String fileName = this.prop.getXmlFullPath();
-		File file = new File(fileName);
-		JaxbUtil.save(xml, file);
-	}
-
-	/**
-	 * 从xml文件导入内容，并覆盖原来的数据
-	 * 
-	 * @throws BaseApiException
-	 */
-	public void importXml(DictXml xml, boolean cleanOld) throws BaseApiException {
-
-		Assert.notNull(xml, "字典xml不能为空");
-		Assert.notEmpty(xml.getDictXmlRow(), "字典必须有数据不能为空");
-
-		// 导入前先备份
-		try {
-			this.backup();
-		} catch (JAXBException e) {
-			log.error("备份字典文件时，发生了错误", e);
-
-			throw new SystemErrorException(e);
-		}
-
-		this.lockForMap.lock();
-		try {
-			if (cleanOld) {
-				// 如果不保留原来的数据，就清空
-				this.map.clear();
-			}
-
-			List<DictXmlRow> list = xml.getDictXmlRow();
-			int todo = 0;
-			for (DictXmlRow row : list) {
-				this.map.put(row.getKey(), row);
-				if (row.isTodo()) {
-					todo++;
-				}
-			}
-			log.info("导入数据完成，共 {} 条记录，其中 {} 条待处理中", list.size(), todo);
-
-		} finally {
-			this.lockForMap.unlock();
-		}
-
-		this.asyncSave();
-	}
-
-	private void backup() throws JAXBException {
-		String backupFile = this.prop.getBackupFileFullPath();
-
-		DictXml backupXml = new DictXml();
-		backupXml.getDictXmlRow().addAll(this.getAllFromMap());
-
-		File file = new File(backupFile);
-		JaxbUtil.save(backupXml, file);
-	}
-
-	/**
-	 * 将当前对象放入freemark的model用于非request请求
-	 */
-	public void addToModel(ModelMap model) {
-		model.addAttribute(VO_NAME, this);
-	}
-
-	/**
-	 * 我们用一个key来保存当前应用的名字，这个名字用于字典页面、api测试页面等地方
-	 */
-	public String getSystemName() {
-		return this.getRawText("system.name");
-	}
-
 }
