@@ -10,7 +10,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
  * @author 梁韦江
  *  2016年8月3日
  */
-public class InvalidSmsRandCodeException extends BaseApiException {
+public class InvalidVerifyCodeException extends BaseApiException {
 
 	private static final long serialVersionUID = 1L;
 
