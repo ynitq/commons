@@ -78,4 +78,9 @@ public class BasePoObj<T> {
 
 	}
 
+	/** 删除完成后执行 */
+	protected void afterDelete() throws BaseApiException {
+
+	}
+
 }

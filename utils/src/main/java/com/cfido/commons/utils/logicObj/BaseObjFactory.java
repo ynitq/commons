@@ -281,7 +281,12 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 
 		// 如果没有问题才真的删除
 		this.getDaoForObjFactory().delete(obj.getPo());
+
+		// 删除后可能需要检查一下
+		obj.afterDelete();
+
 	}
+
 
 	/**
 	 * 该方法在create前执行，子类可覆盖该方法，进行一些额外的逻辑判断
