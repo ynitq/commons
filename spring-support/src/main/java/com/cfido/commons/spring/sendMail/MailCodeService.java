@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.cfido.commons.beans.apiExceptions.InvalidVerifyCodeException;
+import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiExceptions.TooBusyWhenSendMailException;
 import com.cfido.commons.beans.others.CodeVerifyBean;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
+import com.cfido.commons.utils.utils.ExceptionUtil;
 
 /**
  * <pre>
@@ -68,12 +70,13 @@ public class MailCodeService {
 	 * @param code
 	 *            验证码
 	 * @throws TooBusyWhenSendMailException
+	 * @throws MissFieldException
 	 */
 	public void sendCode(String mailType, String email, String subject, String text, String code)
-			throws TooBusyWhenSendMailException {
+			throws TooBusyWhenSendMailException, MissFieldException {
 
+		ExceptionUtil.isEmail(email, "请输入正确email");
 		Assert.hasText(mailType, "mailType不能为空");
-		Assert.hasText(email, "email不能为空");
 		Assert.hasText(subject, "subject不能为空");
 		Assert.hasText(text, "text不能为空");
 		Assert.hasText(code, "code不能为空");
@@ -104,10 +107,12 @@ public class MailCodeService {
 
 	/**
 	 * 验证校验码是否正确
+	 * 
+	 * @throws MissFieldException
 	 */
-	public void verifyCode(String mailType, String email, String code) throws InvalidVerifyCodeException {
+	public void verifyCode(String mailType, String email, String code) throws InvalidVerifyCodeException, MissFieldException {
+		ExceptionUtil.isEmail(email, "请输入正确email");
 		Assert.hasText(mailType, "mailType不能为空");
-		Assert.hasText(email, "email不能为空");
 		Assert.hasText(code, "code不能为空");
 
 		String key = this.createKey(mailType, email);
@@ -162,7 +167,9 @@ public class MailCodeService {
 			@ManagedOperationParameter(name = "email", description = "email"),
 			@ManagedOperationParameter(name = "code", description = "验证码"),
 	})
-	public void testSendCode(String email, String code) throws TooBusyWhenSendMailException {
+	public void testSendCode(String email, String code) throws TooBusyWhenSendMailException, MissFieldException {
+		ExceptionUtil.isEmail(email, "请输入正确email");
+		ExceptionUtil.hasText(code, "验证码不能为空");
 		this.sendCode(TEST_MAIL_TYPE, email, "测试标题", "<html><head></head><body>测试正文</body><html>", code);
 	}
 
@@ -171,7 +178,10 @@ public class MailCodeService {
 			@ManagedOperationParameter(name = "email", description = "email"),
 			@ManagedOperationParameter(name = "code", description = "验证码"),
 	})
-	public void testCheckCode(String email, String code) throws InvalidVerifyCodeException {
+	public void testCheckCode(String email, String code) throws InvalidVerifyCodeException, MissFieldException {
+		ExceptionUtil.isEmail(email, "请输入正确email");
+		ExceptionUtil.hasText(code, "验证码不能为空");
+
 		this.verifyCode(TEST_MAIL_TYPE, email, code);
 	}
 

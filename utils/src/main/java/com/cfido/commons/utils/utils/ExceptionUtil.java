@@ -35,6 +35,12 @@ public class ExceptionUtil {
 		}
 	}
 
+	public static void isEmail(String str, String message) throws MissFieldException {
+		if (StringUtils.isEmpty(str) || !EmailUtil.isEmail(str)) {
+			throw new MissFieldException(message);
+		}
+	}
+
 	public static void notZero(int value, String message) throws MissFieldException {
 		if (value <= 0) {
 			throw new MissFieldException(message);

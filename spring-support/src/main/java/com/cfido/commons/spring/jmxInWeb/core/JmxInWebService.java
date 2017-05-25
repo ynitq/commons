@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.management.Attribute;
 import javax.management.JMException;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServer;
@@ -237,7 +238,13 @@ public class JmxInWebService {
 			res.setHasReturn(!targetOperation.getReturnType().equals("void"));
 
 			return res;
-
+		} catch (MBeanException e) {
+			Exception target = e.getTargetException();
+			if (target instanceof BaseApiException) {
+				throw (BaseApiException) target;
+			} else {
+				throw new MyJmException(e);
+			}
 		} catch (JMException e) {
 			throw new MyJmException(e);
 		}
