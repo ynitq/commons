@@ -15,6 +15,7 @@ import com.cfido.commons.annotation.form.ABuildWhereOptStr;
 import com.cfido.commons.annotation.form.ABuildWhereTimeField;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LogUtil;
+
 /**
  * <pre>
  * 通过反射的办法生成where sql
@@ -38,6 +39,8 @@ public class WhereBuilder {
 
 	/** 生成的sql是否是 jpa的风格 */
 	public static boolean JPA_STYLE = false;
+
+	private int jpaStyleIndex = 1;
 
 	private static java.util.Set<Class<?>> classSet = new HashSet<>();
 	static {
@@ -263,7 +266,6 @@ public class WhereBuilder {
 			return;
 		}
 
-		int index = 1;
 		where.append(' ');
 		where.append(this.wherePrefix);
 		where.append(' ');
@@ -293,8 +295,8 @@ public class WhereBuilder {
 
 							if (JPA_STYLE) {
 								// jpa风格的sql
-								where.append(index);
-								index++;
+								where.append(jpaStyleIndex);
+								jpaStyleIndex++;
 							}
 
 							if (m.getReturnType() == Date.class) {
@@ -331,6 +333,13 @@ public class WhereBuilder {
 
 	public List<Object> getParamsList() {
 		return this.paramList;
+	}
+
+	/** 获取jpa风格的参数序号，并且+1 */
+	public int getAndIncreaseJpaStyleIndex() {
+		int old = this.jpaStyleIndex;
+		this.jpaStyleIndex++;
+		return old;
 	}
 
 	@Override
