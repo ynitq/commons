@@ -34,9 +34,9 @@ public class BinderEditorSupport {
 		public Boolean toValue(String propName, String text) {
 			if (this.allowNull) {
 				// 如果允许空，就有3种状态，需要根据传入的文字来判断
-				if ("true".equalsIgnoreCase(text) || "yes".equals(text)) {
+				if ("true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)) {
 					return true;
-				} else if ("false".equals(text) || "no".equals(text)) {
+				} else if ("false".equalsIgnoreCase(text) || "no".equalsIgnoreCase(text)) {
 					return false;
 				} else {
 					return null;
