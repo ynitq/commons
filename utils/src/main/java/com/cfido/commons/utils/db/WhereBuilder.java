@@ -267,8 +267,10 @@ public class WhereBuilder {
 		}
 
 		where.append(' ');
-		where.append(this.wherePrefix);
-		where.append(' ');
+		if (StringUtils.hasText(this.wherePrefix)) {
+			where.append(this.wherePrefix);
+			where.append(' ');
+		}
 
 		for (Method m : form.getClass().getMethods()) {
 			if (this.isIncludeMethod(m)) {
