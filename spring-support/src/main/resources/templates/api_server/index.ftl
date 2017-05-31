@@ -290,7 +290,7 @@ a:VISITED {
 								<span class="text-danger">*</span></#if><a data-toggle="tooltip" data-placement="right" title="${pp.className}">${pp.name}</a><#if pp.array> []</#if></td>
 							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
 									<#if pp.checkBox>
-										<input name="${pp.name}" type="checkbox" value="true" />
+										<input name="${pp.name}" type="checkbox" value="${pp.value}" />
 									<#else> 
 										<div style="padding-bottom: 2px;">
 											<input name="${pp.name}" type="text" value="${pp.value}" <#if pp.notNull>required="required"</#if>/>
