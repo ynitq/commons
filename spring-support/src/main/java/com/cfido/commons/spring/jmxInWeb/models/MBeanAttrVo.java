@@ -94,7 +94,7 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 	 * @return
 	 */
 	public boolean isJsonValue() {
-		return this.getValue().indexOf("\n") > 0;
+		return this.valueType != AttributeValueTypeEnum.Normal;
 	}
 
 	/**
