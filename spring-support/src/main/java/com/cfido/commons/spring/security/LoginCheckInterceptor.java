@@ -1,7 +1,6 @@
 package com.cfido.commons.spring.security;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -65,11 +63,6 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object target) throws Exception {
 		request.setCharacterEncoding("UTF-8");
-
-		// 检查表单参数是否有不合规则的输入
-		if (!this.checkParam(request, response)) {
-			return false;
-		}
 
 		// 在request增加各类的 attr
 		this.addDebugModeAttr(request);// 将是否是debug模式传给页面
@@ -201,35 +194,5 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
 		ActionInfo info = this.context.getActionInfo();
 		info.showDebugMsg();
-	}
-
-	/**
-	 * 验证表单输入，不允许出现js头文件
-	 * 
-	 * @param request
-	 * @param response
-	 */
-	private boolean checkParam(HttpServletRequest request, HttpServletResponse response) {
-		Enumeration<String> paramNames = request.getParameterNames();
-		while (paramNames.hasMoreElements()) {
-			String paramName = paramNames.nextElement();
-			String[] paramValues = request.getParameterValues(paramName);
-			if (paramValues.length == 1) {
-				String paramValue = paramValues[0];
-				if (StringUtils.hasText(paramValue)) {
-					if (paramValue.trim().contains("<script")) {
-						CommonErrorResponse res = new CommonErrorResponse();
-						res.setErrorMsg("您好，表单中不允许输入script非法字符！");
-						try {
-							response.getWriter().print(JSON.toJSONString(res));
-						} catch (IOException e) {
-							log.error(e.getMessage(), e);
-						}
-						return false;
-					}
-				}
-			}
-		}
-		return true;
 	}
 }

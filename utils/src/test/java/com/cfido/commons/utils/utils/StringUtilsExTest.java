@@ -36,4 +36,19 @@ public class StringUtilsExTest {
 		Assert.isTrue("1,2,3".equals(str), "输出应该是：1,2,3");
 	}
 
+	@Test
+	public void test_delHTMLTag() {
+		log.debug("测试 delHTMLTag");
+		this.delHTMLTag("");
+		this.delHTMLTag("aa<bb");
+		this.delHTMLTag("aa<bb>111");
+		this.delHTMLTag("aa<bb>11<22");
+		this.delHTMLTag("aa<bb>11>22");
+	}
+
+	private void delHTMLTag(String str) {
+		String res = StringUtilsEx.delHTMLTag(str);
+		log.debug("delHTMLTag( {} ) = {}", str, res);
+	}
+
 }

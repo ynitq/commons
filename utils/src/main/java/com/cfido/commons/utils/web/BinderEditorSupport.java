@@ -13,14 +13,17 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
+import com.cfido.commons.annotation.form.AFormNotHtml;
 import com.cfido.commons.annotation.form.AFormValidateMethod;
+import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LogUtil;
+import com.cfido.commons.utils.utils.StringUtilsEx;
 
 public class BinderEditorSupport {
 
 	static public interface IValue<T> {
-		T toValue(String propName, String text);
+		T toValue(Method m, String text);
 	}
 
 	private class ToBoolean implements IValue<Boolean> {
@@ -31,7 +34,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Boolean toValue(String propName, String text) {
+		public Boolean toValue(Method m, String text) {
 			if (this.allowNull) {
 				// 如果允许空，就有3种状态，需要根据传入的文字来判断
 				if ("true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)) {
@@ -53,8 +56,9 @@ public class BinderEditorSupport {
 		private final ThreadLocal<SimpleDateFormat> savedDateFormat = new ThreadLocal<>();
 
 		@Override
-		public Date toValue(String propName, String text) {
+		public Date toValue(Method m, String text) {
 			// 日期的处理方式
+			String propName = m.getName();
 			boolean toBegin = !"endDate".equals(propName);
 			try {
 				Date date = this.getDefaultDateFormat().parse(text);
@@ -85,7 +89,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Double toValue(String propName, String text) {
+		public Double toValue(Method m, String text) {
 			try {
 				return Double.parseDouble(text);
 			} catch (Exception e) {
@@ -106,7 +110,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Float toValue(String propName, String text) {
+		public Float toValue(Method m, String text) {
 			try {
 				return Float.parseFloat(text);
 			} catch (Exception e) {
@@ -128,7 +132,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Integer toValue(String propName, String text) {
+		public Integer toValue(Method m, String text) {
 			try {
 				return Integer.parseInt(text);
 			} catch (Exception e) {
@@ -149,7 +153,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Long toValue(String propName, String text) {
+		public Long toValue(Method m, String text) {
 			try {
 				return Long.parseLong(text);
 			} catch (Exception e) {
@@ -165,9 +169,17 @@ public class BinderEditorSupport {
 	private class ToString implements IValue<String> {
 
 		@Override
-		public String toValue(String propName, String text) {
+		public String toValue(Method m, String text) {
 			if (text != null) {
-				return text.trim();
+
+				// 检查是否不允许html
+				AFormNotHtml anno = ClassUtil.getAnnotationFromMethodAndClass(m, AFormNotHtml.class);
+				if (anno != null) {
+					// 如果不允许html，就删除html标签
+					return StringUtilsEx.delHTMLTag(text);
+				} else {
+					return text.trim();
+				}
 			} else {
 				return null;
 			}
@@ -218,11 +230,11 @@ public class BinderEditorSupport {
 								// 如果要设置的是数组
 								propValue = Array.newInstance(paramClass.getComponentType(), values.length);
 								for (int i = 0; i < values.length; i++) {
-									Object arg = instance.getValueFormString(propName, values[i], paramClass.getComponentType());
+									Object arg = instance.getValueFormString(m, values[i], paramClass.getComponentType());
 									Array.set(propValue, i, arg);
 								}
 							} else {
-								propValue = instance.getValueFormString(propName, values[0], paramClass);
+								propValue = instance.getValueFormString(m, values[0], paramClass);
 							}
 							try {
 								m.invoke(form, propValue);
@@ -287,10 +299,10 @@ public class BinderEditorSupport {
 		this.toValueMap.put(Boolean.class, new ToBoolean(true));
 	}
 
-	private Object getValueFormString(String protName, String text, Class<?> paramClass) {
+	private Object getValueFormString(Method m, String text, Class<?> paramClass) {
 		IValue<?> toValue = this.toValueMap.get(paramClass);
 		if (toValue != null) {
-			return toValue.toValue(protName, text);
+			return toValue.toValue(m, text);
 		}
 		return null;
 	}

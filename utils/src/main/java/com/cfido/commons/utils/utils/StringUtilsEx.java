@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.util.StringUtils;
@@ -371,30 +370,50 @@ public class StringUtilsEx {
 		return r;
 	}
 
-	private static final String regEx_script = "<script[^>]*?>[\\s\\S]*?<\\/script>"; // 定义script的正则表达式
-	private static final String regEx_style = "<style[^>]*?>[\\s\\S]*?<\\/style>"; // 定义style的正则表达式
-	private static final String regEx_html = "<[^>]+>"; // 定义HTML标签的正则表达式
-	private static final String regEx_space = "\\s*|\t|\r|\n";// 定义空格回车换行符
-
 	/**
 	 * 删除Html标签
 	 */
-	public static String delHTMLTag(String htmlStr) {
-		Pattern p_script = Pattern.compile(regEx_script, Pattern.CASE_INSENSITIVE);
-		Matcher m_script = p_script.matcher(htmlStr);
-		htmlStr = m_script.replaceAll(""); // 过滤script标签
+	public static String delHTMLTag(String val) {
+		if (val == null) {
+			return val;
+		}
 
-		Pattern p_style = Pattern.compile(regEx_style, Pattern.CASE_INSENSITIVE);
-		Matcher m_style = p_style.matcher(htmlStr);
-		htmlStr = m_style.replaceAll(""); // 过滤style标签
+		StringBuilder sbuf = new StringBuilder();
 
-		Pattern p_html = Pattern.compile(regEx_html, Pattern.CASE_INSENSITIVE);
-		Matcher m_html = p_html.matcher(htmlStr);
-		htmlStr = m_html.replaceAll(""); // 过滤html标签
+		int curPostion = 0;
+		while (true) {
+			// 先找 < 的位置
+			int keyBegin = val.indexOf("<", curPostion);
+			if (keyBegin == -1) {
+				// 如果已经找不到 < 了，就可以返回结果了
+				if (curPostion == 0) {
+					// 如果当前指针在头部，就说明一次都没找到，可直接返回，
+					sbuf.append(val);
+				} else {
+					// 如果不在头部，就需要将指针以后的部分都加进来
+					sbuf.append(val.substring(curPostion, val.length()));
+				}
 
-		Pattern p_space = Pattern.compile(regEx_space, Pattern.CASE_INSENSITIVE);
-		Matcher m_space = p_space.matcher(htmlStr);
-		htmlStr = m_space.replaceAll(""); // 过滤空格回车标签
-		return htmlStr.trim(); // 返回文本字符串
+				// 找不到就可以退出循环了
+				break;
+			} else {
+				// 如果能找到 < ，就先将指针到 < 之间的都加到buf
+				sbuf.append(val.substring(curPostion, keyBegin));
+
+				// 接着找 >的位置
+				int keyEnd = val.indexOf(">", keyBegin);
+				if (keyEnd == -1) {
+					// 如果找不到>结束，将剩下部分加进来，然后退出循环
+					sbuf.append(val.substring(keyBegin));
+					break;
+				} else {
+					// 如果能找到>,就将指针跳到>之后，略过<>包含的内容
+					curPostion = keyEnd + 1;
+				}
+			}
+		}
+
+		// 返回前顺手将>都删除
+		return sbuf.toString();
 	}
 }
