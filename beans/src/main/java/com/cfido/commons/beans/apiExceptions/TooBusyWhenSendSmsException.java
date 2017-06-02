@@ -14,6 +14,18 @@ public class TooBusyWhenSendSmsException extends BaseApiException {
 
 	private static final long serialVersionUID = 1L;
 
+	/** 剩余的秒数 */
+	private final long remainInSec;
+
+	public TooBusyWhenSendSmsException(long remainInSec) {
+		super();
+		this.remainInSec = remainInSec;
+	}
+
+	public long getRemainInSec() {
+		return remainInSec;
+	}
+
 	@Override
 	public String getErrorMsg() {
 		return "需要间隔1分钟才能再次发送短信验证码";

@@ -87,9 +87,10 @@ public class MailCodeService {
 		CodeVerifyBean oldValue = this.redisTemplate.opsForValue().get(key);
 		if (oldValue != null) {
 			long now = System.currentTimeMillis();
-			if (now - oldValue.getTime() < TimeUnit.SECONDS.toMillis(intervalInSec)) {
+			long remainInSec = this.intervalInSec - (now - oldValue.getTime()) / 1000;
+			if (remainInSec > 0) {
 				// 时间小于时间间隔就抛错
-				throw new TooBusyWhenSendMailException();
+				throw new TooBusyWhenSendMailException(remainInSec);
 			}
 
 		}
