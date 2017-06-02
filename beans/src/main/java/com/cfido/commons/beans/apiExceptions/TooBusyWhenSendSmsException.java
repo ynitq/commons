@@ -1,5 +1,6 @@
 package com.cfido.commons.beans.apiExceptions;
 
+import com.cfido.commons.annotation.api.ADataInApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 
 /**
@@ -15,6 +16,7 @@ public class TooBusyWhenSendSmsException extends BaseApiException {
 	private static final long serialVersionUID = 1L;
 
 	/** 剩余的秒数 */
+	@ADataInApiException
 	private final long remainInSec;
 
 	public TooBusyWhenSendSmsException(long remainInSec) {

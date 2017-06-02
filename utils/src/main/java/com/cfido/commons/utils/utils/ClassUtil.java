@@ -440,7 +440,7 @@ public class ClassUtil {
 			}
 
 			// 返回类型是否是内部类型
-			this.innerReturnType = ClassUtil.isInnerClass(this.returnTypeClass);
+			this.innerReturnType = OpenTypeUtil.isOpenType(this.returnTypeClass);
 
 			// 标志一下分析成功
 			this.isGetter = true;

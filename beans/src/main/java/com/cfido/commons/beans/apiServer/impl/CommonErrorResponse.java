@@ -1,5 +1,7 @@
 package com.cfido.commons.beans.apiServer.impl;
 
+import java.util.Map;
+
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.BaseResponse;
 
@@ -8,10 +10,12 @@ import com.cfido.commons.beans.apiServer.BaseResponse;
  * 调用发生异常时，通用的返回结果
  * </pre>
  * 
- * @author 梁韦江
- *  2016年6月28日
+ * @author 梁韦江 2016年6月28日
  */
 public class CommonErrorResponse extends BaseResponse {
+
+	/** BaseApiException 上额外的数据 */
+	private Map<String, Object> exData;
 
 	public CommonErrorResponse(BaseApiException ex) {
 		this.setCode(ex.getClass().getName());
@@ -43,5 +47,17 @@ public class CommonErrorResponse extends BaseResponse {
 
 	public void setErrorMsg(String errorMessage) {
 		this.setMessage(errorMessage);
+	}
+
+	public Map<String, Object> getExData() {
+		return exData;
+	}
+
+	public void setExData(Map<String, Object> apiData) {
+		if (apiData == null || apiData.isEmpty()) {
+			this.exData = null;
+		} else {
+			this.exData = apiData;
+		}
 	}
 }
