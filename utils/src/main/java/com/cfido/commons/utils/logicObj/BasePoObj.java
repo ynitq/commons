@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.utils.utils.ClassUtil;
 
 /**
  * <pre>
@@ -19,8 +20,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
  * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
  *      子类Scope的注解,必须声明这个bean被创建时，是SCOPE_PROTOTYPE的
  * 
- * @author 梁韦江
- *  2016年6月17日
+ * @author 梁韦江 2016年6月17日
  */
 // @Component
 // @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -28,6 +28,9 @@ public class BasePoObj<T> {
 
 	protected T po;
 
+	private final Class<T> poClass;
+
+	@SuppressWarnings("unchecked")
 	public BasePoObj() {
 		super();
 
@@ -36,6 +39,10 @@ public class BasePoObj<T> {
 
 		Assert.isTrue(ConfigurableBeanFactory.SCOPE_PROTOTYPE.equals(scope.scopeName()),
 				"Scope 的类型必须是 prototype: " + this.getClass().getName());
+
+		this.poClass = (Class<T>) ClassUtil.getGenericType(getClass(), 0);
+
+		Assert.notNull(poClass, "应该能找到po的类");
 	}
 
 	/**
@@ -81,6 +88,10 @@ public class BasePoObj<T> {
 	/** 删除完成后执行 */
 	protected void afterDelete() throws BaseApiException {
 
+	}
+
+	public Class<T> getPoClass() {
+		return poClass;
 	}
 
 }

@@ -31,8 +31,7 @@ public class BaseViewModel<T extends BasePoObj<PO>, PO> {
 		this.obj = obj;
 		this.po = obj.getPo();
 
-		@SuppressWarnings("unchecked")
-		Class<PO> poClass = (Class<PO>) obj.getPo().getClass();
+		Class<PO> poClass = obj.getPoClass();
 
 		try {
 			this.po = poClass.newInstance();
