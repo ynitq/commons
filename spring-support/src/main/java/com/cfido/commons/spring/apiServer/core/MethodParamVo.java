@@ -7,10 +7,10 @@ package com.cfido.commons.spring.apiServer.core;
  * 
  * @author 梁韦江 2016年7月4日
  */
-public class MethodParamVo {
+public class MethodParamVo implements Comparable<MethodParamVo> {
 
 	/** setter 名 */
-	private String name;
+	private final String name;
 	/** 默认值 */
 	private String value;
 	/** 备注 */
@@ -24,6 +24,10 @@ public class MethodParamVo {
 
 	/** 参数是否是数组 */
 	private boolean array;
+
+	protected MethodParamVo(String name) {
+		this.name = name;
+	}
 
 	public boolean isArray() {
 		return array;
@@ -43,10 +47,6 @@ public class MethodParamVo {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getValue() {
@@ -83,6 +83,11 @@ public class MethodParamVo {
 
 	public boolean isCheckBox() {
 		return "boolean".equalsIgnoreCase(this.className);
+	}
+
+	@Override
+	public int compareTo(MethodParamVo o) {
+		return name.compareTo(o.name);
 	}
 
 }

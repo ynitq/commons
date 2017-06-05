@@ -91,8 +91,7 @@ public class ApiServerUtils {
 					// 并且只有一个参数
 					String propName = StringUtils.uncapitalize(methodName.substring(3));// 参数名
 
-					MethodParamVo vo = new MethodParamVo();
-					vo.setName(propName);// 设置名字
+					MethodParamVo vo = new MethodParamVo(propName);
 					vo.setNotNull(notNullFieldSet.contains(propName)); // 设置是否不允许空
 
 					Class<?> paramClass = paramTypes[0];

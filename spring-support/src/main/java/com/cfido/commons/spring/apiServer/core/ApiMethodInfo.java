@@ -1,6 +1,7 @@
 package com.cfido.commons.spring.apiServer.core;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -127,6 +128,7 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 		List<MethodParamVo> list;
 		if (this.hasParam()) {
 			list = ApiServerUtils.getSetters(formClass);
+			Collections.sort(list);
 		} else {
 			list = new LinkedList<>();
 		}
