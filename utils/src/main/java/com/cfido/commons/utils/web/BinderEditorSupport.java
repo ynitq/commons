@@ -211,6 +211,10 @@ public class BinderEditorSupport {
 					if (instance.isValidType(paramClass)) {
 						// 如果是普通类型
 						String[] values = map.get(propName);
+						if (values == null) {
+							// vue提交数组时，会自动在名字后面加上 “[]”
+							values = map.get(propName + "[]");
+						}
 
 						if (values != null && values.length > 0) {
 
