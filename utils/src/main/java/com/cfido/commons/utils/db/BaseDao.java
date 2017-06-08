@@ -30,10 +30,10 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.form.IPageForm;
+import com.cfido.commons.beans.form.PageForm;
 import com.cfido.commons.utils.cache.RedisGo;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.LogUtil;
-import com.cfido.commons.utils.web.PageForm;
 
 /**
  * <pre>
