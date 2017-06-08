@@ -137,11 +137,6 @@ public class BinderUtil {
 		try {
 			T form = formClazz.newInstance();
 
-			// bind的时候默认处理下form的时间校验
-			if (form instanceof PageDateRangeForm && validate) {
-				((PageDateRangeForm) form).verifyDateForDays(DEFAUT_QUERY_DATE_RANGE);
-			}
-
 			if (request != null && saveToSession) {
 
 				// 如果sessionName不为空，才需要从session中获取
