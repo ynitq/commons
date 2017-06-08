@@ -5,25 +5,26 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import com.cfido.commons.annotation.form.AFormNotHtml;
 import com.cfido.commons.annotation.form.AFormValidateMethod;
-import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LogUtil;
+import com.cfido.commons.utils.utils.MethodUtil;
+import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfSetter;
 import com.cfido.commons.utils.utils.StringUtilsEx;
 
 public class BinderEditorSupport {
 
 	static public interface IValue<T> {
-		T toValue(Method m, String text);
+		T toValue(MethodInfoOfSetter m, String text);
 	}
 
 	private class ToBoolean implements IValue<Boolean> {
@@ -34,7 +35,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Boolean toValue(Method m, String text) {
+		public Boolean toValue(MethodInfoOfSetter m, String text) {
 			if (this.allowNull) {
 				// 如果允许空，就有3种状态，需要根据传入的文字来判断
 				if ("true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)) {
@@ -56,9 +57,9 @@ public class BinderEditorSupport {
 		private final ThreadLocal<SimpleDateFormat> savedDateFormat = new ThreadLocal<>();
 
 		@Override
-		public Date toValue(Method m, String text) {
+		public Date toValue(MethodInfoOfSetter m, String text) {
 			// 日期的处理方式
-			String propName = m.getName();
+			String propName = m.getPropName();
 			boolean toBegin = !"endDate".equals(propName);
 			try {
 				Date date = this.getDefaultDateFormat().parse(text);
@@ -89,7 +90,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Double toValue(Method m, String text) {
+		public Double toValue(MethodInfoOfSetter m, String text) {
 			try {
 				return Double.parseDouble(text);
 			} catch (Exception e) {
@@ -110,7 +111,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Float toValue(Method m, String text) {
+		public Float toValue(MethodInfoOfSetter m, String text) {
 			try {
 				return Float.parseFloat(text);
 			} catch (Exception e) {
@@ -132,7 +133,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Integer toValue(Method m, String text) {
+		public Integer toValue(MethodInfoOfSetter m, String text) {
 			try {
 				return Integer.parseInt(text);
 			} catch (Exception e) {
@@ -153,7 +154,7 @@ public class BinderEditorSupport {
 		}
 
 		@Override
-		public Long toValue(Method m, String text) {
+		public Long toValue(MethodInfoOfSetter m, String text) {
 			try {
 				return Long.parseLong(text);
 			} catch (Exception e) {
@@ -169,11 +170,11 @@ public class BinderEditorSupport {
 	private class ToString implements IValue<String> {
 
 		@Override
-		public String toValue(Method m, String text) {
+		public String toValue(MethodInfoOfSetter m, String text) {
 			if (text != null) {
 
 				// 检查是否不允许html
-				AFormNotHtml anno = ClassUtil.getAnnotationFromMethodAndClass(m, AFormNotHtml.class);
+				AFormNotHtml anno = m.getAnnotation(AFormNotHtml.class, true);
 				if (anno != null) {
 					// 如果不允许html，就删除html标签
 					return StringUtilsEx.delHTMLTag(text);
@@ -194,88 +195,94 @@ public class BinderEditorSupport {
 		instance.toValueMap.put(clazz, support);
 	}
 
-	public static void updateObj(HttpServletRequest request, Map<String, String[]> map, Object form, boolean validateForm) {
-		Method validate = null;
-		for (Method m : form.getClass().getMethods()) {
+	public static void updateObj(HttpServletRequest request, Map<String, String[]> dateFromRequest, Object form,
+			boolean validateForm) {
 
-			String methodName = m.getName();
-			if (methodName.startsWith("set") && methodName.length() > 3) {
-				String propName = StringUtils.uncapitalize(methodName.substring(3));// 参数名
+		// 表单绑定只管setter
+		List<MethodInfoOfSetter> setters = MethodUtil.findSetter(form.getClass());
 
-				// 必须是setXXX的方法
-				Class<?>[] paramTypes = m.getParameterTypes();
-				if (paramTypes.length == 1) {
-					// 并且只有一个参数
-					Class<?> paramClass = paramTypes[0];
+		for (MethodInfoOfSetter methodInfo : setters) {
 
-					if (instance.isValidType(paramClass)) {
-						// 如果是普通类型
-						String[] values = map.get(propName);
-						if (values == null) {
-							// vue提交数组时，会自动在名字后面加上 “[]”
-							values = map.get(propName + "[]");
+			String propName = methodInfo.getPropName();
+			Class<?> paramClass = methodInfo.getParamClass();
+
+			if (instance.isValidType(paramClass)) {
+				// 如果是普通类型
+				String[] values = dateFromRequest.get(propName);
+				if (values == null) {
+					// ajax提交数组时，会自动在名字后面加上 “[]”
+					values = dateFromRequest.get(propName + "[]");
+				}
+
+				if (values != null && values.length > 0) {
+
+					if (log.isDebugEnabled()) {
+						StringBuffer vb = new StringBuffer();
+						for (String str : values) {
+							vb.append(str).append(",");
 						}
+						log.debug("需要设置的属性:{}, 类型:{}, 值:{}",
+								propName, paramClass.getSimpleName(),
+								vb.length() > 40 ? vb.substring(0, 40) : vb.toString());
+					}
 
-						if (values != null && values.length > 0) {
+					Object propValue;
 
-							if (log.isDebugEnabled()) {
-								StringBuffer vb = new StringBuffer();
-								for (String str : values) {
-									vb.append(str).append(",");
-								}
-								log.debug("需要设置的属性:{}, 类型:{}, 值:{}",
-										propName, paramClass.getSimpleName(),
-										vb.length() > 40 ? vb.substring(0, 40) : vb.toString());
-							}
-
-							Object propValue;
-
-							if (paramClass.isArray()) {
-								// 如果要设置的是数组
-								propValue = Array.newInstance(paramClass.getComponentType(), values.length);
-								for (int i = 0; i < values.length; i++) {
-									Object arg = instance.getValueFormString(m, values[i], paramClass.getComponentType());
-									Array.set(propValue, i, arg);
-								}
-							} else {
-								propValue = instance.getValueFormString(m, values[0], paramClass);
-							}
-							try {
-								m.invoke(form, propValue);
-							} catch (Exception e) {
-								LogUtil.traceError(log, e);
-							}
+					if (paramClass.isArray()) {
+						// 如果要设置的是数组
+						propValue = Array.newInstance(paramClass.getComponentType(), values.length);
+						for (int i = 0; i < values.length; i++) {
+							Object arg = instance.getValueFormString(methodInfo, values[i], paramClass.getComponentType());
+							Array.set(propValue, i, arg);
 						}
-					} else if (request != null && MultipartFile.class.isAssignableFrom(paramTypes[0])) {
-						// 如果是文件类型
-						log.debug("要绑定的属性{} 是文件类型", propName);
-						// TODO 上传文件也可能是数组，这里还没有处理
-						if (request instanceof StandardMultipartHttpServletRequest) {
-							StandardMultipartHttpServletRequest mreq = (StandardMultipartHttpServletRequest) request;
-							MultipartFile file = mreq.getFileMap().get(propName);
-							try {
-								m.invoke(form, file);
-							} catch (Exception e) {
-								LogUtil.traceError(log, e);
-							}
-						} else {
-							log.warn("{}中 {}字段是需要上传文件，但form的类型不对，请检查form中是否有enctype='multipart/form-data'属性",
-									form.getClass().getName(), propName);
-						}
+					} else {
+						propValue = instance.getValueFormString(methodInfo, values[0], paramClass);
+					}
+					try {
+						methodInfo.getOriginMethod().invoke(form, propValue);
+					} catch (Exception e) {
+						LogUtil.traceError(log, e);
 					}
 				}
-			} else if (m.getAnnotation(AFormValidateMethod.class) != null && m.getParameterTypes().length == 0) {
-				// 如果该方法不是setter，并且被标记为 form校验的方法，则，在完成了所有的setter后，执行
-				validate = m;
+			} else if (request != null && MultipartFile.class.isAssignableFrom(paramClass)) {
+				// 如果是文件类型
+				log.debug("要绑定的属性{} 是文件类型", propName);
+				// TODO 上传文件也可能是数组，这里还没有处理
+				if (request instanceof StandardMultipartHttpServletRequest) {
+					StandardMultipartHttpServletRequest mreq = (StandardMultipartHttpServletRequest) request;
+					MultipartFile file = mreq.getFileMap().get(propName);
+					try {
+						methodInfo.getOriginMethod().invoke(form, file);
+					} catch (Exception e) {
+						LogUtil.traceError(log, e);
+					}
+				} else {
+					log.warn("{}中 {}字段是需要上传文件，但form的类型不对，请检查form中是否有enctype='multipart/form-data'属性",
+							form.getClass().getName(), propName);
+				}
 			}
 		}
 
-		if (validate != null && validateForm) {
-			// 执行校验方法
-			try {
-				validate.invoke(form);
-			} catch (Exception e) {
-				LogUtil.traceError(log, e);
+		if (validateForm) {
+			// 如果要校验表单，就搜索用于校验的方法
+			Method validate = null;
+			for (Method m : form.getClass().getMethods()) {
+				Class<?>[] paramType = m.getParameterTypes();
+				if (m.isAnnotationPresent(AFormValidateMethod.class) && (paramType == null || paramType.length == 0)) {
+					// 校验的方法必须是无参数的，否则没法执行
+					validate = m;
+					break;
+				}
+			}
+
+			if (validate != null) {
+				// 执行校验方法
+				try {
+					validate.invoke(form);
+				} catch (Throwable e) {
+					// 如果校验的方法出错了，我们一点办法都没有
+					LogUtil.traceError(log, e);
+				}
 			}
 		}
 	}
@@ -303,7 +310,7 @@ public class BinderEditorSupport {
 		this.toValueMap.put(Boolean.class, new ToBoolean(true));
 	}
 
-	private Object getValueFormString(Method m, String text, Class<?> paramClass) {
+	private Object getValueFormString(MethodInfoOfSetter m, String text, Class<?> paramClass) {
 		IValue<?> toValue = this.toValueMap.get(paramClass);
 		if (toValue != null) {
 			return toValue.toValue(m, text);

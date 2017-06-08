@@ -9,7 +9,8 @@ import org.springframework.util.Assert;
 
 import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.beans.apiServer.BaseResponse;
-import com.cfido.commons.utils.utils.ClassUtil.MethodInfo;
+import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfGetter;
+import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfSetter;
 
 /**
  * <pre>
@@ -24,7 +25,7 @@ public class ClassUtilTest {
 
 	@Test
 	public void testGetClassBuildTimeFromFile() throws Exception {
-		log.debug("测试当类是文件时，获取的类的build时间");
+		log.debug("测试当类是文件时，获取的类的build时间 -------------------");
 
 		Class<?> clazz = ClassUtil.class;
 
@@ -35,7 +36,7 @@ public class ClassUtilTest {
 
 	@Test
 	public void testGetClassBuildTimeFromJar() throws Exception {
-		log.debug("测试当类在Jar文件时，获取的jar文件的生成时间");
+		log.debug("测试当类在Jar文件时，获取的jar文件的生成时间 -------------------");
 
 		// jar文件 antlr-2.7.7.jar
 		Class<?> clazz = antlr.actions.cpp.ActionLexerTokenTypes.class;
@@ -76,24 +77,43 @@ public class ClassUtilTest {
 
 	@Test
 	public void test_findGetter() {
-		log.debug("测试 findGetter方法");
+		log.debug("测试 findGetter方法 -------------------");
 
 		Class<?> clazz = MyTestCLass.class;
 
-		List<MethodInfo> list = ClassUtil.findGetter(clazz);
-		log.debug("在类 {} 中，找到 {} 个 getter", clazz.getName(), list.size());
+		List<MethodInfoOfGetter> list = MethodUtil.findGetter(clazz);
+		log.debug("\t在类 {} 中，找到 {} 个 getter", clazz.getSimpleName(), list.size());
+		for (MethodInfoOfGetter mi : list) {
+			log.debug("\t在类 {} 中，找到 getter: {}", clazz.getSimpleName(), mi.getPropName());
+		}
 
 		Assert.isTrue(list.size() == 7, "共7个getter");
 	}
 
 	@Test
+	public void test_findSetter() {
+		log.debug("测试 findSetter方法 -------------------");
+
+		Class<?> clazz = MyTestCLass.class;
+
+		List<MethodInfoOfSetter> list = MethodUtil.findSetter(clazz);
+		log.debug("\t在类 {} 中，找到 {} 个 Setter", clazz.getSimpleName(), list.size());
+
+		for (MethodInfoOfSetter mi : list) {
+			log.debug("\t在类 {} 中，找到 Setter: {}", clazz.getSimpleName(), mi.getPropName());
+		}
+
+		Assert.isTrue(list.size() == 3, "共3个setter");
+	}
+
+	@Test
 	public void test_getAllAnnoFromField() {
-		log.debug("测试 getAllAnnoFromField方法");
+		log.debug("测试 getAllAnnoFromField方法 -------------------");
 		Class<?> clazz = MyTestCLass.class;
 		Map<String, AComment> map = ClassUtil.getAllAnnoFromField(clazz, AComment.class);
 
 		for (Map.Entry<String, AComment> en : map.entrySet()) {
-			log.debug("属性 {} = {}", en.getKey(), en.getValue().value());
+			log.debug("\t属性 {} = {}", en.getKey(), en.getValue().value());
 		}
 	}
 

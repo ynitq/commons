@@ -8,7 +8,8 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import com.cfido.commons.utils.utils.ClassUtil.MethodInfo;
+import com.cfido.commons.annotation.bean.AComment;
+import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfGetter;
 
 /**
  * <pre>
@@ -124,9 +125,9 @@ public class ClassDescriber {
 		}
 		this.parseredSet.add(respClass);
 
-		List<MethodInfo> list = ClassUtil.findGetter(respClass);
+		List<MethodInfoOfGetter> list = MethodUtil.findGetter(respClass);
 
-		for (MethodInfo res : list) {
+		for (MethodInfoOfGetter res : list) {
 			if (!this.filter.isValidMethod(res.getOriginMethod())) {
 				// 过滤一下方法
 				continue;
@@ -136,7 +137,7 @@ public class ClassDescriber {
 				buff.append(prefix);
 
 				// code:Integer
-				buff.append(res.getName());
+				buff.append(res.getPropName());
 				buff.append(":");
 				buff.append(res.getReturnTypeClass().getSimpleName());
 
@@ -146,15 +147,16 @@ public class ClassDescriber {
 				}
 
 				// 备注
-				if (StringUtils.hasText(res.getMemo())) {
+				AComment memoAnno = res.getAnnotation(AComment.class, false);
+				if (memoAnno != null && StringUtils.hasText(memoAnno.value())) {
 					buff.append(" (");
-					buff.append(res.getMemo());
+					buff.append(memoAnno.value());
 					buff.append(")");
 				}
 
 				buff.append('\n');
 
-				if (!res.isInnerReturnType()
+				if (!res.isOpenType()
 						&& this.filter.isValidReturnType(res.getReturnTypeClass())
 						&& !this.parseredSet.contains(res.getReturnTypeClass())) {
 					// 如果返回的类型不是内部类型，并且需要显示类结构说明

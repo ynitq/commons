@@ -16,7 +16,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.impl.CommonErrorResponse;
 import com.cfido.commons.beans.apiServer.impl.FormVaildateErrorResponse;
 import com.cfido.commons.beans.exceptions.ValidateFormException;
-import com.cfido.commons.utils.utils.ClassUtil.MethodInfo;
+import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfGetter;
 
 /**
  * <pre>
@@ -109,12 +109,10 @@ public class ExceptionUtil {
 
 		Map<String, Object> map = new HashMap<>();
 		Class<?> clazz = ex.getClass();
-		// 找出所有属性上的说明
-		Map<String, ADataInApiException> fieldMap = ClassUtil.getAllAnnoFromField(clazz, ADataInApiException.class);
 
-		List<MethodInfo> getterList = ClassUtil.findGetter(clazz);
-		for (MethodInfo mi : getterList) {
-			if (mi.isInnerReturnType() && fieldMap.containsKey(mi.getName())) {
+		List<MethodInfoOfGetter> getterList = MethodUtil.findGetter(clazz);
+		for (MethodInfoOfGetter mi : getterList) {
+			if (mi.isOpenType() && mi.getAnnotation(ADataInApiException.class, false) != null) {
 				// 如果是 系统的类型，并且属性上ADataInApiException有注解
 				Object value = null;
 				try {
@@ -122,7 +120,7 @@ public class ExceptionUtil {
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				}
 				if (value != null) {
-					map.put(mi.getName(), value);
+					map.put(mi.getPropName(), value);
 				}
 			}
 		}

@@ -102,8 +102,13 @@ public class MethodUtil {
 			this.method = method;
 		}
 
+		/** 是否有指定的注解 */
+		public boolean isAnnotationPresent(Class<? extends Annotation> annoClass, boolean findInDeclaringClass) {
+			return this.getAnnotation(annoClass, findInDeclaringClass) != null;
+		}
+
 		/** 寻找注解 */
-		public <A extends Annotation> A getAnnotation(Class<A> annoClass) {
+		public <A extends Annotation> A getAnnotation(Class<A> annoClass, boolean findInDeclaringClass) {
 
 			A anno = null;
 
@@ -121,13 +126,17 @@ public class MethodUtil {
 				anno = annoInFieldMap.get(this.propName);
 			}
 
-			if (anno == null && isTarget(targetAnno, ElementType.TYPE)) {
+			if (findInDeclaringClass && anno == null && isTarget(targetAnno, ElementType.TYPE)) {
 				// 如果字段上也没找到，就查一下方法所在的类
 				anno = ClassUtil.getAnnotation(this.method.getDeclaringClass(), annoClass);
 			}
 
 			return anno;
+		}
 
+		/** 寻找注解，默认是不在所属类上找 */
+		public <A extends Annotation> A getAnnotation(Class<A> annoClass) {
+			return this.getAnnotation(annoClass, false);
 		}
 
 		/**
@@ -312,7 +321,7 @@ public class MethodUtil {
 				// setter 不能有返回类型
 				return false;
 			}
-			return false;
+			return true;
 		}
 
 		@Override
