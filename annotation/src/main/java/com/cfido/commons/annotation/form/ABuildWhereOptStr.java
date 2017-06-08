@@ -16,11 +16,14 @@ import java.lang.annotation.Target;
  * @author 梁韦江 2015年7月18日
  */
 @Target({
-		ElementType.METHOD
+		ElementType.METHOD, ElementType.FIELD
 })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ABuildWhereOptStr {
+	/** 操作符 */
 	String optStr() default "=";
+
+	/** 默认如果是like的情况下只在值的后面加 %，例如 "张三%", 如果该值为真，表示前后修改要加 %，例如 “%张三%” */
 	boolean mustBeAllLike() default false;
 }

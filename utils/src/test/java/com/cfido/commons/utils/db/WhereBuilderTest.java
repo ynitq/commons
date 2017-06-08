@@ -3,16 +3,14 @@ package com.cfido.commons.utils.db;
 import org.junit.Test;
 
 import com.cfido.commons.annotation.form.ABuildWhereFieldName;
-import com.cfido.commons.utils.db.WhereBuilder;
-import com.cfido.commons.utils.web.PageDateRangeForm;
+import com.cfido.commons.beans.form.PageForm;
 
 /**
  * <pre>
  * 
  * </pre>
  * 
- * @author 梁韦江
- * 2015年7月19日
+ * @author 梁韦江 2015年7月19日
  */
 public class WhereBuilderTest {
 
@@ -23,10 +21,8 @@ public class WhereBuilderTest {
 	 * 
 	 * @author 黄云 2015-6-17
 	 */
-	public class InsSearchForm extends PageDateRangeForm {
-		/**
-		 * 
-		 */
+	public class InsSearchForm extends PageForm {
+
 		private static final long serialVersionUID = 1L;
 		private String test;
 
@@ -39,18 +35,14 @@ public class WhereBuilderTest {
 			this.test = test;
 		}
 	}
-	
+
 	@Test
 	public void test() {
 		InsSearchForm form = new InsSearchForm();
-		form.setStartDateStr("2015-06-01");
-		form.setEndDateStr("2014-06-02");
-		form.verifyDateForDays(30);
 		form.setTest("test");
-		WhereBuilder builder = WhereBuilder.create(form, "timeField", "asName");
+		WhereBuilder builder = WhereBuilder.create(form);
 
 		System.out.println(builder.toString());
 	}
-
 
 }

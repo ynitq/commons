@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * @author 梁韦江 2015年7月18日
  */
 @Target({
-	ElementType.METHOD
+		ElementType.METHOD, ElementType.FIELD
 })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
