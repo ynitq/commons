@@ -6,11 +6,13 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import com.cfido.commons.annotation.form.ABuildWhereExclude;
-import com.cfido.commons.annotation.form.ABuildWhereTimeField;
+import com.cfido.commons.annotation.form.ABuildWhereOptStr;
+import com.cfido.commons.beans.form.PageForm;
 import com.cfido.commons.utils.utils.DateUtil;
 
-public class PageDateRangeForm extends PageForm implements Serializable{
-	
+@Deprecated
+public class PageDateRangeForm extends PageForm implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -22,7 +24,7 @@ public class PageDateRangeForm extends PageForm implements Serializable{
 
 	private Date endDate;
 
-	@ABuildWhereTimeField(isBegin = false)
+	@ABuildWhereOptStr(optStr = "<=")
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -32,7 +34,7 @@ public class PageDateRangeForm extends PageForm implements Serializable{
 		return endDateStr;
 	}
 
-	@ABuildWhereTimeField(isBegin = true)
+	@ABuildWhereOptStr(optStr = ">=")
 	public Date getStartDate() {
 		return startDate;
 	}
