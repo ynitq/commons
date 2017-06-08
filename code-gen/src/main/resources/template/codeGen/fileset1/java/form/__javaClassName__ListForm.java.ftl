@@ -3,7 +3,8 @@ package ${package};
 import java.util.Date;
 
 import com.linzi.common.annotation.api.AForm;
-import com.linzi.common.annotation.form.ABuildWhereTimeField;
+import com.cfido.commons.annotation.form.ABuildWhereFieldName;
+import com.cfido.commons.annotation.form.ABuildWhereOptStr;
 import com.linzi.common.beans.form.PageForm;
 
 /**
@@ -20,7 +21,12 @@ public class ${table.javaClassName}ListForm extends PageForm {
 	//--------------- 属性 ---------------
 <#list table.columns as column>
 		<#if column.javaClassName='Date'> 
+	@ABuildWhereFieldName(name = "${column.propName}")
+	@ABuildWhereOptStr(optStr = ">=")
 	private Date ${column.propName}Begin = new Date(); // 开始时间
+
+	@ABuildWhereFieldName(name = "${column.propName}")
+	@ABuildWhereOptStr(optStr = "<=")
 	private Date ${column.propName}End = new Date(); //结束时间
 		<#else>
 	private ${column.javaClassName} ${column.propName};
@@ -35,7 +41,6 @@ public class ${table.javaClassName}ListForm extends PageForm {
 		this.${column.propName}Begin = ${column.propName};
 	}
 
-	@ABuildWhereTimeField(filed = "${column.propName}", isBegin = true)
 	public Date get${column.propNameU}Begin() {
 		return this.${column.propName}Begin;
 	}
@@ -44,7 +49,6 @@ public class ${table.javaClassName}ListForm extends PageForm {
 		this.${column.propName}End = ${column.propName};
 	}
 
-	@ABuildWhereTimeField(filed = "${column.propName}", isBegin = false)
 	public Date get${column.propNameU}End() {
 		return this.${column.propName}End;
 	}
