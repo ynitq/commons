@@ -13,7 +13,9 @@
 <link href="https://cdn.bootcss.com/toastr.js/2.1.3/toastr.min.css" rel="stylesheet">
 
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<!-- 
 <script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.min.js"></script>
+ -->
 <script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
@@ -135,28 +137,38 @@ a:VISITED {
 
 	$(document).ready(function() {
 		$(".js_form").submit(function() {
-			var that = $(this);
-			var url = confVm.basePath + $(this).attr("action")
-			console.log("post to " + url);
-
-			that.ajaxSubmit({
-				type : "post", //提交方式  
-				dataType : "html", //如果是要上传文件,只能用html
-				url : url, //请求url  
-				headers : {
-					"x-auth-token" : confVm.sessionId,
-				},
-				success : function(data) { //提交成功的回调函数
-					var res = eval("(" + data + ")");
-					if (!res.success) {
-						console.log("错误信息:" + res.message);
-					}
-					$("#testResult").text("url:" + url + "\n返回结果:\n" + data);
-				},
-				error : function(xhr, status, error) {
-					$("#testResult").text("错误码:" + xhr.status + "\n" + xhr.responseText);
-				},
-			});
+			try {
+				var that = $(this);
+				var url = confVm.basePath + $(this).attr("data-url")
+				console.log("post to " + url);
+	
+				var formData = new FormData(that[0]);
+	
+				$.ajax({
+					type : "post", //提交方式  
+					dataType : "json", //如果是要上传文件,只能用html
+					data: formData,
+					url : url, //请求url
+					contentType : false, // 当有文件要上传时，此项是必须的，否则后台无法识别文件流的起始位置(详见：#1)
+					processData : false, // 是否序列化data属性，默认true(注意：false时type必须是post，详见：#2)
+					headers : {
+						"x-auth-token" : confVm.sessionId,
+					},
+					success : function(data) { //提交成功的回调函数
+						//var res = eval("(" + data + ")");
+						var res = data;
+						if (!res.success) {
+							console.log("错误信息:" + res.message);
+						}
+						$("#testResult").text("url:" + url + "\n返回结果:\n" + JSON.stringify(data,null,4));
+					},
+					error : function(xhr, status, error) {
+						$("#testResult").text("错误码:" + xhr.status + "\n" + xhr.responseText);
+					},
+				});
+			} catch (ex) {
+				console.log("ajax 错误", ex)
+			}
 			return false;
 		});
 
@@ -177,7 +189,7 @@ a:VISITED {
 
 		$(".js_add_input").click(function() {
 			var div = $(this).parent().clone();
-			
+
 			var icon = div.find(".glyphicon-plus")
 			icon.removeClass("glyphicon-plus");
 			icon.addClass("glyphicon-minus");
@@ -185,12 +197,12 @@ a:VISITED {
 			div.find("a").click(function() {
 				$(this).parent().remove();
 			})
-			
-			var parent = $(this).parent().parent(); 
+
+			var parent = $(this).parent().parent();
 			console.debug('点击增加')
 			parent.append(div);
 		})
-		
+
 		confVm = new Vue({
 			el : "#coll-other-conf",
 
@@ -280,26 +292,22 @@ a:VISITED {
 					<#if m.needLogin> 登录用户 : <span class="label label-success"> ${m.webUserClasses}</span> ${m.optId} <#else> <span
 						class="label label-danger">无需登录</span></#if>
 				</p>
-				<form method="post" action="${vo.apiUrlPrefix}/${m.url}"
+				<form method="post" data-url="${vo.apiUrlPrefix}/${m.url}"
 					<#if m.uploadFile>enctype="multipart/form-data"</#if>
 					class="js_form">
 					<table width="100%" class="table">
 						<#list m.paramVoList as pp>
 						<tr>
-							<td width="120" valign="top"><#if pp.notNull>
-								<span class="text-danger">*</span></#if><a data-toggle="tooltip" data-placement="right" title="${pp.className}">${pp.name}</a><#if pp.array> []</#if></td>
+							<td width="120" valign="top"><#if pp.notNull> <span class="text-danger">*</span></#if><a data-toggle="tooltip"
+								data-placement="right" title="${pp.className}">${pp.name}</a> <#if pp.array> []</#if></td>
 							<td><#if pp.uploadFile> <input name="${pp.name}" type="file" class="js_dropify" data-show-remove="false" /> <#else>
-									<#if pp.checkBox>
-										<input name="${pp.name}" type="checkbox" value="${pp.value}" />
-									<#else> 
-										<div style="padding-bottom: 2px;">
-											<input name="${pp.name}" type="text" value="${pp.value}" <#if pp.notNull>required="required"</#if>/>
-											<#if pp.array><a class="btn btn-xs btn-default js_add_input"><i class="glyphicon glyphicon-plus"></i></a></#if>
-										</div>
-									</#if>
-								</#if> 
-								<span class="text-muted">${pp.memo}</span>
-							</td>
+								<#if pp.checkBox> <input name="${pp.name}" type="checkbox" value="${pp.value}" /> <#else>
+								<div style="padding-bottom: 2px;">
+									<input name="${pp.name}" type="text" value="${pp.value}"
+									<#if pp.notNull>required="required"</#if>
+									/>
+									<#if pp.array> <a class="btn btn-xs btn-default js_add_input"><i class="glyphicon glyphicon-plus"></i></a></#if>
+								</div></#if></#if> <span class="text-muted">${pp.memo}</span></td>
 						</tr>
 						</#list>
 						<tr>
