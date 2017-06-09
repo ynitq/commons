@@ -1,6 +1,7 @@
 package com.cfido.commons.spring.imageUpload;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -13,9 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.beans.apiExceptions.InvalidImageFormatException;
-import com.cfido.commons.beans.apiExceptions.MissFieldException;
-import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.dict.DictAutoConfig;
 import com.cfido.commons.utils.utils.FileUtil;
 import com.cfido.commons.utils.utils.ImageEX;
@@ -42,16 +42,59 @@ public class ImageUploadService {
 		});
 	}
 
+	public class ImageProp {
+		@AComment("缩略图全路径")
+		private String thumbFullPath;
+		@AComment("图片宽")
+		private int imageWidth;
+		@AComment("图片高")
+		private int imageHeight;
+		@AComment("缩略图宽")
+		private int thumbWidth;
+		@AComment("缩略图高")
+		private int thumbHeight;
+
+		public String getThumbFullPath() {
+			return thumbFullPath;
+		}
+
+		public int getImageWidth() {
+			return imageWidth;
+		}
+
+		public int getImageHeight() {
+			return imageHeight;
+		}
+
+		public int getThumbWidth() {
+			return thumbWidth;
+		}
+
+		public int getThumbHeight() {
+			return thumbHeight;
+		}
+
+	}
+
 	/** 描述图片保存的结果 */
 	public class SaveResult {
+		@AComment("文件扩展名")
 		private String extName = "";// 文件扩展名
+		@AComment("文件名")
 		private String name;
+		@AComment("全路径")
 		private String fullPath;
+		@AComment("文件大小")
+		private long fileSize;
 
+		@AComment("上传的是否是图片")
 		private boolean image; // 是否是图片
-		private String thumbFullPath;
-		private int imageWidth;
-		private int imageHeight;
+		@AComment("图片的属性")
+		private ImageProp imageProp; // 如果是图片，才会有的属性
+
+		public ImageProp getImageProp() {
+			return imageProp;
+		}
 
 		public String getExtName() {
 			return extName;
@@ -69,16 +112,8 @@ public class ImageUploadService {
 			return image;
 		}
 
-		public String getThumbFullPath() {
-			return thumbFullPath;
-		}
-
-		public int getImageWidth() {
-			return imageWidth;
-		}
-
-		public int getImageHeight() {
-			return imageHeight;
+		public long getFileSize() {
+			return fileSize;
 		}
 
 		private void updateOriginalFilename(String originalFilename) {
@@ -104,8 +139,9 @@ public class ImageUploadService {
 
 			this.fullPath = prefix + name + extStr;
 			if (image) {
+				this.imageProp = new ImageProp();
 				// 如果是图片，需要有缩略图
-				this.thumbFullPath = prefix + name + ImageUploadService.this.prop.getThumb().getPostfix() + extStr;
+				this.imageProp.thumbFullPath = prefix + name + ImageUploadService.this.prop.getThumb().getPostfix() + extStr;
 			}
 		}
 
@@ -143,10 +179,11 @@ public class ImageUploadService {
 	 * @return 保存的结果
 	 * @throws IOException
 	 */
-	public SaveResult save(MultipartFile multipartFile, String path, String name) throws BaseApiException, IOException {
+	public SaveResult save(MultipartFile multipartFile, String path, String name)
+			throws FileNotFoundException, InvalidImageFormatException, IOException {
 		// 检查是否有上传文件
 		if (multipartFile == null || multipartFile.isEmpty()) {
-			throw new MissFieldException("请上传文件");
+			throw new FileNotFoundException("找不到上传的文件");
 		}
 
 		SaveResult res = new SaveResult();
@@ -159,15 +196,18 @@ public class ImageUploadService {
 
 		// 分析是否图片前，先将图片保存下来
 		Path filePath = FileUtil.save(multipartFile, res.fullPath);
+		res.fileSize = filePath.toFile().length();
 		if (res.image) {
 			try {
 				ImageEX old = new ImageEX(filePath.toFile());
-				res.imageWidth = old.getWidth();
-				res.imageHeight = old.getHeight();
+				res.imageProp.imageWidth = old.getWidth();
+				res.imageProp.imageHeight = old.getHeight();
 
 				// 生成缩略图
 				ImageEX thumb = old.chageImageSizeKeepScaled(this.prop.getThumb().getWidth(), this.prop.getThumb().getHeight());
-				thumb.outPutImage(res.extName, new File(res.thumbFullPath));
+				thumb.outPutImage(res.extName, new File(res.imageProp.thumbFullPath));
+				res.imageProp.thumbWidth = thumb.getWidth();
+				res.imageProp.thumbHeight = thumb.getHeight();
 
 			} catch (InvalidImageFormatException e) {
 				// 如果是格式错误，就删除这个文件

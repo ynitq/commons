@@ -488,8 +488,8 @@ public class DictCoreService {
 				row.setPathPrefix(DictAutoConfig.ATTACHMENT_PATH);
 				if (res.isImage()) {
 					// 如果是图片，就需要填写和图片相关的参数
-					row.setImageHeight(res.getImageHeight());
-					row.setImageWidth(res.getImageWidth());
+					row.setImageHeight(res.getImageProp().getImageHeight());
+					row.setImageWidth(res.getImageProp().getImageWidth());
 				}
 			}
 			this.asyncSave();
