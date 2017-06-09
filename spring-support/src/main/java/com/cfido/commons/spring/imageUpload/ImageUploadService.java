@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ import com.cfido.commons.utils.utils.ImageEX;
  */
 @Service
 public class ImageUploadService {
+
+	public final static String DEFAULT_ROOT_PATH = "attachments";
 
 	@Autowired
 	private ImageUploadProperties prop;
@@ -168,6 +172,22 @@ public class ImageUploadService {
 	}
 
 	/**
+	 * 保存上传的文件, 保存在默认目录下 attectments/yyyyMMdd/465768715787.jpg
+	 * 
+	 * @param multipartFile
+	 *            上传的数据
+	 * @see ImageUploadService#DEFAULT_ROOT_PATH 默认保存的目录
+	 */
+	public SaveResult save(MultipartFile multipartFile)
+			throws FileNotFoundException, InvalidImageFormatException, IOException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String path = String.format("%s/%s", DEFAULT_ROOT_PATH, sdf.format(new Date()));
+		String fileName = String.valueOf(System.nanoTime());
+
+		return this.save(multipartFile, path, fileName);
+	}
+
+	/**
 	 * 保存上传的文件
 	 * 
 	 * @param multipartFile
@@ -175,9 +195,8 @@ public class ImageUploadService {
 	 * @param path
 	 *            图片存放路径
 	 * @param name
-	 *            文件名（无扩张名）
+	 *            文件名（无扩展名）
 	 * @return 保存的结果
-	 * @throws IOException
 	 */
 	public SaveResult save(MultipartFile multipartFile, String path, String name)
 			throws FileNotFoundException, InvalidImageFormatException, IOException {
