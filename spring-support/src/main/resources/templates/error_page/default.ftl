@@ -2,13 +2,12 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Cache-Control" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<meta http-equiv="Cache-Control" content="must-revalidate" />
+<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <title>出错了</title>
-<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"></head>
+<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
 <style>
 .errorPage {
 	margin-top: 100px;
@@ -49,7 +48,6 @@
 	right: 5px;
 	overflow: auto;
 }
-
 </style>
 <script type="text/javascript">
 	function swapErrorDiv() {
@@ -72,15 +70,9 @@
 						<p class="text-warning">出错了!</p>
 						<h1 class="error-code">${errorInfo.statusCode}</h1>
 						<p class="error-message">
-						<#if errorInfo.statusCode==404 >
-							世界上最遥远的距离，不是生与死的距离，而是我在深情地望着电脑屏幕，却再也寻找不到你的身影。 
-						<#else>
-							<#if errorInfo.apiException >
-								${errorInfo.message}
-							<#else>
-								抱歉，系统发生了内部错误，我们的工程师正在努力排查中，请稍后再试。
-							</#if> 
-						</#if></p>
+							<#if errorInfo.statusCode==404> 世界上最遥远的距离，不是生与死的距离，而是我在深情地望着电脑屏幕，却再也寻找不到你的身影。 <#else> <#if
+								errorInfo.apiException> ${errorInfo.message} <#else> 抱歉，系统发生了内部错误，我们的工程师正在努力排查中，请稍后再试。 </#if></#if>
+						</p>
 					</header>
 					<div class="row">
 						<div class="col-md-6 col-md-offset-3">
@@ -93,7 +85,7 @@
 		</div>
 	</section>
 
-	<#if errorInfo.canShowException >
+	<#if errorInfo.canShowException>
 	<div class="showErrorBtn">
 		<button class="btn btn-default btn-sm" type="button" onclick="swapErrorDiv()">
 			显示/隐藏 错误信息
