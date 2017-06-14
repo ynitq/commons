@@ -2,7 +2,7 @@ package com.cfido.commons.beans.oauth;
 
 /**
  * <pre>
- * token
+ * 用于用户访问资源时，需要的授权token
  * 通过 oauth/token请求授权时，返回的结果
  * 
  * 遵循 oauth 2.0 规范
@@ -28,12 +28,9 @@ package com.cfido.commons.beans.oauth;
  * 
  * </pre>
  * 
- * @author 梁韦江
- *  2016年7月12日
+ * @author 梁韦江 2016年7月12日
  */
-public class TokenBean {
-
-	private String access_token;
+public class UserTokenBean extends AccessTokenBean {
 
 	/** 例如 ： bearer, 微信的TokenBaen 无此属性 */
 	private String token_type;
@@ -41,9 +38,6 @@ public class TokenBean {
 	private String refresh_token;
 
 	private String scope;
-
-	/** access_token接口调用凭证超时时间，单位（秒） */
-	private Long expires_in;
 
 	private String openid;
 
@@ -53,14 +47,6 @@ public class TokenBean {
 
 	public void setOpenid(String openid) {
 		this.openid = openid;
-	}
-
-	public String getAccess_token() {
-		return access_token;
-	}
-
-	public void setAccess_token(String access_token) {
-		this.access_token = access_token;
 	}
 
 	public String getToken_type() {
@@ -85,14 +71,6 @@ public class TokenBean {
 
 	public void setScope(String scope) {
 		this.scope = scope;
-	}
-
-	public Long getExpires_in() {
-		return expires_in;
-	}
-
-	public void setExpires_in(Long expires_in) {
-		this.expires_in = expires_in;
 	}
 
 }

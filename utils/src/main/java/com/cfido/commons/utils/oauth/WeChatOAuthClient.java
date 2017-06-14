@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.cfido.commons.beans.oauth.TokenBean;
+import com.cfido.commons.beans.oauth.UserTokenBean;
 import com.cfido.commons.beans.oauth.WeChatUserInfoBean;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
@@ -53,7 +53,7 @@ public class WeChatOAuthClient {
 	private boolean isTokenGot;
 
 	/** 已经获得的 token */
-	private TokenBean token;
+	private UserTokenBean token;
 
 	/** 成功获取/刷新 token 时的时间，用于判断是token超时 */
 	private long tokenGotTime;
@@ -112,7 +112,7 @@ public class WeChatOAuthClient {
 	 * 
 	 * @return
 	 */
-	public TokenBean getToken() {
+	public UserTokenBean getToken() {
 		return token;
 	}
 
@@ -193,7 +193,7 @@ public class WeChatOAuthClient {
 
 		this.beforeGetToken();
 
-		this.token = HttpUtil.requestJson(TokenBean.class, URL_ACCESS_TOKEN, param, false, null);
+		this.token = HttpUtil.requestJson(UserTokenBean.class, URL_ACCESS_TOKEN, param, false, null);
 
 		this.afterGetToken();
 
@@ -218,7 +218,7 @@ public class WeChatOAuthClient {
 
 		this.beforeGetToken();
 
-		this.token = HttpUtil.requestJson(TokenBean.class, URL_REFRESH_TOKEN, param, false, null);
+		this.token = HttpUtil.requestJson(UserTokenBean.class, URL_REFRESH_TOKEN, param, false, null);
 
 		this.afterGetToken();
 

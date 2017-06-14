@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.appServer.UserResponse;
-import com.cfido.commons.beans.oauth.TokenBean;
+import com.cfido.commons.beans.oauth.UserTokenBean;
 import com.cfido.commons.utils.utils.HttpUtil;
 
 /**
@@ -24,7 +24,7 @@ public abstract class BaseOAuthClient {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BaseOAuthClient.class);
 
-	private TokenBean token;
+	private UserTokenBean token;
 
 	private boolean isTokenGot;
 
@@ -81,7 +81,7 @@ public abstract class BaseOAuthClient {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		this.isTokenGot = false;
-		this.token = HttpUtil.requestJson(TokenBean.class, url, param, true, null);
+		this.token = HttpUtil.requestJson(UserTokenBean.class, url, param, true, null);
 		this.isTokenGot = true;
 
 		log.info("获得 token 成功：{}", token.getAccess_token());
@@ -137,7 +137,7 @@ public abstract class BaseOAuthClient {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		this.isTokenGot = false;
-		this.token = HttpUtil.requestJson(TokenBean.class, url, param, true, null);
+		this.token = HttpUtil.requestJson(UserTokenBean.class, url, param, true, null);
 		this.isTokenGot = true;
 		
 		
@@ -170,7 +170,7 @@ public abstract class BaseOAuthClient {
 		return HttpUtil.requestJson(responseClass, fullUrl, paramMap, postMethod, header);
 	}
 
-	public TokenBean getToken() {
+	public UserTokenBean getToken() {
 		return token;
 	}
 
