@@ -247,7 +247,7 @@ public class RememberMeUserHandler {
 		byte[] byteAry = str.getBytes();
 		BitUtils.shiftRight(byteAry, 4);// 右移4位
 
-		return EncryptUtil.byteArray2String(byteAry);
+		return EncryptUtil.byteToHex(byteAry);
 	}
 
 	private String getCookiePath(HttpServletRequest request) {
@@ -276,7 +276,7 @@ public class RememberMeUserHandler {
 	 */
 	protected CookieValue decodeCookie(String cookieValue) {
 
-		byte[] byteAry = EncryptUtil.byteString2Array(cookieValue);
+		byte[] byteAry = EncryptUtil.hexToByte(cookieValue);
 
 		// 左移动4位
 		BitUtils.shiftLeft(byteAry, 4);

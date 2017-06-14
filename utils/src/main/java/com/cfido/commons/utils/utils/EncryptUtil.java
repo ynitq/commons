@@ -17,6 +17,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Base64.Encoder;
+import java.util.Formatter;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -67,36 +68,38 @@ public class EncryptUtil {
 
 	}
 
-	private final static char[] hexDigits = "0123456789abcdef".toCharArray();
+	// private final static char[] hexDigits = "0123456789abcdef".toCharArray();
 
 	/**
-	 * 字节数组 -- 十六进制字符串
-	 * 
-	 * @param byteArray
-	 * @return
+	 * byte数组 转为 十六进制字符串
 	 */
-	public static String byteArray2String(byte[] byteArray) {
-		StringBuffer resultSb = new StringBuffer(33);
-		for (int i = 0; i < byteArray.length; i++) {
-
-			int value = byteArray[i];
-			if (value < 0) {
-				value += 256;
-			}
-			int d1 = value / 16;
-			int d2 = value % 16;
-			resultSb.append(hexDigits[d1]).append(hexDigits[d2]);
+	public static String byteToHex(byte[] byteArray) {
+		Formatter formatter = new Formatter();
+		for (byte b : byteArray) {
+			formatter.format("%02x", b);
 		}
-		return resultSb.toString();
+		String result = formatter.toString();
+		formatter.close();
+		return result;
+		//
+		// StringBuffer resultSb = new StringBuffer(33);
+		// for (int i = 0; i < byteArray.length; i++) {
+		//
+		// int value = byteArray[i];
+		// if (value < 0) {
+		// value += 256;
+		// }
+		// int d1 = value / 16;
+		// int d2 = value % 16;
+		// resultSb.append(hexDigits[d1]).append(hexDigits[d2]);
+		// }
+		// return resultSb.toString();
 	}
 
 	/**
-	 * 十六进制字符串 --- 字节数组
-	 * 
-	 * @param str
-	 * @return
+	 * 十六进制字符串 转为 byte数组
 	 */
-	public static byte[] byteString2Array(String str) {
+	public static byte[] hexToByte(String str) {
 		if (str == null)
 			return null;
 
@@ -146,7 +149,7 @@ public class EncryptUtil {
 	}
 
 	public static String desDecryptAscll(String keyString, String ascllString) throws EncryptException {
-		byte rawByte[] = desDecrypt(keyString, byteString2Array(ascllString));
+		byte rawByte[] = desDecrypt(keyString, hexToByte(ascllString));
 		return new String(rawByte);
 	}
 
@@ -197,7 +200,7 @@ public class EncryptUtil {
 	 */
 	public static String desEncryptAscllString(String keyString, String data) throws EncryptException {
 		byte dataByte[] = desEncrypt(keyString, data.getBytes());
-		return byteArray2String(dataByte);
+		return byteToHex(dataByte);
 	}
 
 	/**
@@ -269,7 +272,7 @@ public class EncryptUtil {
 			resultString = origin;
 			MessageDigest md = MessageDigest.getInstance("MD5");
 			byte[] byteArray = md.digest(resultString.getBytes());
-			return byteArray2String(byteArray);
+			return byteToHex(byteArray);
 		} catch (Exception ex) {
 			return null;
 		}
