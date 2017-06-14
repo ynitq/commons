@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
  * 配置提供微信相关服务, 可使用的服务
  * 
  * {@linkplain WeChatProperties} 微信配置参数
+ * {@linkplain WeChatService} 微信服务,包括获取ticket，jssdk配置等
  * 
  * </pre>
  * 
