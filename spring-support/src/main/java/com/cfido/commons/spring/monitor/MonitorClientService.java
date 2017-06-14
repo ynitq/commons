@@ -199,7 +199,7 @@ public class MonitorClientService {
 			param.put("msg", msg);
 		}
 
-		log.debug("向监控服务器 {} 发送信息 {}", serverUrl, msg);
+		log.info("向监控服务器 {} 发送信息 {}", serverUrl, msg);
 
 		HttpUtil.request(serverUrl, param, true, null);
 	}
@@ -221,7 +221,7 @@ public class MonitorClientService {
 				this.monitorTreadPool.addNewTask(task);
 			}
 		} else {
-			log.debug("未和监控服务器联系成功，放弃发送报告，msg={}", msg);
+			log.warn("未和监控服务器联系成功，放弃发送报告，msg={}", msg);
 		}
 	}
 
