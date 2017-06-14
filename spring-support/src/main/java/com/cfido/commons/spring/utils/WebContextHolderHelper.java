@@ -110,7 +110,7 @@ public class WebContextHolderHelper {
 
 		HttpServletRequest request = getRequest();
 		if (request != null) {
-			StringBuffer sb = request.getRequestURL();
+			StringBuilder sb = new StringBuilder(request.getRequestURL());
 
 			if (needQueryString) {
 
@@ -118,6 +118,28 @@ public class WebContextHolderHelper {
 				if (StringUtils.hasText(queryString)) {
 					sb.append("?").append(queryString);
 				}
+			}
+
+			return sb.toString();
+		}
+		return null;
+
+	}
+
+	/**
+	 * 获得全Uri路径，包含queryString
+	 * 
+	 * @return
+	 */
+	public static String getRequestURIAndQueryString() {
+
+		HttpServletRequest request = getRequest();
+		if (request != null) {
+			StringBuilder sb = new StringBuilder(request.getRequestURI());
+
+			String queryString = request.getQueryString();
+			if (StringUtils.hasText(queryString)) {
+				sb.append("?").append(queryString);
 			}
 
 			return sb.toString();
