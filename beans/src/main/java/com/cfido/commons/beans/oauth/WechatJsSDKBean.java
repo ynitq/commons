@@ -20,10 +20,13 @@ public class WechatJsSDKBean {
 	private final String nonceStr = UUID.randomUUID().toString();
 
 	private final String appId;
+	private final String url;
+
 	private String signature;
 
-	public WechatJsSDKBean(String appId) {
+	public WechatJsSDKBean(String url, String appId) {
 		super();
+		this.url = url;
 		this.appId = appId;
 	}
 
@@ -45,6 +48,10 @@ public class WechatJsSDKBean {
 
 	public void setSignature(String signature) {
 		this.signature = signature;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 
 }
