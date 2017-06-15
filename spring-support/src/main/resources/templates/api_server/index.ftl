@@ -13,9 +13,6 @@
 <link href="https://cdn.bootcss.com/toastr.js/2.1.3/toastr.min.css" rel="stylesheet">
 
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<!-- 
-<script src="https://cdn.bootcss.com/jquery.form/4.2.1/jquery.form.min.js"></script>
- -->
 <script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
@@ -141,13 +138,13 @@ a:VISITED {
 				var that = $(this);
 				var url = confVm.basePath + $(this).attr("data-url")
 				console.log("post to " + url);
-	
+
 				var formData = new FormData(that[0]);
-	
+
 				$.ajax({
 					type : "post", //提交方式  
 					dataType : "json", //如果是要上传文件,只能用html
-					data: formData,
+					data : formData,
 					url : url, //请求url
 					contentType : false, // 当有文件要上传时，此项是必须的，否则后台无法识别文件流的起始位置(详见：#1)
 					processData : false, // 是否序列化data属性，默认true(注意：false时type必须是post，详见：#2)
@@ -160,7 +157,7 @@ a:VISITED {
 						if (!res.success) {
 							console.log("错误信息:" + res.message);
 						}
-						$("#testResult").text("url:" + url + "\n返回结果:\n" + JSON.stringify(data,null,4));
+						$("#testResult").text("url:" + url + "\n返回结果:\n" + JSON.stringify(data, null, 4));
 					},
 					error : function(xhr, status, error) {
 						$("#testResult").text("错误码:" + xhr.status + "\n" + xhr.responseText);
@@ -231,11 +228,34 @@ a:VISITED {
 	</nav>
 
 	<div id="testDiv">
-		<div style="padding-bottom: 5px; height: 30px; line-height: 30px;">
-			测试结果 <a class='btn btn-default btn-sm pull-right' id="js_clear"><i class="glyphicon glyphicon-trash"></i> 清空</a>
-		</div>
-		<div style="clear: both;">
-			<pre id="testResult"></pre>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#tab-test-result" aria-controls="tab-test-result" role="tab"
+				data-toggle="tab">测试结果</a></li>
+			<li role="presentation"><a href="#tab-all-json" aria-controls="tab-all-json" role="tab" data-toggle="tab">所有接口</a></li>
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="tab-test-result">
+				<div style="margin: 5px">
+					<a class='btn btn-default btn-sm' id="js_clear" ><i class="glyphicon glyphicon-trash"></i> 清空</a>
+				</div>
+				<div style="clear: both;">
+					<pre id="testResult"></pre>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="tab-all-json">
+			<pre>
+<#list vo.infGroup as group>
+	/** ${group.memo} */
+	${group.infKey}: {
+<#list group.methods as m> 
+		${m.methodKey}: '${vo.apiUrlPrefix}/${m.url}', //  ${m.memo}
+</#list>
+	},
+</#list>
+			</pre>
+			</div>
 		</div>
 	</div>
 
