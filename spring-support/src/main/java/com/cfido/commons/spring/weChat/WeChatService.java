@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,9 +21,13 @@ import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.oauth.AccessTokenBean;
 import com.cfido.commons.beans.oauth.WechatJsSDKBean;
 import com.cfido.commons.beans.oauth.WechatTicketBean;
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
+import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
 import com.cfido.commons.spring.monitor.MonitorClientService;
 import com.cfido.commons.spring.monitor.MonitorMsgTypeEnum;
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
+import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.EncryptUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
 import com.cfido.commons.utils.utils.LogUtil;
@@ -50,8 +59,49 @@ public class WeChatService {
 	@Autowired
 	private MonitorClientService monitorClient;
 
+	@Autowired
+	private JmxInWebService jmxInWebService;
+
 	private final static String KEY_ACCESS_TOKEN = "wechat:accessToken";
 	private final static String KEY_JSAPI = "wechat:jsApi";
+
+	@ManagedResource(description = "微信服务")
+	@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+	public class WeChatServiceMBean {
+
+		@ManagedAttribute(description = "微信appId")
+		public String getAppId() {
+			return WeChatService.this.prop.getAppId();
+		}
+
+		@ManagedAttribute(description = "微信jsapi ticket")
+		public Map<String, Object> getJsApiTicket() throws WeChatAccessFailException {
+
+			WechatTicketBean bean = WeChatService.this.getJsApiTicket();
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("ticket", bean);
+			map.put("获取时间", DateUtil.dateFormat(new Date(bean.getCreateTime())));
+			return map;
+		}
+
+		@ManagedAttribute(description = "微信access token")
+		public Map<String, Object> getAccessToken() throws WeChatAccessFailException {
+
+			AccessTokenBean bean = WeChatService.this.getAccessToken();
+
+			Map<String, Object> map = new HashMap<>();
+			map.put("token", bean);
+			map.put("获取时间", DateUtil.dateFormat(new Date(bean.getCreateTime())));
+			return map;
+		}
+
+	}
+
+	@PostConstruct
+	protected void init() {
+		this.jmxInWebService.register(new WeChatServiceMBean());
+	}
 
 	/**
 	 * 获取access token

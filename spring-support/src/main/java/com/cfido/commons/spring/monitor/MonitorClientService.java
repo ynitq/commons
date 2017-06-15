@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.ClientMsgForm;
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
+import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.threadPool.BaseThreadPool;
 import com.cfido.commons.utils.threadPool.IMyTask;
@@ -37,48 +38,65 @@ import com.cfido.commons.utils.utils.LogUtil;
  * @author 梁韦江 2016年12月16日
  */
 @Service
-@ManagedResource(description = "监控系统客户端服务")
-@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
 public class MonitorClientService {
 
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientService.class);
+	@ManagedResource(description = "监控系统客户端服务")
+	@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
+	public class MonitorClientMBean {
 
-	@Autowired
-	private MonitorClientProperties clientProperties;
-
-	@Autowired
-	private MonitorClientContext context;
-
-	private boolean connected = false;
-
-	/** id的json字符串，初始化的时候生成，每次提交数据都需要带上 */
-	private String idJsonStr;
-
-	/** 等待5分钟再次重试时用的标志 */
-	private final Object retryFlag = new Object();
-	private boolean retryQuitFlag = false;
-
-	/**
-	 * 异步发送数据的线程池
-	 */
-	private final BaseThreadPool monitorTreadPool = new BaseThreadPool() {
-
-		@Override
-		protected int getUniqueIdSetInitSize() {
-			return 0;
+		@ManagedAttribute(description = "本机监控id")
+		public String getIdJsonStr() {
+			return idJsonStr;
 		}
 
-		@Override
-		protected int getPoolSize() {
-			// 单线程就可以了
-			return 1;
+		@ManagedAttribute(description = "监控服务器Host")
+		public String getServerHost() {
+			return MonitorClientService.this.clientProperties.getServer().getHost();
 		}
 
-		@Override
-		protected String getName() {
-			return "监控系统发送数据线程池";
+		@ManagedAttribute(description = "监控服务器url")
+		public String getServerUrl() {
+			return MonitorClientService.this.clientProperties.getServerUrlOfReport();
 		}
-	};
+
+		@ManagedAttribute(description = "主程序的生成时间")
+		public String getStartClassBuildTime() {
+			Date date = MonitorClientService.this.context.getStartClassBuildTime();
+			if (date != null) {
+				return DateUtil.dateFormat(date);
+			} else {
+				return "获取文件生成时间失败";
+			}
+		}
+
+		@ManagedAttribute(description = "是否已经成功向服务器汇报")
+		public boolean isConnected() {
+			return connected;
+		}
+
+		@ManagedAttribute(description = "是否汇报给监控服务器")
+		public boolean isEnable() {
+			return MonitorClientService.this.clientProperties.isEnable();
+		}
+
+		@ManagedAttribute()
+		public void setEnable(boolean enable) {
+			MonitorClientService.this.clientProperties.setEnable(enable);
+		}
+
+		@ManagedAttribute()
+		public void setServerHost(String serverHost) {
+			MonitorClientService.this.clientProperties.getServer().setHost(serverHost);
+		}
+
+		@ManagedOperation(description = "测试发送消息给监控服务器")
+		@ManagedOperationParameters({
+				@ManagedOperationParameter(description = "要发送的信息", name = "msg"),
+		})
+		public void testSendMsg(String msg) throws IOException {
+			MonitorClientService.this.postMsgToServer(MonitorMsgTypeEnum.WARNING, msg);
+		}
+	}
 
 	/**
 	 * <pre>
@@ -89,14 +107,23 @@ public class MonitorClientService {
 	 */
 	private class MyTask implements IMyTask {
 
-		private final String msg;
-
 		private final MonitorMsgTypeEnum level;
+
+		private final String msg;
 
 		public MyTask(MonitorMsgTypeEnum level, String msg) {
 			super();
 			this.level = level;
 			this.msg = msg;
+		}
+
+		@Override
+		public void afterRun() {
+		}
+
+		@Override
+		public String getUniqueId() {
+			return null;
 		}
 
 		@Override
@@ -109,46 +136,90 @@ public class MonitorClientService {
 			}
 		}
 
-		@Override
-		public void afterRun() {
-		}
-
-		@Override
-		public String getUniqueId() {
-			return null;
-		}
-
 	}
 
-	@PostConstruct
-	protected void init() {
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientService.class);
 
-		this.connected = false;
+	@Autowired
+	private MonitorClientProperties clientProperties;
 
-		// id的json字符串
-		this.idJsonStr = JSON.toJSONString(this.context.getClientId(), true);
+	private boolean connected = false;
 
-		// 启动报告线程
-		Thread reportThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					MonitorClientService.this.reportToServer();
-				} catch (InterruptedException e) {
-				}
+	@Autowired
+	private MonitorClientContext context;
+
+	@Autowired
+	private JmxInWebService jmxInWebService;
+
+	/** id的json字符串，初始化的时候生成，每次提交数据都需要带上 */
+	private String idJsonStr;
+
+	/**
+	 * 异步发送数据的线程池
+	 */
+	private final BaseThreadPool monitorTreadPool = new BaseThreadPool() {
+
+		@Override
+		protected String getName() {
+			return "监控系统发送数据线程池";
+		}
+
+		@Override
+		protected int getPoolSize() {
+			// 单线程就可以了
+			return 1;
+		}
+
+		@Override
+		protected int getUniqueIdSetInitSize() {
+			return 0;
+		}
+	};
+
+	/** 等待5分钟再次重试时用的标志 */
+	private final Object retryFlag = new Object();
+
+	private boolean retryQuitFlag = false;
+
+	/**
+	 * 向服务器汇报一些消息
+	 * 
+	 * @param level
+	 *            信息的等级
+	 * @param msg
+	 *            要汇报的消息
+	 */
+	public void reportMsgToServer(MonitorMsgTypeEnum level, String msg) {
+		if (connected) {
+			if (StringUtils.hasText(msg)) {
+				MyTask task = new MyTask(level, msg);
+				// 将任务放到线程池，异步发送数据
+				this.monitorTreadPool.addNewTask(task);
 			}
-		}, "监控客户端报告线程");
-		reportThread.start();
-
+		} else {
+			log.warn("未和监控服务器联系成功，放弃发送报告，msg={}", msg);
+		}
 	}
 
-	@PreDestroy
-	protected void onShutdown() {
-		// shutdown的时候，如果重试线程还在跑，就让那个线程退出循环
-		this.retryQuitFlag = true;
-		synchronized (this.retryFlag) {
-			this.retryFlag.notify();
+	/**
+	 * 向服务器报告一下id。 服务器对应的表单时 {@link ClientMsgForm}
+	 */
+	private void postMsgToServer(MonitorMsgTypeEnum level, String msg) throws IOException {
+		String serverUrl = this.clientProperties.getServerUrlOfReport();
+
+		ClientInfoResponse clientInfo = this.context.getClientInfo(false);
+
+		Map<String, Object> param = new HashMap<>();
+		param.put("idStr", idJsonStr);
+		param.put("clientInfo", JSON.toJSONString(clientInfo));
+		param.put("msgType", level.code);
+		if (StringUtils.hasText(msg)) {
+			param.put("msg", msg);
 		}
+
+		log.info("向监控服务器 {} 发送信息 {}", serverUrl, msg);
+
+		HttpUtil.request(serverUrl, param, true, null);
 	}
 
 	private void reportToServer() throws InterruptedException {
@@ -183,99 +254,38 @@ public class MonitorClientService {
 		}
 	}
 
-	/**
-	 * 向服务器报告一下id。 服务器对应的表单时 {@link ClientMsgForm}
-	 */
-	private void postMsgToServer(MonitorMsgTypeEnum level, String msg) throws IOException {
-		String serverUrl = this.clientProperties.getServerUrlOfReport();
+	@PostConstruct
+	protected void init() {
 
-		ClientInfoResponse clientInfo = this.context.getClientInfo(false);
+		// 注册MBean
+		this.jmxInWebService.register(new MonitorClientMBean());
 
-		Map<String, Object> param = new HashMap<>();
-		param.put("idStr", idJsonStr);
-		param.put("clientInfo", JSON.toJSONString(clientInfo));
-		param.put("msgType", level.code);
-		if (StringUtils.hasText(msg)) {
-			param.put("msg", msg);
-		}
+		this.connected = false;
 
-		log.info("向监控服务器 {} 发送信息 {}", serverUrl, msg);
+		// id的json字符串
+		this.idJsonStr = JSON.toJSONString(this.context.getClientId(), true);
 
-		HttpUtil.request(serverUrl, param, true, null);
-	}
-
-
-	/**
-	 * 向服务器汇报一些消息
-	 * 
-	 * @param level
-	 *            信息的等级
-	 * @param msg
-	 *            要汇报的消息
-	 */
-	public void reportMsgToServer(MonitorMsgTypeEnum level, String msg) {
-		if (connected) {
-			if (StringUtils.hasText(msg)) {
-				MyTask task = new MyTask(level, msg);
-				// 将任务放到线程池，异步发送数据
-				this.monitorTreadPool.addNewTask(task);
+		// 启动报告线程
+		Thread reportThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					MonitorClientService.this.reportToServer();
+				} catch (InterruptedException e) {
+				}
 			}
-		} else {
-			log.warn("未和监控服务器联系成功，放弃发送报告，msg={}", msg);
+		}, "监控客户端报告线程");
+		reportThread.start();
+
+	}
+
+	@PreDestroy
+	protected void onShutdown() {
+		// shutdown的时候，如果重试线程还在跑，就让那个线程退出循环
+		this.retryQuitFlag = true;
+		synchronized (this.retryFlag) {
+			this.retryFlag.notify();
 		}
-	}
-
-	@ManagedAttribute(description = "是否已经成功向服务器汇报")
-	public boolean isConnected() {
-		return connected;
-	}
-
-	@ManagedAttribute(description = "监控服务器url")
-	public String getServerUrl() {
-		return this.clientProperties.getServerUrlOfReport();
-	}
-
-	@ManagedOperation(description = "测试发送消息给监控服务器")
-	@ManagedOperationParameters({
-			@ManagedOperationParameter(description = "要发送的信息", name = "msg"),
-	})
-	public void testSendMsg(String msg) throws IOException {
-		this.postMsgToServer(MonitorMsgTypeEnum.WARNING, msg);
-	}
-
-	@ManagedAttribute(description = "监控服务器Host")
-	public String getServerHost() {
-		return this.clientProperties.getServer().getHost();
-	}
-
-	@ManagedAttribute(description = "主程序的生成时间")
-	public String getStartClassBuildTime() {
-		Date date = this.context.getStartClassBuildTime();
-		if (date != null) {
-			return DateUtil.dateFormat(date);
-		} else {
-			return "获取文件生成时间失败";
-		}
-	}
-
-	@ManagedAttribute()
-	public void setServerHost(String serverHost) {
-		this.clientProperties.getServer().setHost(serverHost);
-	}
-
-	@ManagedAttribute(description = "本机监控id")
-	public String getIdJsonStr() {
-		return idJsonStr;
-	}
-
-	@ManagedAttribute(description = "是否汇报给监控服务器")
-	public boolean isEnable() {
-		return this.clientProperties.isEnable();
-	}
-
-	@ManagedAttribute()
-	public void setEnable(boolean enable) {
-		this.clientProperties.setEnable(enable);
 	}
 
 }
