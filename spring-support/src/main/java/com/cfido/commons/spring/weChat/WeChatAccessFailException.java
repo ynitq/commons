@@ -1,5 +1,7 @@
 package com.cfido.commons.spring.weChat;
 
+import com.cfido.commons.beans.apiServer.BaseApiException;
+
 /**
  * <pre>
  * 访问微信开发网关时出现了错误
@@ -7,7 +9,7 @@ package com.cfido.commons.spring.weChat;
  * 
  * @author 梁韦江 2017年6月14日
  */
-public class WeChatAccessFailException extends Exception {
+public class WeChatAccessFailException extends BaseApiException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -29,6 +31,11 @@ public class WeChatAccessFailException extends Exception {
 
 	public WeChatAccessFailException(Throwable cause) {
 		super(cause);
+	}
+
+	@Override
+	public String getErrorMsg() {
+		return "访问微信接口时，出现了错误";
 	}
 
 }

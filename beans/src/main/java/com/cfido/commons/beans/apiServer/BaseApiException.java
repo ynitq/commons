@@ -36,11 +36,6 @@ public abstract class BaseApiException extends Exception {
 	 */
 	public abstract String getErrorMsg();
 
-	@Override
-	public String getMessage() {
-		return this.getErrorMsg();
-	}
-
 	/**
 	 * 获得返回码， 逻辑错误还是正常的返回200代码
 	 * 
