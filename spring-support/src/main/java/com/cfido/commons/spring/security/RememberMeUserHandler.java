@@ -227,6 +227,10 @@ public class RememberMeUserHandler {
 
 		log.debug("删除 cookie:{}", cookieName);
 
+		// 也需要在request中删除，否则同一个线程，logout后，getUer方法是可以重新从request中将用户读取回来的
+		CookieUtils.removeCookie(request, cookieName);
+
+		// 再删除response中的
 		Cookie cookie = new Cookie(cookieName, null);
 		cookie.setMaxAge(0);
 		cookie.setPath(getCookiePath(request));

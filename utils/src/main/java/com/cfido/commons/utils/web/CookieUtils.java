@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.utils.utils.EncryptUtil;
+
 /**
  * <pre>
  * 常见的cookie操作
@@ -119,6 +120,25 @@ public class CookieUtils {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 从request中清除，用于防止同一线程重复读取
+	 * 
+	 * @param request
+	 * @param cookieName
+	 */
+	public static void removeCookie(HttpServletRequest request, String cookieName) {
+		Cookie cookies[] = request.getCookies();
+		if (cookies == null) {
+			return;
+		}
+
+		Cookie cookie = findCookieFromArray(cookies, cookieName);
+		if (cookie != null) {
+			cookie.setValue(null);
+			cookie.setMaxAge(0);
+		}
 	}
 
 	/**
