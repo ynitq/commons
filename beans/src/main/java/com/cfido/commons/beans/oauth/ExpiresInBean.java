@@ -9,7 +9,8 @@ import java.util.concurrent.TimeUnit;
  * 
  * @author 梁韦江 2017年6月13日
  */
-public class ExpiresInBean {
+public class ExpiresInBean extends BaseWechatBean {
+
 	/** 这个bean 的创建时间 */
 	private long createTime = System.currentTimeMillis();
 

@@ -9,6 +9,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.cfido.commons.beans.exceptions.WeChatApiException;
 import com.cfido.commons.beans.oauth.UserTokenBean;
 import com.cfido.commons.beans.oauth.WeChatUserInfoBean;
 import com.cfido.commons.utils.utils.EncodeUtil;
@@ -19,8 +20,6 @@ import com.cfido.commons.utils.utils.HttpUtilException;
  * <pre>
  * 微信相关
  * </pre>
- * 
- * @author 左浪国 2016年8月2日
  */
 public class WeChatOAuthClient {
 
@@ -179,8 +178,9 @@ public class WeChatOAuthClient {
 	 * @param code
 	 * @throws IOException
 	 * @throws HttpUtilException
+	 * @throws WeChatApiException
 	 */
-	public void onAuthorizeCallback(String code) throws HttpUtilException, IOException {
+	public void onAuthorizeCallback(String code) throws HttpUtilException, IOException, WeChatApiException {
 		Assert.notNull(code, "'code' 不能为空");
 
 		// 参数设置
@@ -205,8 +205,9 @@ public class WeChatOAuthClient {
 	 * 
 	 * @throws IOException
 	 * @throws HttpUtilException
+	 * @throws WeChatApiException
 	 */
-	public void refreshToken() throws HttpUtilException, IOException {
+	public void refreshToken() throws HttpUtilException, IOException, WeChatApiException {
 		Assert.isTrue(this.isTokenGot, "token尚未成功获取");
 
 		// 参数设置
@@ -225,8 +226,13 @@ public class WeChatOAuthClient {
 		log.info("获得 token 成功：{}", JSON.toJSONString(token, true));
 	}
 
-	private void afterGetToken() {
+	private void afterGetToken() throws WeChatApiException {
 		Assert.notNull(this.token, "token 不应该为null");
+
+		this.isTokenGot = false;
+
+		// 检查是否成功
+		this.token.checkIsSuccess();
 
 		this.isTokenGot = true;
 		this.tokenGotTime = System.currentTimeMillis();
