@@ -18,6 +18,7 @@ import com.cfido.commons.spring.apiServer.core.DebugPageVo;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
+import com.cfido.commons.utils.utils.EncodeUtil;
 
 import freemarker.template.TemplateException;
 
@@ -99,6 +100,6 @@ public class ApiDebugController {
 			log.debug(sb.toString());
 		}
 
-		return sb.toString();
+		return EncodeUtil.html(sb.toString(), false);
 	}
 }

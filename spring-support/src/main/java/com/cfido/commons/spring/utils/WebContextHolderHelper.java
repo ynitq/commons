@@ -156,17 +156,17 @@ public class WebContextHolderHelper {
 	}
 
 	public static String getBasePath() {
-		return getAttachmentFullPath(null);
+		return getFullPath(null);
 	}
 
 	/**
-	 * 获得附件的全路径
+	 * 获得全路径
 	 * 
-	 * @param attachmentPath
-	 *            附件的相对路径
+	 * @param path
+	 *            相对路径
 	 * @return
 	 */
-	public static String getAttachmentFullPath(String attachmentPath) {
+	public static String getFullPath(String path) {
 		HttpServletRequest request = getRequest();
 		if (request == null) {
 			return null;
@@ -196,11 +196,11 @@ public class WebContextHolderHelper {
 			url.append(contextPath);
 		}
 
-		if (StringUtils.hasText(attachmentPath)) {
-			if (!attachmentPath.startsWith("/")) {
+		if (StringUtils.hasText(path)) {
+			if (!path.startsWith("/")) {
 				url.append('/');
 			}
-			url.append(attachmentPath);
+			url.append(path);
 		}
 		return url.toString();
 	}

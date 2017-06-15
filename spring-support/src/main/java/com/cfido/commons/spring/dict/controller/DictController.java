@@ -78,7 +78,7 @@ public class DictController {
 		model.put("pageTitle", this.coreService.getSystemName());
 		model.put("adminInProp", this.adminUserHandler.isAdminInPorp());
 
-		String basePath = WebContextHolderHelper.getAttachmentFullPath(null);
+		String basePath = WebContextHolderHelper.getBasePath();
 		model.put("basePath", basePath);
 
 		return this.templateService.process("index", model);
