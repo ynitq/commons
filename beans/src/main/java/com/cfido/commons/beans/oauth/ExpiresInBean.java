@@ -33,7 +33,7 @@ public class ExpiresInBean {
 	}
 
 	/** 是否超时了 */
-	public boolean isExpired() {
+	public boolean checkIsExpired() {
 		final long now = System.currentTimeMillis();
 		return now > this.createTime + TimeUnit.SECONDS.toMillis(this.expires_in);
 	}

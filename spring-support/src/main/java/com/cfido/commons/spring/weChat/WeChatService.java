@@ -60,7 +60,7 @@ public class WeChatService {
 	 */
 	public synchronized AccessTokenBean getAccessToken() throws WeChatAccessFailException {
 		AccessTokenBean token = this.accessTokenCache.opsForValue().get(KEY_ACCESS_TOKEN);
-		if (token == null || token.isExpired()) {
+		if (token == null || token.checkIsExpired()) {
 			if (token == null) {
 				log.debug("微信access token 不存在，需要获取");
 			} else {
@@ -102,7 +102,7 @@ public class WeChatService {
 	public synchronized WechatTicketBean getJsApiTicket() throws WeChatAccessFailException {
 
 		WechatTicketBean ticket = this.jsapiTicketCache.opsForValue().get(KEY_JSAPI);
-		if (ticket == null || ticket.isExpired()) {
+		if (ticket == null || ticket.checkIsExpired()) {
 			if (ticket == null) {
 				log.debug("微信 jsapi ticket 不存在，需要获取");
 			} else {
@@ -146,7 +146,7 @@ public class WeChatService {
 			return null;
 		}
 
-		WechatJsSDKBean res = new WechatJsSDKBean(this.prop.getAppId());
+		WechatJsSDKBean res = new WechatJsSDKBean(url, this.prop.getAppId());
 		// 初始化时已经生成了 nonceStr和 timestamp， 需要生成sign
 
 		// 注意这里参数名必须全部小写，且必须有序
@@ -168,11 +168,12 @@ public class WeChatService {
 	}
 
 	/**
-	 * 获取实现jsSdk时所需要的参数，默认使用当前请求的url
+	 * 获取实现jsSdk时所需要的参数，默认使用当前请求的来源url
 	 * 
 	 * @throws WeChatAccessFailException
 	 */
-	public WechatJsSDKBean getJsSdkConfig() throws WeChatAccessFailException {
-		return this.getJsSdkConfig(WebContextHolderHelper.getRequestURL(true));
+	public WechatJsSDKBean getJsSdkConfigFromReferer() throws WeChatAccessFailException {
+		String url = WebContextHolderHelper.getRequest().getHeader("referer");
+		return this.getJsSdkConfig(url);
 	}
 }
