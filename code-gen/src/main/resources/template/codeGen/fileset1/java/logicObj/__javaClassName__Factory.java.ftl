@@ -27,7 +27,7 @@ public class ${table.javaClassName}Factory extends BaseObjFactory<${table.javaCl
 	private final IConverter<${table.javaClassName}Obj, ${table.javaClassName}ViewModel> obj2ViewModelConverter = new IConverter<${table.javaClassName}Obj, ${table.javaClassName}ViewModel>() {
 		@Override
 		public ${table.javaClassName}ViewModel convert(${table.javaClassName}Obj src) {
-			return new ${table.javaClassName}ViewModel(src);
+			return src.createModel();
 		}
 	};
 
