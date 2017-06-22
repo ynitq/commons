@@ -187,7 +187,7 @@ public class WeChatService {
 	}
 
 	/**
-	 * 获取实现jsSdk时所需要的参数，但不包含jsApiList
+	 * 获取实现jsSdk时所需要的参数，但不包含jsApiList。注意：官网文档写的只支持 80 和 https的443
 	 * 
 	 * @throws WeChatAccessFailException
 	 */
