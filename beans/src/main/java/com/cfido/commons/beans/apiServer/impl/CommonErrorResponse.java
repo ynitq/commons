@@ -22,12 +22,7 @@ public class CommonErrorResponse extends BaseResponse {
 		this.setMessage(ex.getErrorMsg());
 	}
 
-	public CommonErrorResponse(Exception ex) {
-		this.setCode(ex.getClass().getName());
-		this.setMessage(ex.getMessage());
-	}
-
-	public CommonErrorResponse(Exception ex, String errorMessage) {
+	public CommonErrorResponse(Throwable ex, String errorMessage) {
 		this.setCode(ex.getClass().getName());
 		this.setMessage(errorMessage);
 	}

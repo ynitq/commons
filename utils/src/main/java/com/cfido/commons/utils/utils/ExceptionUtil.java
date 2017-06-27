@@ -7,7 +7,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartException;
 
 import com.cfido.commons.annotation.api.ADataInApiException;
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
@@ -128,6 +130,18 @@ public class ExceptionUtil {
 		return map;
 	}
 
+	private static String getSize(long size) {
+		if (size >= 1024 * 1024) {
+			long t1 = 10 * size / 1024 / 1024;
+			float t2 = t1 / 10f;
+			return String.format("%.1fM", t2);
+		} else {
+			long t1 = 10 * size / 1024;
+			float t2 = t1 / 10f;
+			return String.format("%.1fK", t2);
+		}
+	}
+
 	/**
 	 * 系统运行时错误
 	 * 
@@ -139,9 +153,25 @@ public class ExceptionUtil {
 	 */
 	private static CommonErrorResponse getSystemErrorResponse(Throwable ex, boolean debugMode) {
 
-		SystemErrorException error = new SystemErrorException(ex);
-		CommonErrorResponse res = new CommonErrorResponse(error);
+		CommonErrorResponse res;
+		if (ex instanceof MultipartException) {
+			String msg = "上传文件时发生了错误";
 
+			Throwable root = ((MultipartException) ex).getRootCause();
+			if (root != null) {
+				if (root instanceof FileSizeLimitExceededException) {
+					FileSizeLimitExceededException e = (FileSizeLimitExceededException) root;
+
+					msg = String.format("上传文件不能超过 %s", getSize(e.getPermittedSize()));
+				}
+			}
+
+			res = new CommonErrorResponse(ex, msg);
+		} else {
+
+			SystemErrorException error = new SystemErrorException(ex);
+			res = new CommonErrorResponse(error);
+		}
 		if (debugMode) {
 			// 如果是开发模式，将调查错误过程回馈给客户端
 			String str = LogUtil.getTraceString(null, ex);
