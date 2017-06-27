@@ -84,6 +84,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<!-- 从图片中读取GPS等exif信息的工具 -->
+			<groupId>com.drewnoakes</groupId>
+			<artifactId>metadata-extractor</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- /其他的依赖 -->
 
 	</dependencies>

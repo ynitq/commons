@@ -42,7 +42,7 @@
 		<module>utils</module>
 		<module>spring-support</module>
 		<module>code-gen</module>
-		<!-- <module>weixin</module>  -->
+		<!-- <module>weixin</module> -->
 	</modules>
 	<!-- /项目列表 -->
 
@@ -69,13 +69,13 @@
 				<artifactId>utils</artifactId>
 				<version>${version.cfido.commons}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.cfido.commons</groupId>
 				<artifactId>spring-support</artifactId>
 				<version>${version.cfido.commons}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.cfido.commons</groupId>
 				<artifactId>code-gen</artifactId>
@@ -84,6 +84,13 @@
 			<!-- /我们自己的工具类项目 -->
 
 			<!-- 常用工具包 -->
+			<dependency>
+				<!-- 从图片中读取GPS等exif信息的工具 -->
+				<groupId>com.drewnoakes</groupId>
+				<artifactId>metadata-extractor</artifactId>
+				<version>2.10.1</version>
+			</dependency>
+
 			<dependency>
 				<!-- 二维码相关 -->
 				<groupId>com.google.zxing</groupId>
