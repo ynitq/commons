@@ -28,6 +28,9 @@ public class WeChatProperties {
 	/** 公众号的appsecret */
 	private String appSecret;
 
+	/** 网页授权时，传给wx-proxy.lin-zi.com的state */
+	private String state;
+
 	public String getAppId() {
 		return appId;
 	}
@@ -42,6 +45,14 @@ public class WeChatProperties {
 
 	public void setAppSecret(String appSecret) {
 		this.appSecret = appSecret;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	@PostConstruct
