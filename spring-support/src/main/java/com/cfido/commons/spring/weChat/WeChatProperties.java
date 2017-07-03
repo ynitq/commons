@@ -22,6 +22,8 @@ import com.cfido.commons.utils.oauth.WeChatOAuthClient;
 @ConfigurationProperties(prefix = "wechat")
 public class WeChatProperties {
 
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WeChatProperties.class);
+
 	/** 公众号的唯一标识 */
 	private String appId;
 
@@ -63,6 +65,10 @@ public class WeChatProperties {
 		}
 		if (StringUtils.isEmpty(appSecret)) {
 			throw new RuntimeException("请配置 wechat.appSecret 参数");
+		}
+
+		if (StringUtils.hasText(this.authUrl)) {
+			log.info("微信认证配置了额外的url. wechat.authUrl={}", this.authUrl);
 		}
 	}
 
