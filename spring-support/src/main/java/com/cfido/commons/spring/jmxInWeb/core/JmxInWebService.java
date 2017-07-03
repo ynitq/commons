@@ -56,17 +56,21 @@ public class JmxInWebService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(JmxInWebService.class);
 
-	@Autowired
+	@Autowired(required = false)
 	private MBeanExporter mBeanExporter;
 
 	@Autowired
 	private JmxInWebProperties prop;
 
 	/** 在init() 中初始化 */
-	@Autowired
+	@Autowired(required = false)
 	private MBeanServer server;
 
 	public void changeAttr(JwChangeAttrForm form) throws BaseApiException {
+		if (this.server == null) {
+			return;
+		}
+
 		MBeanAttributeInfo targetAttribute = null;
 
 		ObjectName name = this.getObjectName(form.getObjectName());
@@ -108,6 +112,10 @@ public class JmxInWebService {
 	}
 
 	public MBeanVo getMBeanInfo(String objectNameStr) throws BaseApiException {
+		if (this.server == null) {
+			return null;
+		}
+
 		ExceptionUtil.hasText(objectNameStr, "objectName不能为空");
 
 		try {
@@ -128,6 +136,9 @@ public class JmxInWebService {
 	}
 
 	public List<DomainVo> getMBeanList() throws BaseApiException {
+		if (this.server == null) {
+			return null;
+		}
 
 		try {
 			// 从Server中查询出所有的MBean
@@ -200,6 +211,10 @@ public class JmxInWebService {
 	 */
 	public JwInvokeOptResponse invokeOpt(String objectName, String optName, InvokeOperationParamInfo paramInfo)
 			throws BaseApiException {
+		if (this.server == null) {
+			return null;
+		}
+
 		ObjectName name = this.getObjectName(objectName);
 
 		// Find target attribute
@@ -287,6 +302,9 @@ public class JmxInWebService {
 	 *            mbean名
 	 */
 	public void register(Object obj, String domain, String name) {
+		if (this.mBeanExporter == null) {
+			return;
+		}
 
 		try {
 			ObjectName oname = ObjectName.getInstance(domain + ":name=" + name);
@@ -314,6 +332,9 @@ public class JmxInWebService {
 	 *            mbean名
 	 */
 	public void unRegister(String domain, String name) {
+		if (this.server == null) {
+			return;
+		}
 		try {
 			ObjectName oname = ObjectName.getInstance(domain + ":name=" + name);
 			if (this.server.isRegistered(oname)) {
@@ -333,6 +354,10 @@ public class JmxInWebService {
 	 * @throws MyMBeanNotFoundException
 	 */
 	private MBeanInfo getMBeanInfoByName(ObjectName objectName) throws BaseApiException {
+		if (this.server == null) {
+			return null;
+		}
+
 		if (server.isRegistered(objectName)) {
 			try {
 				return server.getMBeanInfo(objectName);
