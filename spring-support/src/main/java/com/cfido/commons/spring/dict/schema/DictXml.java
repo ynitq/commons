@@ -2,7 +2,7 @@
 // 此文件是由 JavaTM Architecture for XML Binding (JAXB) 引用实现 v2.2.8-b130911.1802 生成的
 // 请访问 <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // 在重新编译源模式时, 对此文件的所有修改都将丢失。
-// 生成时间: 2017.02.23 时间 09:50:49 AM CST 
+// 生成时间: 2017.07.03 时间 02:41:58 PM CST 
 //
 
 
@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  *                 &lt;attribute name="todo" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *                 &lt;attribute name="usedCount" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
  *                 &lt;attribute name="html" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *                 &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
  *                 &lt;attribute name="key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -349,6 +350,7 @@ public class DictXml {
      *       &lt;attribute name="todo" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
      *       &lt;attribute name="usedCount" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
      *       &lt;attribute name="html" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+     *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
      *       &lt;attribute name="key" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -373,6 +375,8 @@ public class DictXml {
         protected int usedCount;
         @XmlAttribute(name = "html", required = true)
         protected boolean html;
+        @XmlAttribute(name = "type", required = true)
+        protected int type;
         @XmlAttribute(name = "key", required = true)
         protected String key;
 
@@ -470,6 +474,22 @@ public class DictXml {
          */
         public void setHtml(boolean value) {
             this.html = value;
+        }
+
+        /**
+         * 获取type属性的值。
+         * 
+         */
+        public int getType() {
+            return type;
+        }
+
+        /**
+         * 设置type属性的值。
+         * 
+         */
+        public void setType(int value) {
+            this.type = value;
         }
 
         /**

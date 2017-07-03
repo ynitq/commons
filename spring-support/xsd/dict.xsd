@@ -39,6 +39,15 @@
 								<xs:documentation>是否是html值，就是不转码直接输出</xs:documentation>
 							</xs:annotation>
 						</xs:attribute>
+						<xs:attribute name="type" type="xs:int" use="required">
+							<xs:annotation>
+								<xs:documentation>值的类型。
+0：未转
+1：文本
+2：html
+3：markdown</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
 						<xs:attribute name="key" type="xs:string" use="required">
 							<xs:annotation>
 								<xs:documentation>键值</xs:documentation>

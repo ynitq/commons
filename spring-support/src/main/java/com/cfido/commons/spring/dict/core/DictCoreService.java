@@ -718,6 +718,11 @@ public class DictCoreService {
 			this.map.clear();
 			int todo = 0;
 			for (DictXmlRow row : xmlDoc.getDictXmlRow()) {
+				// TODO 这里最好用常量
+				if (row.getType() == 0) {
+					row.setType(row.isHtml() ? 2 : 1);
+				}
+
 				this.map.put(row.getKey(), row);
 				if (row.isTodo()) {
 					todo++;
