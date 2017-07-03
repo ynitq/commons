@@ -4,7 +4,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.linzi.framework.logicObj.BasePoObj;
+import com.cfido.commons.utils.logicObj.BasePoObj;
 import ${prop.entityPackage}.${table.javaClassName};
 
 /**

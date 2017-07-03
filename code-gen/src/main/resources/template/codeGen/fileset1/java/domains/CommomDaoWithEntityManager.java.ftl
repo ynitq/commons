@@ -5,7 +5,7 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 
-import com.linzi.framework.db.BaseCommomDaoEntityManager;
+import com.cfido.commons.utils.db.BaseCommomDaoEntityManager;
 
 /**
  * <pre>

@@ -3,10 +3,11 @@ package ${package};
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.linzi.common.beans.apiServer.BaseApiException;
-import com.linzi.common.beans.others.IConverter;
-import com.linzi.framework.db.IObjFactoryDao;
-import com.linzi.framework.logicObj.BaseObjFactory;
+import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.beans.others.IConverter;
+import com.cfido.commons.utils.db.IObjFactoryDao;
+import com.cfido.commons.utils.logicObj.BaseObjFactory;
+
 
 import ${prop.entityPackage}.${table.javaClassName};
 
