@@ -179,8 +179,8 @@ public class CodeGenTemplateService {
 					packageName.replace('.', '/'),
 					fileName);
 
-			this.writeFile(this.codeGenProperties.getOutput(), filePath, content, true);
-			this.writeFile(this.codeGenProperties.getSample(), filePath, content, true);
+			this.writeFile(this.codeGenProperties.getOutput(), filePath, content, true, forceOverride);
+			this.writeFile(this.codeGenProperties.getSample(), filePath, content, true, forceOverride);
 		}
 	}
 
@@ -204,20 +204,20 @@ public class CodeGenTemplateService {
 
 		if (StringUtils.hasText(content)) {
 			// 如果有内容，就保存文件
-			this.writeFile(this.codeGenProperties.getOutput(), filePath, content, false);
-			this.writeFile(this.codeGenProperties.getSample(), filePath, content, false);
+			this.writeFile(this.codeGenProperties.getOutput(), filePath, content, false, false);
+			this.writeFile(this.codeGenProperties.getSample(), filePath, content, false, false);
 
 		}
 	}
 
 	private void writeFile(FileSaveOption option, String fileName, String content,
-			boolean isJava) throws IOException {
+			boolean isJava, boolean forceOverride) throws IOException {
 		String fullPath = String.format("%s/%s",
 				isJava ? option.getJava() : option.getOther(),
 				fileName);
 
-		boolean save = false;
-		boolean override = false;
+		boolean save = forceOverride;
+		boolean override = forceOverride;
 
 		if (isJava && fileName.endsWith(CodeGenProperties._OVERRIDE_SURFFIX)) {
 			// Xxxx_CodeGen.java结尾的文件名，强制覆盖
@@ -229,7 +229,7 @@ public class CodeGenTemplateService {
 		override = override || option.isOverride();
 
 		if (save) {
-			log.info("保存文件: {}", fullPath);
+			log.info("保存文件: {}, override={}", fullPath, override);
 			FileUtil.write(fullPath, content, override);
 		}
 

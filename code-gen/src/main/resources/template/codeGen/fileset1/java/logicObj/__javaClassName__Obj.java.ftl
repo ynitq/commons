@@ -18,6 +18,8 @@ import ${prop.entityPackage}.${table.javaClassName};
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ${table.javaClassName}Obj extends BasePoObj<${table.javaClassName}> {
 
+	private ${table.javaClassName}Factory factory;
+
 	public ${table.javaClassName}ViewModel createModel() {
 		return new ${table.javaClassName}ViewModel(this);
 	}
