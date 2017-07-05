@@ -110,9 +110,9 @@ public class CodeGenMainService {
 			this.createEntityFiles();
 		}
 
-		if (this.codeGenProperties.isAutoRunFileSet1()) {
-			log.debug("自动生成 套装1 文件");
-			this.createFilesSet1();
+		if (this.codeGenProperties.isAutoRunLogicObj()) {
+			log.debug("自动生成 逻辑对象 文件");
+			this.createLogicObjFile();
 		}
 
 		if (this.codeGenProperties.isAutoRunTemplate()) {
@@ -169,10 +169,9 @@ public class CodeGenMainService {
 		return map;
 	}
 
-	@ManagedOperation(description = "生成 套装1 的文件，包含了domain、jsp等等")
-	public void createFilesSet1() throws IOException {
-		this.doCreateFileByTemplate("template/codeGen/fileset1/java");
-		this.doCreateFileByTemplate("template/codeGen/fileset1/other");
+	@ManagedOperation(description = "生成 逻辑对象 的文件，包含了domain、逻辑对象、对象工厂、对象视图")
+	public void createLogicObjFile() throws IOException {
+		this.doCreateFileByTemplate("template/codeGen/logicObj");
 	}
 
 	@ManagedOperation(description = "生成 templateDir属性定义的模板 的文件")

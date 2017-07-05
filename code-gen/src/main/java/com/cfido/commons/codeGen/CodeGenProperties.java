@@ -289,8 +289,8 @@ public class CodeGenProperties {
 	/**
 	 * 是否自动生成 套装1 的文件
 	 */
-	public boolean isAutoRunFileSet1() {
-		return this.isAutoRun("fileset1");
+	public boolean isAutoRunLogicObj() {
+		return this.isAutoRun("logicObj");
 	}
 
 	/**

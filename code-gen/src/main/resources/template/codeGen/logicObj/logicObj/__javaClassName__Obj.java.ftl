@@ -4,6 +4,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.utils.logicObj.BasePoObj;
 import ${prop.entityPackage}.${table.javaClassName};
 
@@ -22,5 +23,9 @@ public class ${table.javaClassName}Obj extends BasePoObj<${table.javaClassName}>
 
 	public ${table.javaClassName}ViewModel createModel() {
 		return new ${table.javaClassName}ViewModel(this);
+	}
+	
+	public void update() throws BaseApiException {
+		this.factory.update(this, true);
 	}
 }
