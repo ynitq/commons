@@ -57,6 +57,8 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 
 	private Cache cacheOfPo;
 
+	private SafeSave<PO> saveSave;
+
 	protected final String idFieldName;
 
 	/** 从泛型中找到的po的类型 */
@@ -84,6 +86,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 		Assert.notNull(this.idClass, "应该可找到ID的Class");
 		Assert.notNull(this.methodOfGetId, "应该可找到getId的Method");
 
+		this.saveSave = new SafeSave<>(this.entityClass);
 		this.idFieldName = this.methodOfGetId.getName().substring(3).toLowerCase();
 	}
 
@@ -102,6 +105,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	 * @param po
 	 * @throws DaoException
 	 */
+	@Override
 	@Transactional
 	public void delete(PO po) throws DaoException {
 		Assert.notNull(po, "po 不能为空");
@@ -118,6 +122,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	 * @return
 	 * @throws DaoException
 	 */
+	@Override
 	public List<PO> findAll() throws DaoException {
 		String sql = String.format("from %s order by %s desc",
 				this.entityClass.getSimpleName(),
@@ -144,7 +149,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 
 		String countHsql = "select count(*) " + sqlStartWithFrom;
 		int total = this.getCommonDao().getCount(countHsql, params);
-		return new PageQueryResult<PO>(total, items, pageForm);
+		return new PageQueryResult<>(total, items, pageForm);
 	}
 
 	/**
@@ -169,7 +174,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 
 		String countHsql = "select count(*) " + sqlStartWithFrom;
 		int total = this.getCommonDao().getCount(countHsql, params);
-		return new PageQueryResult<PO>(total, items, pageForm);
+		return new PageQueryResult<>(total, items, pageForm);
 	}
 
 	/**
@@ -263,6 +268,8 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	public void insert(PO po) throws DaoException {
 		Assert.notNull(po, "po 不能为空");
 
+		this.saveSave.process(po);
+
 		this.getCommonDao().insert(po);
 
 		// 保存时，将对象放到cache中
@@ -281,6 +288,8 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	@Transactional
 	public void update(PO po, boolean resetCache) throws DaoException {
 		Assert.notNull(po, "po 不能为空");
+
+		this.saveSave.process(po);
 
 		this.getCommonDao().update(po);
 
@@ -383,7 +392,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 			return null;
 		}
 
-		CacheValueForList<ID> o = new CacheValueForList<ID>();
+		CacheValueForList<ID> o = new CacheValueForList<>();
 		CacheValueForList<ID> value = this.cacheOfList.get(key, o.getClass());
 		if (value != null) {
 			return value.getList();
