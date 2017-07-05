@@ -51,6 +51,18 @@ public class CodeGenMainService {
 	@Autowired
 	private CodeGenContext context;
 
+	private boolean forceOverride;
+
+	@ManagedAttribute(description = "强制保存")
+	public boolean isForceOverride() {
+		return forceOverride;
+	}
+
+	@ManagedAttribute()
+	public void setForceOverride(boolean forceOverride) {
+		this.forceOverride = forceOverride;
+	}
+
 	@ManagedAttribute(description = "数据库")
 	public String getCatalog() {
 		return this.metadataReader.getCatalog();
@@ -142,7 +154,7 @@ public class CodeGenMainService {
 					this.codeGenProperties.getEntityPackage(), // 包名
 					table.getJavaClassName() + ".java", // 文件名
 					this.codeGenProperties.getEntity().getTemplate(), // 模板名
-					map, true);
+					map, this.forceOverride);
 		}
 	}
 
@@ -207,7 +219,7 @@ public class CodeGenMainService {
 								res.packageName, // 包名
 								fileName, // 文件名
 								templateName, // 模板名
-								map,false);
+								map, this.forceOverride);
 					} else {
 						String fileName = res.fileName.replace(
 								CodeGenProperties.PROP_IN_FILE_NAME_FOR_OTHER,
@@ -228,7 +240,7 @@ public class CodeGenMainService {
 							res.packageName, // 包名
 							res.fileName, // 文件名
 							templateName, // 模板名
-							map, false);
+							map, this.forceOverride);
 				} else {
 					this.codeGenTemplateService.saveOtherFile(
 							String.format("%s/%s", res.path, res.fileName), // 文件路径
