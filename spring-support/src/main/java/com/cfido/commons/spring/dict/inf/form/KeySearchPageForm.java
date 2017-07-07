@@ -18,8 +18,6 @@ import com.cfido.commons.spring.dict.schema.DictXml.DictXmlRow;
 @AForm
 public class KeySearchPageForm extends PageForm {
 
-	private static final long serialVersionUID = 1L;
-
 	private String key;
 
 	public String getKey() {
