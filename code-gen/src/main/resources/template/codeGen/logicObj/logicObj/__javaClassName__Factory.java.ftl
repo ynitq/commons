@@ -60,7 +60,7 @@ public class ${table.javaClassName}Factory extends BaseObjFactory<${table.javaCl
 
 	@Override
 	public void delete(${table.javaClassName}Obj obj) throws BaseApiException {
-		// TODO 需要人工干预是否真的从数据库中删除
+		// TODO 删除${table.javaClassName}时，需要人工判断是否真的从数据库中删除
 		super.delete(obj);
 	}
 
