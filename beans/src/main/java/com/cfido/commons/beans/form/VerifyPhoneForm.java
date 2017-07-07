@@ -20,7 +20,7 @@ public class VerifyPhoneForm extends PhoneForm {
 
 	@AComment(value = "4位短信验证码")
 	@NotNull(message = "验证码不能为空")
-	@Size(min = 4, max = 3, message = "验证码为3位")
+	@Size(min = 4, max = 4, message = "验证码为4位")
 	private String code;
 
 	public String getCode() {
