@@ -23,6 +23,9 @@ public class DictRowEditForm {
 
 	@NotNull(message = "值不能为空")
 	private String value;
+	
+	@NotNull(message = "类型不能为空，请选择内容类型")
+	private int type;
 
 	/** 备注 */
 	private String memo;
@@ -44,6 +47,10 @@ public class DictRowEditForm {
 	public String getValue() {
 		return value;
 	}
+	
+	public int getType() {
+		return type;
+	}
 
 	@AComment(value = "是否是直接输出为html")
 	@AMock("false")
@@ -54,6 +61,11 @@ public class DictRowEditForm {
 	@AComment(value = "键值")
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	@AComment(value = "类型")
+	public void setType(int type) {
+		this.type = type;
 	}
 
 	@AComment(value = "备注")

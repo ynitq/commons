@@ -3,7 +3,6 @@ package com.cfido.commons.spring.dict.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +10,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.DictProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.dict.core.DictTemplateService;
-import com.cfido.commons.spring.dict.schema.DictXml.DictXmlRow;
 import com.cfido.commons.spring.security.CommonAdminWebUser;
 import com.cfido.commons.spring.security.RememberMeUserHandler;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
-import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.FileUtil;
 
 import freemarker.template.TemplateException;
@@ -96,16 +92,17 @@ public class DictController {
 	@ResponseBody
 	public String js() throws TemplateException, IOException {
 
-		// 获得所有数据
-		List<DictXmlRow> srcList = this.coreService.getAllFromMap();
-
-		// 将数据转化成为map,其实就是js中的object
-		Map<String, String> jsonMap = new HashMap<>();
-		for (DictXmlRow row : srcList) {
-			jsonMap.put(row.getKey(), row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false));
-		}
-		String jsonStr = JSON.toJSONString(jsonMap, true);
-
+//		// 获得所有数据
+//		List<DictXmlRow> srcList = this.coreService.getAllFromMap();
+//
+//		// 将数据转化成为map,其实就是js中的object
+//		Map<String, String> jsonMap = new HashMap<>();
+//		for (DictXmlRow row : srcList) {
+//			jsonMap.put(row.getKey(), row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false));
+//		}
+//		String jsonStr = JSON.toJSONString(jsonMap, true);
+		String jsonStr = this.coreService.js();
+		
 		Map<String, Object> model = new HashMap<>();
 		model.put("jsonStr", jsonStr);
 		model.put("debugMode", String.valueOf(this.debugMode.isDebugMode()));

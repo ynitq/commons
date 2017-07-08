@@ -10,6 +10,7 @@
 <link href="https://cdn.bootcss.com/toastr.js/2.1.3/toastr.min.css" rel="stylesheet">
 <link href="https://cdn.bootcss.com/Dropify/0.2.2/css/dropify.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="/dict/static/dict/index.css">
+<link rel="stylesheet" type="text/css" href="/dict/static/dict/md.css">
 </head>
 
 <body>

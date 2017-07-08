@@ -22,6 +22,7 @@ public class DictVo {
 	private boolean todo;
 	private int usedCount;
 	private boolean html;
+	private int type;
 	private String memo;
 
 	/** 标注和搜索关键字的 key的html */
@@ -36,6 +37,7 @@ public class DictVo {
 		this.html = row.isHtml();
 		this.usedCount = row.getUsedCount();
 		this.key = row.getKey();
+		this.type = row.getType();
 		this.memo = row.getMemo();
 	}
 
@@ -65,6 +67,10 @@ public class DictVo {
 
 	public String getKey() {
 		return key;
+	}
+	
+	public int getType() {
+		return type;
 	}
 
 	/**

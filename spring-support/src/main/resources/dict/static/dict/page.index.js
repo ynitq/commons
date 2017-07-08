@@ -47,7 +47,9 @@ var dictManager = {
 			value : "",
 			memo : "",
 			html : false,
+			type : 0,
 			usedCount : 0,
+			preview: "",
 		},
 
 		pageBar : {// 翻页控制
@@ -103,8 +105,10 @@ var dictManager = {
 					this.editRow.key = cur.key;
 					this.editRow.value = cur.value;
 					this.editRow.html = cur.html;
+					this.editRow.type = cur.type;
 					this.editRow.memo = cur.memo;
 					this.editRow.usedCount = cur.usedCount;
+					this.editRow.preview = cur.preview;
 
 					this.editMode = true;
 					this.tabTitle = "编辑";
@@ -196,6 +200,17 @@ var dictManager = {
 					this.fileFormEditMode = false;
 					this.fileFormPanelTitle = "新建";
 				},
+				/** 保存后，刷新数据 */
+				flush : function(cur) {
+					this.editRow.key = cur.key;
+					this.editRow.value = cur.value;
+					this.editRow.html = cur.html;
+					this.editRow.type = cur.type;
+					this.editRow.memo = cur.memo;
+					this.editRow.usedCount = cur.usedCount;
+					this.editRow.preview = cur.preview;
+				},
+				
 			},
 		});
 
@@ -256,7 +271,10 @@ var dictManager = {
 
 			lzUtil.ajax(that.urlSave, param, function(result, status, xhr) {
 				lzUtil.showMsg("保存成功");
-
+				
+				var cur = result.list[0];
+				that.pageVm.flush(cur);
+				
 				// 刷新列表页
 				that.updateListPage(result);
 			});

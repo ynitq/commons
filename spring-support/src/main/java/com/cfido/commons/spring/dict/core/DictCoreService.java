@@ -23,12 +23,15 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBException;
 
+import org.pegdown.Extensions;
+import org.pegdown.PegDownProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.apiExceptions.IdNotFoundException;
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiExceptions.SimpleApiException;
@@ -37,6 +40,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.DictAutoConfig;
 import com.cfido.commons.spring.dict.DictProperties;
+import com.cfido.commons.spring.dict.constants.DictValueTypeConstant;
 import com.cfido.commons.spring.dict.inf.form.DictAttachmentEditForm;
 import com.cfido.commons.spring.dict.inf.form.DictRowEditForm;
 import com.cfido.commons.spring.dict.inf.form.KeySearchPageForm;
@@ -106,6 +110,9 @@ public class DictCoreService {
 	}
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictCoreService.class);
+	
+	/* PegDown 解析 Markdown 格式的内容 */
+	private final PegDownProcessor pdp = new PegDownProcessor(Extensions.ALL_WITH_OPTIONALS);
 
 	public static final String VO_NAME = "dict";
 
@@ -348,6 +355,26 @@ public class DictCoreService {
 
 		return listAll;
 	}
+	
+	public String js() throws TemplateException, IOException {
+
+		List<DictXmlRow> srcList = this.getAllFromMap();
+		
+		// 将数据转化成为map,其实就是js中的object
+		Map<String, String> jsonMap = new HashMap<>();
+		for (DictXmlRow row : srcList) {
+			String value = row.getValue();
+			int type = row.getType();
+			
+			if( type == DictValueTypeConstant.TEXT ) {
+				value = EncodeUtil.html(value, false);
+			} else if( type == DictValueTypeConstant.MARK_DOWN ) {
+				value = pdp.markdownToHtml(value);
+			}
+			jsonMap.put(row.getKey(), value);
+		}
+		return JSON.toJSONString(jsonMap, true);
+	}
 
 	/**
 	 * 根据key返回key对应的原始文本，不做html转化
@@ -512,9 +539,11 @@ public class DictCoreService {
 		try {
 			DictXmlRow row = this.map.get(form.getKey());
 
+			// TODO 这个方法要加入对类型的判断，如果是html类型，应该置isHtml = true
 			if (row == null) {
 				// 手动添加的，todo可以为false
 				row = this.newDefaultEntity(form.getKey(), form.getValue(), false);
+				row.setType(DictValueTypeConstant.TEXT);
 				this.map.put(form.getKey(), row);
 			}
 
@@ -523,7 +552,8 @@ public class DictCoreService {
 
 			// 根据表单填写数据
 			row.setValue(form.getValue());
-			row.setHtml(form.isHtml());
+			row.setHtml(form.getType() == DictValueTypeConstant.HTML? true : false);
+			row.setType(form.getType());
 			row.setMemo(form.getMemo());
 
 			if (row.isTodo() && StringUtils.hasText(form.getValue())) {
@@ -562,7 +592,14 @@ public class DictCoreService {
 	 */
 	private String getRowOutputHtml(DictXmlRow row, boolean debugMode) {
 		// 如果是html模式就直接输出value，否则就需要转码
-		String value = row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false);
+//		String value = row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false);
+		String value = row.getValue();
+		if( row.getType() == DictValueTypeConstant.TEXT) {
+			value = EncodeUtil.html(row.getValue(), false);
+		} else if( row.getType() == DictValueTypeConstant.MARK_DOWN) {
+			value = pdp.markdownToHtml(row.getValue());
+		}
+		
 		if (debugMode) {
 			// 如果是debug模式，就用debug的格式
 			return String.format(DEBUG_FORMAT,
@@ -604,6 +641,7 @@ public class DictCoreService {
 
 				// 如果原来不存在这个key，就创建一条记录
 				row = this.newDefaultEntity(key, defaultValue, true);
+				row.setType(DictValueTypeConstant.TEXT);
 
 				// 在备注里面说明这个是自动添加的，需要处理
 				if (defaultValue != null) {
@@ -686,6 +724,9 @@ public class DictCoreService {
 	 * 将xml行对象转为vo
 	 */
 	private DictVo rowToVo(DictXmlRow row) {
+		
+		// TODO 主这个方法里需要加根据类型对md格式的解析
+		
 		DictVo vo = new DictVo();
 
 		// 通过row设置数据
@@ -719,8 +760,8 @@ public class DictCoreService {
 			int todo = 0;
 			for (DictXmlRow row : xmlDoc.getDictXmlRow()) {
 				// TODO 这里最好用常量
-				if (row.getType() == 0) {
-					row.setType(row.isHtml() ? 2 : 1);
+				if (row.getType() == DictValueTypeConstant.TEXT) {
+					row.setType(row.isHtml() ? DictValueTypeConstant.HTML : DictValueTypeConstant.MARK_DOWN);
 				}
 
 				this.map.put(row.getKey(), row);

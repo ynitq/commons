@@ -62,6 +62,7 @@
 		<ul class="nav nav-tabs" role="tablist" id="tab_nav">
 			<li role="presentation" class="active"><a href="#div_tab_import" role="tab" data-toggle="tab">导入/导出</a></li>
 			<li role="presentation"><a href="#div_tab_edit" role="tab" data-toggle="tab">{{tabTitle}}</a></li>
+			<li role="presentation"><a href="#div_tab_preview" role="tab" data-toggle="tab">预览</a></li>
 		</ul>
 		<!-- /标签导航 -->
 
@@ -111,9 +112,20 @@
 							<div class="form-group">
 								<div class="col-sm-offset-2 col-sm-9">
 									<div class="checkbox">
-										<label> <input type="checkbox" name="html" v-model="editRow.html" value="true">内容中有html代码
+										<label> <input type="radio" name="type" v-model="editRow.type" value="2" checked="{{editRow.type === 2}}"/> 
+										内容中有html代码
 										</label>
-										<p class="help-block">如果希望在内容中自己写HTML代码，请勾选该选项，一般情况下，我们不建议内容中带有HTML代码</p>
+										<label style="color:red;">&nbsp;&nbsp;&nbsp;&nbsp;如果希望在内容中自己写HTML代码，请勾选该选项，一般情况下，我们不建议内容中带有HTML代码</label>
+									</div>
+									
+									<div class="checkbox">
+										<label> <input type="radio" name="type" v-model="editRow.type" value="3" checked="{{editRow.type === 3}}"/> 内容中有MarkDown代码
+										</label>
+									</div>
+									
+									<div class="checkbox">
+										<label> <input type="radio" name="type" v-model="editRow.type" value="1" checked="{{editRow.type === 1 || editRow.type === 0}}"/> 内容中只有文本
+										</label>
 									</div>
 								</div>
 							</div>
@@ -202,6 +214,11 @@
 				</div>
 
 
+			</div>
+			<!-- /导入标签页 -->
+			
+			<!-- 预览标签页 -->
+			<div role="tabpanel" class="tab-pane fade" id="div_tab_preview" v-html="editRow.preview">
 			</div>
 			<!-- /导入标签页 -->
 
