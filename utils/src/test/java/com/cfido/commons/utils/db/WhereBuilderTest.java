@@ -23,7 +23,6 @@ public class WhereBuilderTest {
 	 */
 	public class InsSearchForm extends PageForm {
 
-		private static final long serialVersionUID = 1L;
 		private String test;
 
 		@ABuildWhereFieldName(name = "testField")

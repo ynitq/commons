@@ -57,6 +57,7 @@ import com.cfido.commons.utils.db.PageQueryResult;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.JaxbUtil;
+import com.cfido.commons.utils.utils.LogUtil;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -455,14 +456,18 @@ public class DictCoreService {
 	 * @throws TemplateException
 	 * @throws IOException
 	 */
-	public String processTemplate(String key, Map<String, Object> dataModel) throws TemplateException, IOException {
+	public String processTemplate(String key, Map<String, Object> dataModel) throws TemplateException {
 
-		Template template = this.freemarkerCfg.getTemplate(key);
-		StringWriter w = new StringWriter();
-		PrintWriter out = new PrintWriter(w);
-		template.process(dataModel, out);
-
-		return w.toString();
+		try {
+			Template template = this.freemarkerCfg.getTemplate(key);
+			StringWriter w = new StringWriter();
+			PrintWriter out = new PrintWriter(w);
+			template.process(dataModel, out);
+			return w.toString();
+		} catch (IOException e) {
+			LogUtil.traceError(log, e);
+			return null;
+		}
 	}
 
 	/**

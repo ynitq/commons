@@ -3,10 +3,11 @@ package ${package};
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.linzi.common.beans.apiServer.BaseApiException;
-import com.linzi.common.beans.others.IConverter;
-import com.linzi.framework.db.IObjFactoryDao;
-import com.linzi.framework.logicObj.BaseObjFactory;
+import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.beans.others.IConverter;
+import com.cfido.commons.utils.db.IObjFactoryDao;
+import com.cfido.commons.utils.logicObj.BaseObjFactory;
+
 
 import ${prop.entityPackage}.${table.javaClassName};
 
@@ -59,7 +60,7 @@ public class ${table.javaClassName}Factory extends BaseObjFactory<${table.javaCl
 
 	@Override
 	public void delete(${table.javaClassName}Obj obj) throws BaseApiException {
-		// TODO 需要人工干预是否真的从数据库中删除
+		// TODO 删除${table.javaClassName}时，需要人工判断是否真的从数据库中删除
 		super.delete(obj);
 	}
 

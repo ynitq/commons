@@ -1,7 +1,6 @@
 package com.cfido.commons.beans.form;
 
-import java.io.Serializable;
-
+import com.cfido.commons.annotation.api.AForm;
 import com.cfido.commons.annotation.api.AMock;
 import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.annotation.form.ABuildWhereExclude;
@@ -12,12 +11,10 @@ import com.cfido.commons.annotation.form.AFormValidateMethod;
  * 翻页查询的基础表单，所有方法在生成hsql时不作为sql的组成部分
  * </pre>
  * 
- * @author 梁韦江
- *  2016年6月24日
+ * @author 梁韦江 2016年6月24日
  */
-public class PageForm implements IPageForm, Serializable {
-
-	private static final long serialVersionUID = 1L;
+@AForm
+public class PageForm implements IPageForm {
 
 	/**
 	 * 页码，默认是第一页

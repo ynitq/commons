@@ -1,6 +1,6 @@
 package ${package};
 
-import com.linzi.framework.logicObj.BaseViewModel;
+import com.cfido.commons.utils.logicObj.BaseViewModel;
 import ${prop.entityPackage}.${table.javaClassName};
 
 /**

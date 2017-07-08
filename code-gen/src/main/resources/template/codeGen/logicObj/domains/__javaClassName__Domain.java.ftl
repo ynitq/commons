@@ -3,8 +3,8 @@ package ${package};
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.linzi.framework.db.BaseDomainWithCache;
-import com.linzi.framework.db.ICommonDao;
+import com.cfido.commons.utils.db.BaseDomainWithCache;
+import com.cfido.commons.utils.db.ICommonDao;
 import ${prop.entityPackage}.${table.javaClassName};
 
 

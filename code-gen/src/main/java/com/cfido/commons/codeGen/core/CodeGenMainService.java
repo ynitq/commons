@@ -51,6 +51,18 @@ public class CodeGenMainService {
 	@Autowired
 	private CodeGenContext context;
 
+	private boolean forceOverride;
+
+	@ManagedAttribute(description = "强制保存")
+	public boolean isForceOverride() {
+		return forceOverride;
+	}
+
+	@ManagedAttribute()
+	public void setForceOverride(boolean forceOverride) {
+		this.forceOverride = forceOverride;
+	}
+
 	@ManagedAttribute(description = "数据库")
 	public String getCatalog() {
 		return this.metadataReader.getCatalog();
@@ -98,9 +110,9 @@ public class CodeGenMainService {
 			this.createEntityFiles();
 		}
 
-		if (this.codeGenProperties.isAutoRunFileSet1()) {
-			log.debug("自动生成 套装1 文件");
-			this.createFilesSet1();
+		if (this.codeGenProperties.isAutoRunLogicObj()) {
+			log.debug("自动生成 逻辑对象 文件");
+			this.createLogicObjFile();
 		}
 
 		if (this.codeGenProperties.isAutoRunTemplate()) {
@@ -142,7 +154,7 @@ public class CodeGenMainService {
 					this.codeGenProperties.getEntityPackage(), // 包名
 					table.getJavaClassName() + ".java", // 文件名
 					this.codeGenProperties.getEntity().getTemplate(), // 模板名
-					map, true);
+					map, this.forceOverride);
 		}
 	}
 
@@ -157,10 +169,9 @@ public class CodeGenMainService {
 		return map;
 	}
 
-	@ManagedOperation(description = "生成 套装1 的文件，包含了domain、jsp等等")
-	public void createFilesSet1() throws IOException {
-		this.doCreateFileByTemplate("template/codeGen/fileset1/java");
-		this.doCreateFileByTemplate("template/codeGen/fileset1/other");
+	@ManagedOperation(description = "生成 逻辑对象 的文件，包含了domain、逻辑对象、对象工厂、对象视图")
+	public void createLogicObjFile() throws IOException {
+		this.doCreateFileByTemplate("template/codeGen/logicObj");
 	}
 
 	@ManagedOperation(description = "生成 templateDir属性定义的模板 的文件")
@@ -207,7 +218,7 @@ public class CodeGenMainService {
 								res.packageName, // 包名
 								fileName, // 文件名
 								templateName, // 模板名
-								map,false);
+								map, this.forceOverride);
 					} else {
 						String fileName = res.fileName.replace(
 								CodeGenProperties.PROP_IN_FILE_NAME_FOR_OTHER,
@@ -228,7 +239,7 @@ public class CodeGenMainService {
 							res.packageName, // 包名
 							res.fileName, // 文件名
 							templateName, // 模板名
-							map, false);
+							map, this.forceOverride);
 				} else {
 					this.codeGenTemplateService.saveOtherFile(
 							String.format("%s/%s", res.path, res.fileName), // 文件路径
