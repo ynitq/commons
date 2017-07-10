@@ -2,6 +2,7 @@ package com.cfido.commons.beans.apiExceptions;
 
 import java.io.Serializable;
 
+import com.cfido.commons.annotation.api.ADataInApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 
 /**
@@ -17,19 +18,22 @@ public class IdNotFoundException extends BaseApiException {
 
 	private final String errorMsg;
 
-	public IdNotFoundException(String objName, Serializable id) {
-		super();
-		this.errorMsg = String.format("找不到 id=%s 的 %s 数据 ", String.valueOf(id), objName);
-	}
+	@ADataInApiException
+	private final Serializable id;
 
-	public IdNotFoundException(String errorMsg) {
-		super(errorMsg);
+	public IdNotFoundException(String errorMsg, Serializable id) {
+		super();
 		this.errorMsg = errorMsg;
+		this.id = id;
 	}
 
 	@Override
 	public String getErrorMsg() {
 		return this.errorMsg;
+	}
+
+	public Serializable getId() {
+		return id;
 	}
 
 }

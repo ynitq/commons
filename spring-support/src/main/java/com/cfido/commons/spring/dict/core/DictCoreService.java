@@ -173,7 +173,7 @@ public class DictCoreService {
 			DictAttachmentRow deletedRow = this.attahcmentMap.remove(key);
 
 			if (deletedRow == null) {
-				throw new IdNotFoundException("附件", key);
+				throw new IdNotFoundException("无此附件", key);
 			} else {
 				this.imageUploadService.deleteOldFile(deletedRow.getKey(), deletedRow.getExtName());
 			}
@@ -202,7 +202,7 @@ public class DictCoreService {
 			DictXmlRow deletedRow = this.map.remove(key);
 
 			if (deletedRow == null) {
-				throw new IdNotFoundException("字典", key);
+				throw new IdNotFoundException("无此键值", key);
 			}
 		} finally {
 			lockForMap.unlock();
