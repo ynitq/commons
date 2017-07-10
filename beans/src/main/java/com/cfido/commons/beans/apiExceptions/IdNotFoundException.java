@@ -2,6 +2,7 @@ package com.cfido.commons.beans.apiExceptions;
 
 import java.io.Serializable;
 
+import com.cfido.commons.annotation.api.ADataInApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 
 /**
@@ -9,26 +10,30 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
  * 找不到数据
  * </pre>
  * 
- * @author 梁韦江
- *  2016年7月2日
+ * @author 梁韦江 2016年7月2日
  */
 public class IdNotFoundException extends BaseApiException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String objName;
+	private final String errorMsg;
 
-	private final Serializable id;
+	@ADataInApiException
+	private final String id;
 
-	public IdNotFoundException(String objName, Serializable id) {
+	public IdNotFoundException(String errorMsg, Serializable id) {
 		super();
-		this.objName = objName;
-		this.id = id;
+		this.errorMsg = errorMsg;
+		this.id = String.valueOf(id);
 	}
 
 	@Override
 	public String getErrorMsg() {
-		return String.format("找不到 id=%s 的 %s 数据 ", String.valueOf(this.id), this.objName);
+		return this.errorMsg;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }

@@ -57,7 +57,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 
 	private Cache cacheOfPo;
 
-	private SafeSave<PO> saveSave;
+	private SafeSave<PO> safeSave;
 
 	protected final String idFieldName;
 
@@ -86,7 +86,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 		Assert.notNull(this.idClass, "应该可找到ID的Class");
 		Assert.notNull(this.methodOfGetId, "应该可找到getId的Method");
 
-		this.saveSave = new SafeSave<>(this.entityClass);
+		this.safeSave = new SafeSave<>(this.entityClass);
 		this.idFieldName = this.methodOfGetId.getName().substring(3).toLowerCase();
 	}
 
@@ -268,7 +268,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	public void insert(PO po) throws DaoException {
 		Assert.notNull(po, "po 不能为空");
 
-		this.saveSave.process(po);
+		this.safeSave.process(po);
 
 		this.getCommonDao().insert(po);
 
@@ -289,7 +289,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	public void update(PO po, boolean resetCache) throws DaoException {
 		Assert.notNull(po, "po 不能为空");
 
-		this.saveSave.process(po);
+		this.safeSave.process(po);
 
 		this.getCommonDao().update(po);
 
