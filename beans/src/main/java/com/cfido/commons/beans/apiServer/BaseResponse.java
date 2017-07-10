@@ -1,6 +1,5 @@
 package com.cfido.commons.beans.apiServer;
 
-import com.cfido.commons.annotation.api.AMock;
 import com.cfido.commons.annotation.bean.AComment;
 
 /**
@@ -27,7 +26,7 @@ public abstract class BaseResponse {
 	/**
 	 * 必须有 message这个属性在基类，否则android 客户端没法用
 	 */
-	@AMock(value = "一般是错误信息，正常情况下是空")
+	@AComment(value = "一般是错误信息，正常情况下是空")
 	private String message;
 
 	public String getCode() {
