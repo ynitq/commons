@@ -19,12 +19,12 @@ public class IdNotFoundException extends BaseApiException {
 	private final String errorMsg;
 
 	@ADataInApiException
-	private final Serializable id;
+	private final String id;
 
 	public IdNotFoundException(String errorMsg, Serializable id) {
 		super();
 		this.errorMsg = errorMsg;
-		this.id = id;
+		this.id = String.valueOf(id);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class IdNotFoundException extends BaseApiException {
 		return this.errorMsg;
 	}
 
-	public Serializable getId() {
+	public String getId() {
 		return id;
 	}
 
