@@ -1,13 +1,17 @@
 package com.cfido.commons.utils.utils;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfGetter;
 
@@ -88,12 +92,14 @@ public class ClassDescriber {
 	 */
 	public static String create(Class<?> clazz, IFieldDescFilter filter) {
 		ClassDescriber cd = new ClassDescriber(filter);
-		cd.parser(clazz, "");
-		String str = cd.buff.toString();
-		return str;
+		cd.parser(clazz, cd.rootMap);
+		String jsonStr = JSON.toJSONString(cd.rootMap, SerializerFeature.PrettyFormat, SerializerFeature.UseSingleQuotes,
+				SerializerFeature.MapSortField);
+
+		return jsonStr.replace("\t", "    ");
 	}
 
-	private final StringBuffer buff = new StringBuffer();
+	private final Map<String, Object> rootMap = new HashMap<>();
 
 	/** 默认过滤器 */
 	private final IFieldDescFilter defaultFilter = new DefaultFieldDescFilter();
@@ -102,10 +108,6 @@ public class ClassDescriber {
 
 	/** 保存已经分析过的类型 */
 	private final Set<Class<?>> parseredSet = new HashSet<>();
-
-	private ClassDescriber() {
-		this(null);
-	}
 
 	private ClassDescriber(IFieldDescFilter filter) {
 		super();
@@ -117,10 +119,10 @@ public class ClassDescriber {
 	 * 
 	 * @return
 	 */
-	private void parser(Class<?> respClass, String prefix) {
+	private void parser(Class<?> respClass, Map<String, Object> nodeMap) {
 
 		if (this.parseredSet.contains(respClass)) {
-			// 如果已经分析过，就不在分析了，免得无需递归
+			// 如果已经分析过，就不在分析了，免得无限递归
 			return;
 		}
 		this.parseredSet.add(respClass);
@@ -128,45 +130,43 @@ public class ClassDescriber {
 		List<MethodInfoOfGetter> list = MethodUtil.findGetter(respClass);
 
 		for (MethodInfoOfGetter res : list) {
+
 			if (!this.filter.isValidMethod(res.getOriginMethod())) {
 				// 过滤一下方法
 				continue;
 			}
 
-			if (res != null) {
-				buff.append(prefix);
+			String name = res.getPropName() + ":" + res.getReturnTypeClass().getSimpleName();
+			// 如果是数组，后面加 []， 例如: code[]:Integer
+			if (res.isArray()) {
+				name += "[]";
+			}
 
-				// code:Integer
-				buff.append(res.getPropName());
-				buff.append(":");
-				buff.append(res.getReturnTypeClass().getSimpleName());
+			// 备注
+			String memo = "";
+			AComment memoAnno = res.getAnnotation(AComment.class, false);
+			if (memoAnno != null && StringUtils.hasText(memoAnno.value())) {
+				memo = memoAnno.value();
+			}
 
-				// 如果是数组，后面加 []， 例如: code:Integer[]
-				if (res.isArray()) {
-					buff.append("[]");
-				}
-
-				// 备注
-				AComment memoAnno = res.getAnnotation(AComment.class, false);
-				if (memoAnno != null && StringUtils.hasText(memoAnno.value())) {
-					buff.append(" (");
-					buff.append(memoAnno.value());
-					buff.append(")");
-				}
-
-				buff.append('\n');
-
-				if (!res.isOpenType()
-						&& this.filter.isValidReturnType(res.getReturnTypeClass())
-						&& !this.parseredSet.contains(res.getReturnTypeClass())) {
-					// 如果返回的类型不是内部类型，并且需要显示类结构说明
-					if (res.isArray()) {
-						// 如果是数组，就加多一行
-						buff.append(prefix);
-						buff.append('\t');
-						buff.append(String.format("[%s的结构]\n", res.getReturnTypeClass().getSimpleName()));
+			if (res.isOpenType()) {
+				// 如果返回类型是普通类型
+				nodeMap.put(name, memo);
+			} else {
+				if (this.parseredSet.contains(res.getReturnTypeClass())
+						|| !this.filter.isValidReturnType(res.getReturnTypeClass())) {
+					// 如果这个类已经存在了或者不需要描述
+					nodeMap.put(name, memo);
+				} else {
+					// 否则就需要显示类结构说明
+					Map<String, Object> subMap = new HashMap<>();
+					if (StringUtils.hasText(memo)) {
+						// 属性的备注
+						subMap.put(" //", memo);
 					}
-					parser(res.getReturnTypeClass(), prefix + "\t");
+					nodeMap.put(name, subMap);
+
+					this.parser(res.getReturnTypeClass(), subMap);
 				}
 			}
 		}
