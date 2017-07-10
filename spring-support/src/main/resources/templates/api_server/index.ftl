@@ -15,7 +15,6 @@
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/Dropify/0.2.2/js/dropify.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/vue/2.2.6/vue.min.js"></script>
 
 </head>
 <style>
@@ -199,15 +198,6 @@ a:VISITED {
 			console.debug('点击增加')
 			parent.append(div);
 		})
-
-		confVm = new Vue({
-			el : "#coll-other-conf",
-
-			data : {
-				sessionId : "${sessionId}",
-				basePath : "${basePath}",
-			},
-		});
 	});
 </script>
 </head>
@@ -261,27 +251,6 @@ a:VISITED {
 
 	<div id="leftDiv">
 		<div class="panel-group" role="tablist" aria-multiselectable="true">
-
-			<div class="panel panel-default">
-				<a class="my-panel-heading " data-toggle="collapse" href="#coll-other-conf" aria-expanded="false"
-					aria-controls="coll-other-conf}">服务器配置 </a>
-				<div id="coll-other-conf" class="panel-collapse collapse" role="tabpanel" style="padding: 5px;">
-					<div class="form-group">
-						<label> x-auth-token:</label>
-						<input type="text" class="form-control" v-model="sessionId" />
-						<p class="help-block">
-							用ajax进行跨域请求，因为没有cookie，所以只能通过header传sessionId。只需要在ajax中增加这个
-							<code>x-auth-token</code>
-							的header，服务器就可以找回认证状态
-						</p>
-					</div>
-					<div class="form-group">
-						<label> Server: </label>
-						<input type="text" class="form-control" v-model="basePath" />
-						<p class="help-block">默认的ajax请求是对当前服务器，但我们可以修改一下ip，调用其他服务器的api, 测试一下ajax跨域调用。</p>
-					</div>
-				</div>
-			</div>
 
 			<#list vo.infGroup as group>
 			<div class="panel panel-default">
