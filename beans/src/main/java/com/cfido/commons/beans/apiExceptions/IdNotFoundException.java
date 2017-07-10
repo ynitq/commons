@@ -9,26 +9,27 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
  * 找不到数据
  * </pre>
  * 
- * @author 梁韦江
- *  2016年7月2日
+ * @author 梁韦江 2016年7月2日
  */
 public class IdNotFoundException extends BaseApiException {
 
 	private static final long serialVersionUID = 1L;
 
-	private final String objName;
-
-	private final Serializable id;
+	private final String errorMsg;
 
 	public IdNotFoundException(String objName, Serializable id) {
 		super();
-		this.objName = objName;
-		this.id = id;
+		this.errorMsg = String.format("找不到 id=%s 的 %s 数据 ", String.valueOf(id), objName);
+	}
+
+	public IdNotFoundException(String errorMsg) {
+		super(errorMsg);
+		this.errorMsg = errorMsg;
 	}
 
 	@Override
 	public String getErrorMsg() {
-		return String.format("找不到 id=%s 的 %s 数据 ", String.valueOf(this.id), this.objName);
+		return this.errorMsg;
 	}
 
 }

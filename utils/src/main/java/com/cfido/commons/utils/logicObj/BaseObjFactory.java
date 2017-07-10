@@ -131,10 +131,15 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	public OBJ getByIdNotNull(ID id) throws IdNotFoundException {
 		OBJ obj = this.getById(id);
 		if (obj == null) {
-			throw new IdNotFoundException(this.objClass.getSimpleName(), id);
+			throw this.createIdNotFoundException(id);
 		} else {
 			return obj;
 		}
+	}
+
+	/** 创建 IdNotFoundException 的错误，方便给子类自定义错误信息 */
+	protected IdNotFoundException createIdNotFoundException(ID id) {
+		return new IdNotFoundException(this.objClass.getSimpleName(), id);
 	}
 
 	/**
@@ -286,7 +291,6 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 		obj.afterDelete();
 
 	}
-
 
 	/**
 	 * 该方法在create前执行，子类可覆盖该方法，进行一些额外的逻辑判断

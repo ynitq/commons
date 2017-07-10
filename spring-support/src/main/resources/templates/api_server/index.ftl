@@ -129,13 +129,11 @@ a:VISITED {
 		}
 	};
 
-	var confVm = {};
-
 	$(document).ready(function() {
 		$(".js_form").submit(function() {
 			try {
 				var that = $(this);
-				var url = confVm.basePath + $(this).attr("data-url")
+				var url = $(this).attr("data-url")
 				console.log("post to " + url);
 
 				var formData = new FormData(that[0]);
@@ -147,9 +145,6 @@ a:VISITED {
 					url : url, //请求url
 					contentType : false, // 当有文件要上传时，此项是必须的，否则后台无法识别文件流的起始位置(详见：#1)
 					processData : false, // 是否序列化data属性，默认true(注意：false时type必须是post，详见：#2)
-					headers : {
-						"x-auth-token" : confVm.sessionId,
-					},
 					success : function(data) { //提交成功的回调函数
 						//var res = eval("(" + data + ")");
 						var res = data;
