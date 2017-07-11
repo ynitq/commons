@@ -42,9 +42,6 @@ public class ${table.javaClassName}Factory extends BaseObjFactory<${table.javaCl
 
 	/**
 	 * 将obj转为视图对象的转换器
-	 * 
-	 * @param po
-	 * @return
 	 */
 	public IConverter<${table.javaClassName}Obj, ${table.javaClassName}ViewModel> getObj2ViewModelConverter() {
 		return obj2ViewModelConverter;
