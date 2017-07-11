@@ -14,7 +14,7 @@ import org.springframework.util.Assert;
 
 import com.cfido.commons.beans.apiExceptions.InvalidVerifyCodeException;
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
-import com.cfido.commons.beans.apiExceptions.TooBusyWhenSendMailException;
+import com.cfido.commons.beans.apiExceptions.TooBusyException;
 import com.cfido.commons.beans.others.CodeVerifyBean;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
@@ -69,11 +69,11 @@ public class MailCodeService {
 	 *            正文
 	 * @param code
 	 *            验证码
-	 * @throws TooBusyWhenSendMailException
+	 * @throws TooBusyException
 	 * @throws MissFieldException
 	 */
 	public void sendCode(String mailType, String email, String subject, String text, String code)
-			throws TooBusyWhenSendMailException, MissFieldException {
+			throws TooBusyException, MissFieldException {
 
 		ExceptionUtil.isEmail(email, "请输入正确email");
 		Assert.hasText(mailType, "mailType不能为空");
@@ -90,7 +90,7 @@ public class MailCodeService {
 			long remainInSec = this.intervalInSec - (now - oldValue.getTime()) / 1000;
 			if (remainInSec > 0) {
 				// 时间小于时间间隔就抛错
-				throw new TooBusyWhenSendMailException(remainInSec);
+				throw new TooBusyException(remainInSec);
 			}
 
 		}
@@ -170,7 +170,7 @@ public class MailCodeService {
 			@ManagedOperationParameter(name = "email", description = "email"),
 			@ManagedOperationParameter(name = "code", description = "验证码"),
 	})
-	public void testSendCode(String email, String code) throws TooBusyWhenSendMailException, MissFieldException {
+	public void testSendCode(String email, String code) throws TooBusyException, MissFieldException {
 		ExceptionUtil.isEmail(email, "请输入正确email");
 		ExceptionUtil.hasText(code, "验证码不能为空");
 		this.sendCode(TEST_MAIL_TYPE, email, "测试标题", "<html><head></head><body>测试正文</body><html>", code);
