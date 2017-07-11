@@ -107,7 +107,7 @@ public abstract class BaseCodeService {
 	 * @throws TooBusyException
 	 *             如果发送太频繁
 	 */
-	protected String createCodeAndCheckTooBusy(String key) throws TooBusyException {
+	public String createRandomCodeAndCheckBusy(String key) throws TooBusyException {
 		// 检查操作太频繁
 		this.checkTooBusy(key);
 
@@ -187,7 +187,7 @@ public abstract class BaseCodeService {
 	protected abstract String getRedisKeyPrefix();
 
 	/** 将code保存到redis中 */
-	protected String saveCode(String key, String code) {
+	public String saveCode(String key, String code) {
 		Assert.hasText(key, "key不能为空");
 
 		String redisKey = this.createRedisKey(key);
