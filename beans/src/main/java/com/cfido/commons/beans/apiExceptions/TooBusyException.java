@@ -5,12 +5,12 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
 
 /**
  * <pre>
- * 需要间隔1分钟才能再次发送邮件验证码
+ * 需要间隔一段时间才能再次操作
  * </pre>
  * 
- * @author 梁韦江 2016年8月3日
+ * @author 梁韦江
  */
-public class TooBusyWhenSendMailException extends BaseApiException {
+public class TooBusyException extends BaseApiException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -18,7 +18,7 @@ public class TooBusyWhenSendMailException extends BaseApiException {
 	@ADataInApiException
 	private final long remainInSec;
 
-	public TooBusyWhenSendMailException(long remainInSec) {
+	public TooBusyException(long remainInSec) {
 		super();
 		this.remainInSec = remainInSec;
 	}
@@ -29,7 +29,7 @@ public class TooBusyWhenSendMailException extends BaseApiException {
 
 	@Override
 	public String getErrorMsg() {
-		return "需要间隔" + this.remainInSec + "秒才能再次发送邮件验证码";
+		return "需要间隔" + this.remainInSec + "秒才能再次操作";
 	}
 
 }
