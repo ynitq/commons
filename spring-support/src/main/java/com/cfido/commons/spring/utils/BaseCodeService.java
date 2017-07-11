@@ -128,7 +128,7 @@ public abstract class BaseCodeService {
 	/**
 	 * 正在的执行验证校验码是否正确
 	 * 
-	 * @param redisKey
+	 * @param key
 	 *            键值
 	 * @param code
 	 *            验证码
