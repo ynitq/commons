@@ -16,7 +16,7 @@ public class InvalidImageFormatException extends BaseApiException {
 
 	@Override
 	public String getErrorMsg() {
-		return "图片类型非法";
+		return "图片文件格式错误";
 	}
 
 }
