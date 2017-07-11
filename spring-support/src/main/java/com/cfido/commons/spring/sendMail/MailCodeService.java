@@ -1,9 +1,6 @@
 package com.cfido.commons.spring.sendMail;
 
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
@@ -15,10 +12,9 @@ import org.springframework.util.Assert;
 import com.cfido.commons.beans.apiExceptions.InvalidVerifyCodeException;
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiExceptions.TooBusyException;
-import com.cfido.commons.beans.others.CodeVerifyBean;
-import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
+import com.cfido.commons.spring.utils.BaseCodeService;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 
@@ -32,23 +28,15 @@ import com.cfido.commons.utils.utils.ExceptionUtil;
 @ManagedResource(description = "邮件验证码服务")
 @Service
 @ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN_MAIL)
-public class MailCodeService {
-
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MailCodeService.class);
+public class MailCodeService extends BaseCodeService {
 
 	private static final String TEST_MAIL_TYPE = "系统测试邮件";
-
-	@Autowired
-	private RedisTemplate<String, CodeVerifyBean> redisTemplate;
 
 	@Autowired
 	private SendMailService sendMailService;
 
 	@Autowired
 	private DictCoreService dictCoreService;
-
-	@Autowired
-	private DebugModeProperties debugMode;
 
 	/** 验证码的有效期 */
 	private int codeExpireTimeInMin = 10;
@@ -81,22 +69,13 @@ public class MailCodeService {
 		Assert.hasText(text, "text不能为空");
 		Assert.hasText(code, "code不能为空");
 
-		// 发送验证码邮件前，先将key保存起来
 		String key = this.createKey(mailType, email);
 
-		CodeVerifyBean oldValue = this.redisTemplate.opsForValue().get(key);
-		if (oldValue != null) {
-			long now = System.currentTimeMillis();
-			long remainInSec = this.intervalInSec - (now - oldValue.getTime()) / 1000;
-			if (remainInSec > 0) {
-				// 时间小于时间间隔就抛错
-				throw new TooBusyException(remainInSec);
-			}
+		// 检查是否太频繁
+		this.checkTooBusy(key);
 
-		}
-
-		CodeVerifyBean value = new CodeVerifyBean(code);
-		this.redisTemplate.opsForValue().set(key, value, codeExpireTimeInMin, TimeUnit.MINUTES);
+		// 将验证码保存下来
+		this.saveCode(key, code);
 
 		// 用系统名字作为邮件标题发送邮件
 		this.sendMailService.sendMail(this.dictCoreService.getSystemName(),
@@ -105,7 +84,7 @@ public class MailCodeService {
 	}
 
 	private String createKey(String mailType, String email) {
-		return String.format("mailCode:%s——%s", email, mailType);
+		return String.format("%s:%s", email, mailType);
 	}
 
 	/**
@@ -119,32 +98,10 @@ public class MailCodeService {
 		Assert.hasText(code, "code不能为空");
 
 		String key = this.createKey(mailType, email);
-		if (this.debugMode.isDebugMode() && !TEST_MAIL_TYPE.equals(mailType)) {
-			log.warn("开发模式下，自动通过验证 key={} , code={}", key, code);
-			return;
-		}
-
-		CodeVerifyBean value = this.redisTemplate.opsForValue().get(key);
-		if (value != null) {
-
-			if (code.equals(value.getCode())) {
-				log.debug("校验验证码时，找到键值:{} 并验证成功", key);
-
-				// 验证成功就删除键值，验证码只能使用一次
-				this.redisTemplate.delete(key);
-
-				// 验证成功就直接返回，其他情况都是抛错
-				return;
-			} else {
-				log.debug("校验验证码时，找到键值:{}，但验证码不对, 正确值:{}, 传入值:{} ",
-						key, value.getCode(), code);
-			}
-		} else {
-			log.debug("校验验证码时，找不到键值:{}", key);
-		}
-		throw new InvalidVerifyCodeException();
+		this.checkRandCode(key, code);
 	}
 
+	@Override
 	@ManagedAttribute(description = "验证码的有效期（分钟）")
 	public int getCodeExpireTimeInMin() {
 		return codeExpireTimeInMin;
@@ -155,6 +112,7 @@ public class MailCodeService {
 		this.codeExpireTimeInMin = codeExpireTimeInMin;
 	}
 
+	@Override
 	@ManagedAttribute(description = "两次发送的最小时间间隔(秒)")
 	public int getIntervalInSec() {
 		return intervalInSec;
@@ -185,7 +143,13 @@ public class MailCodeService {
 		ExceptionUtil.isEmail(email, "请输入正确email");
 		ExceptionUtil.hasText(code, "验证码不能为空");
 
-		this.verifyCode(TEST_MAIL_TYPE, email, code);
+		String key = this.createKey(TEST_MAIL_TYPE, email);
+		this.doVerifyCode(key, code, true);
+	}
+
+	@Override
+	protected String getRedisKeyPrefix() {
+		return "mailCode";
 	}
 
 }
