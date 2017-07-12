@@ -94,7 +94,7 @@ public class DictCoreService {
 			if (row != null) {
 				return row.getValue();
 			} else {
-				return null;
+				return "";
 			}
 		}
 
@@ -111,7 +111,7 @@ public class DictCoreService {
 	}
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictCoreService.class);
-	
+
 	/* PegDown 解析 Markdown 格式的内容 */
 	private final PegDownProcessor pdp = new PegDownProcessor(Extensions.ALL_WITH_OPTIONALS);
 
@@ -356,20 +356,20 @@ public class DictCoreService {
 
 		return listAll;
 	}
-	
+
 	public String js() throws TemplateException, IOException {
 
 		List<DictXmlRow> srcList = this.getAllFromMap();
-		
+
 		// 将数据转化成为map,其实就是js中的object
 		Map<String, String> jsonMap = new HashMap<>();
 		for (DictXmlRow row : srcList) {
 			String value = row.getValue();
 			int type = row.getType();
-			
-			if( type == DictValueTypeConstant.TEXT ) {
+
+			if (type == DictValueTypeConstant.TEXT) {
 				value = EncodeUtil.html(value, false);
-			} else if( type == DictValueTypeConstant.MARK_DOWN ) {
+			} else if (type == DictValueTypeConstant.MARK_DOWN) {
 				value = pdp.markdownToHtml(value);
 			}
 			jsonMap.put(row.getKey(), value);
@@ -456,7 +456,7 @@ public class DictCoreService {
 	 * @throws TemplateException
 	 * @throws IOException
 	 */
-	public String processTemplate(String key, Map<String, Object> dataModel) throws TemplateException {
+	public String processTemplate(String key, Map<String, Object> dataModel) {
 
 		try {
 			Template template = this.freemarkerCfg.getTemplate(key);
@@ -464,9 +464,9 @@ public class DictCoreService {
 			PrintWriter out = new PrintWriter(w);
 			template.process(dataModel, out);
 			return w.toString();
-		} catch (IOException e) {
-			LogUtil.traceError(log, e);
-			return null;
+		} catch (TemplateException | IOException e) {
+			LogUtil.traceError(log, e, "解析模板时发生了错误");
+			return e.getMessage();
 		}
 	}
 
@@ -544,7 +544,6 @@ public class DictCoreService {
 		try {
 			DictXmlRow row = this.map.get(form.getKey());
 
-			// TODO 这个方法要加入对类型的判断，如果是html类型，应该置isHtml = true
 			if (row == null) {
 				// 手动添加的，todo可以为false
 				row = this.newDefaultEntity(form.getKey(), form.getValue(), false);
@@ -557,7 +556,8 @@ public class DictCoreService {
 
 			// 根据表单填写数据
 			row.setValue(form.getValue());
-			row.setHtml(form.getType() == DictValueTypeConstant.HTML? true : false);
+			// row.setHtml(form.getType() == DictValueTypeConstant.HTML ? true :
+			// false);
 			row.setType(form.getType());
 			row.setMemo(form.getMemo());
 
@@ -597,14 +597,15 @@ public class DictCoreService {
 	 */
 	private String getRowOutputHtml(DictXmlRow row, boolean debugMode) {
 		// 如果是html模式就直接输出value，否则就需要转码
-//		String value = row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false);
+		// String value = row.isHtml() ? row.getValue() :
+		// EncodeUtil.html(row.getValue(), false);
 		String value = row.getValue();
-		if( row.getType() == DictValueTypeConstant.TEXT) {
+		if (row.getType() == DictValueTypeConstant.TEXT) {
 			value = EncodeUtil.html(row.getValue(), false);
-		} else if( row.getType() == DictValueTypeConstant.MARK_DOWN) {
+		} else if (row.getType() == DictValueTypeConstant.MARK_DOWN) {
 			value = pdp.markdownToHtml(row.getValue());
 		}
-		
+
 		if (debugMode) {
 			// 如果是debug模式，就用debug的格式
 			return String.format(DEBUG_FORMAT,
@@ -699,7 +700,7 @@ public class DictCoreService {
 	}
 
 	/**
-	 * 新见PO时的各项默认值
+	 * 新建PO时的各项默认值
 	 * 
 	 * @param key
 	 * @param value
@@ -710,9 +711,10 @@ public class DictCoreService {
 		DictXmlRow row = new DictXmlRow();
 
 		row.setKey(key);
-		row.setHtml(false);
+		// row.setHtml(false);
 		row.setTodo(todo);
 		row.setUsedCount(0);
+		row.setType(DictValueTypeConstant.TEXT);
 
 		if (StringUtils.hasText(value)) {
 			// 如果有默认值，就用默认值
@@ -729,16 +731,14 @@ public class DictCoreService {
 	 * 将xml行对象转为vo
 	 */
 	private DictVo rowToVo(DictXmlRow row) {
-		
-		// TODO 主这个方法里需要加根据类型对md格式的解析
-		
+
 		DictVo vo = new DictVo();
 
 		// 通过row设置数据
 		vo.updateFromXml(row);
 
-		// 预览的html
-		vo.setPreview(this.getRowOutputHtml(row, true));
+		// 预览的html，根据类型对md格式的解析
+		vo.setPreview(this.getRowOutputHtml(row, false));
 
 		return vo;
 	}
@@ -764,9 +764,9 @@ public class DictCoreService {
 			this.map.clear();
 			int todo = 0;
 			for (DictXmlRow row : xmlDoc.getDictXmlRow()) {
-				// TODO 这里最好用常量
-				if (row.getType() == DictValueTypeConstant.TEXT) {
-					row.setType(row.isHtml() ? DictValueTypeConstant.HTML : DictValueTypeConstant.MARK_DOWN);
+				if (row.getType() == 0) {
+					// 如果是0，表示还是旧的用isHtml的数据，新版本用type替换了html，这里是将type设置为非0，表示已经转换过了
+					row.setType(row.isHtml() ? DictValueTypeConstant.HTML : DictValueTypeConstant.TEXT);
 				}
 
 				this.map.put(row.getKey(), row);
