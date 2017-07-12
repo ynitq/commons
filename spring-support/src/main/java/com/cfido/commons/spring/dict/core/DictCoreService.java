@@ -94,7 +94,7 @@ public class DictCoreService {
 			if (row != null) {
 				return row.getValue();
 			} else {
-				return "";
+				return null;
 			}
 		}
 

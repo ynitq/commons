@@ -44,10 +44,10 @@ public abstract class BaseCodeService {
 		Assert.hasText(key, "key不能为空");
 		Assert.hasText(code, "code不能为空");
 
-		if (this.debugMode.isDebugMode()) {
-			log.warn("开发模式下，自动通过验证 key={} , code={}", key, code);
-			return;
-		}
+//		if (this.debugMode.isDebugMode()) {
+//			log.warn("开发模式下，自动通过验证 key={} , code={}", key, code);
+//			return;
+//		}
 
 		this.doVerifyCode(key, code, deleteKey);
 	}
