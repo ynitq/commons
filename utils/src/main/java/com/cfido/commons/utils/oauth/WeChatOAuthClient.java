@@ -197,6 +197,11 @@ public class WeChatOAuthClient {
 
 		this.afterGetToken();
 
+		log.info("获得 token 成功：{}", token.getOpenid());
+		log.info("获得 token 成功：{}", token.getToken_type());
+		log.info("获得 token 成功：{}", token.getRefresh_token());
+		log.info("获得 token 成功：{}", token.getScope());
+		
 		log.info("获得 token 成功：{}", JSON.toJSONString(token, true));
 	}
 
