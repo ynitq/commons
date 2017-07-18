@@ -647,17 +647,15 @@ public class DictCoreService {
 
 				// 如果原来不存在这个key，就创建一条记录
 				row = this.newDefaultEntity(key, defaultValue, true);
-				row.setType(DictValueTypeConstant.TEXT);
-
-				// 在备注里面说明这个是自动添加的，需要处理
-				if (defaultValue != null) {
-					row.setMemo(String.format("第一次发现于: %s (%s)",
-							WebContextHolderHelper.getRequestURL(false),
-							DateUtil.dateFormat(new Date())));
-				}
 
 				// 同时将key放到map中
 				this.map.put(row.getKey(), row);
+			} else {
+				if (defaultValue != null && row.getKey().equals(row.getValue())) {
+					// 如果原来的键和值相等，就表示是自动添加的，如果碰巧传入的了默认值，就用默认值更新一下
+					row.setValue(defaultValue);
+					this.asyncSave();
+				}
 			}
 
 			if (incCounter) {
@@ -703,10 +701,10 @@ public class DictCoreService {
 	 * 新建PO时的各项默认值
 	 * 
 	 * @param key
-	 * @param value
+	 * @param defaultValue
 	 * @return
 	 */
-	private DictXmlRow newDefaultEntity(String key, String value, boolean todo) {
+	private DictXmlRow newDefaultEntity(String key, String defaultValue, boolean todo) {
 
 		DictXmlRow row = new DictXmlRow();
 
@@ -716,12 +714,19 @@ public class DictCoreService {
 		row.setUsedCount(0);
 		row.setType(DictValueTypeConstant.TEXT);
 
-		if (StringUtils.hasText(value)) {
+		if (StringUtils.hasText(defaultValue)) {
 			// 如果有默认值，就用默认值
-			row.setValue(value);
+			row.setValue(defaultValue);
+			row.setTodo(false); // 有默认值的，就一定不是TODO的
+			row.setMemo("默认值自动添加");
 		} else {
 			// 如果没有默认值，就用key作为值
 			row.setValue(key);
+
+			// 在备注里面说明这个是自动添加的，需要处理
+			row.setMemo(String.format("第一次发现于: %s (%s)",
+					WebContextHolderHelper.getRequestURL(false),
+					DateUtil.dateFormat(new Date())));
 		}
 
 		return row;
