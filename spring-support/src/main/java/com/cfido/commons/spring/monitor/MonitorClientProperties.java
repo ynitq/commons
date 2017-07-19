@@ -216,6 +216,10 @@ public class MonitorClientProperties {
 			return;
 		}
 
+		if (!this.enable) {
+			// 如果关闭了服务，就无需检查
+			return;
+		}
 
 		this.detectServerHost();
 		this.detectClientHost();

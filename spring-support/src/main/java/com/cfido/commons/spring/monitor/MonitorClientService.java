@@ -275,7 +275,10 @@ public class MonitorClientService {
 				}
 			}
 		}, "监控客户端报告线程");
-		reportThread.start();
+
+		if (this.clientProperties.isEnable()) {
+			reportThread.start();
+		}
 
 	}
 
