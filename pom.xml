@@ -198,7 +198,7 @@
 				<configuration>
 					<nohelp>true</nohelp>
 					<show>private</show>
-					<bottom><![CDATA[Copyright 2016, <a href="http://www.lin-zi.com" target="_blank">云南林资科技有限公司<a>]]>
+					<bottom><![CDATA[Copyright 2016, github开源项目<a href="https://github.com/ynitq/commons" target="_blank">ynitq/commons<a>]]>
 					</bottom>
 					<additionalJOptions>
 						<additionalJOption>-J-Duser.language=zh</additionalJOption>
