@@ -18,11 +18,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface AForm {
-
-	/**
-	 * 备注信息，说明这个表单是干什么的，用于自动生成的页面
-	 * 
-	 * @return
-	 */
-	String value() default "";
 }
