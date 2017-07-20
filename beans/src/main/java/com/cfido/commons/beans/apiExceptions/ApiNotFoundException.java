@@ -1,5 +1,6 @@
 package com.cfido.commons.beans.apiExceptions;
 
+import com.cfido.commons.annotation.api.ADataInApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 
 /**
@@ -7,8 +8,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
  * 登陆状态失效了，需要重新授权
  * </pre>
  * 
- * @author 梁韦江
- *  2016年7月2日
+ * @author 梁韦江 2016年7月2日
  */
 public class ApiNotFoundException extends BaseApiException {
 
@@ -17,14 +17,17 @@ public class ApiNotFoundException extends BaseApiException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final String infName;
+	@ADataInApiException
+	private final String url;
 
-	private final String methodName;
-	
 	public ApiNotFoundException(String infName, String methodName) {
 		super();
-		this.infName = infName;
-		this.methodName = methodName;
+		this.url = infName + "/" + methodName;
+	}
+
+	public ApiNotFoundException(String url) {
+		super();
+		this.url = url;
 	}
 
 	@Override
@@ -32,12 +35,8 @@ public class ApiNotFoundException extends BaseApiException {
 		return "你所调用的访问的地址不存在";
 	}
 
-	public String getInfName() {
-		return infName;
-	}
-
-	public String getMethodName() {
-		return methodName;
+	public String getUrl() {
+		return url;
 	}
 
 	@Override
