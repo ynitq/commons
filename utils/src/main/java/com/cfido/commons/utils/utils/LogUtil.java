@@ -30,7 +30,8 @@ public class LogUtil {
 
 		@Override
 		public boolean isMatch(StackTraceElement obj) {
-			return obj != null && (obj.getClassName().startsWith("com.linzi") || obj.getClassName().startsWith("com.cfido"));
+			return obj != null && (obj.getClassName().startsWith("com.linzi")
+					|| obj.getClassName().startsWith("com.cfido") || obj.getClassName().startsWith("game"));
 		}
 
 	};
