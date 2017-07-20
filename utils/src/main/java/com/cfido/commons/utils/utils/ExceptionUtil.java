@@ -104,7 +104,7 @@ public class ExceptionUtil {
 	/**
 	 * 获取ApiException上的额外数据
 	 */
-	private static Map<String, Object> getExDataFromApiException(BaseApiException ex) {
+	public static Map<String, Object> getExDataFromApiException(BaseApiException ex) {
 		if (ex == null) {
 			return null;
 		}
