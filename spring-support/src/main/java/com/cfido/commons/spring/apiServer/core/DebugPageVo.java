@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.cfido.commons.spring.apiServer.service.ApiMethodInfo;
+
 /**
  * <pre>
  * 用于debug界面的vo
@@ -22,7 +24,7 @@ public class DebugPageVo {
 		private String memo;// 备注
 
 		/** 这个分组下的所有api */
-		private final List<ApiMethodInfo> methods = new LinkedList<>();
+		private final List<ApiMethodInfo<?>> methods = new LinkedList<>();
 
 		public String getInfKey() {
 			return infKey;
@@ -40,25 +42,25 @@ public class DebugPageVo {
 			this.memo = memo;
 		}
 
-		public List<ApiMethodInfo> getMethods() {
+		public List<ApiMethodInfo<?>> getMethods() {
 			return methods;
 		}
 
 	}
 
-	private final List<ApiMethodInfo> methods;
+	private final List<ApiMethodInfo<?>> methods;
 	private final String apiUrlPrefix;
 
 	/** 所有的分类 */
 	private final List<InfGroup> infGroup = new LinkedList<>();
 
-	public DebugPageVo(String apiUrlPrefix, List<ApiMethodInfo> methods) {
+	public DebugPageVo(String apiUrlPrefix, List<ApiMethodInfo<?>> methods) {
 		super();
 		this.apiUrlPrefix = apiUrlPrefix;
 		this.methods = methods;
 
 		Map<String, InfGroup> groupMap = new HashMap<>();
-		for (ApiMethodInfo mi : methods) {
+		for (ApiMethodInfo<?> mi : methods) {
 			String key = mi.getInfaceKey();
 
 			// 看看是否存在这个分组
@@ -92,7 +94,7 @@ public class DebugPageVo {
 		return infGroup;
 	}
 
-	public List<ApiMethodInfo> getMethods() {
+	public List<ApiMethodInfo<?>> getMethods() {
 		return methods;
 	}
 

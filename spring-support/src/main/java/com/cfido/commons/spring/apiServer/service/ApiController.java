@@ -16,8 +16,6 @@ import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.apiExceptions.ApiNotFoundException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.BaseResponse;
-import com.cfido.commons.spring.apiServer.core.ApiMethodInfo;
-import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.web.BinderUtil;
@@ -44,9 +42,6 @@ public class ApiController {
 	@Autowired
 	private ApiMapContainer apiMapContainer;
 
-	@Autowired
-	private DebugModeProperties debugMode;
-
 	@Autowired(required = false)
 	private LoginContext loginContext;
 
@@ -64,7 +59,8 @@ public class ApiController {
 	@PostConstruct
 	protected void init() {
 		if (this.securityService != null) {
-			log.info("{} 有特殊的安全服务者 {}", this.getClass().getSimpleName(), this.securityService.getClass().getSimpleName());
+			log.info("{} 有特殊的安全服务者 {}", this.getClass().getSimpleName(),
+					this.securityService.getClass().getSimpleName());
 		} else {
 			if (this.loginContext == null) {
 				log.warn("警告！！ {} 没有任何安全保障，请检查");
@@ -82,8 +78,8 @@ public class ApiController {
 	 * @param methodInfo
 	 *            ApiMethodInfo
 	 */
-	private void onBeforeInvoke(HttpServletRequest req, HttpServletResponse resp, ApiMethodInfo methodInfo)
-			throws BaseApiException {
+	private void onBeforeInvoke(HttpServletRequest req, HttpServletResponse resp,
+			ApiMethodInfo<BaseResponse> methodInfo) throws BaseApiException {
 
 		if (methodInfo.isNeedLogin()) {
 			if (this.securityService != null) {
@@ -105,7 +101,7 @@ public class ApiController {
 		resp.setHeader("Access-Control-Allow-Origin", "*");
 		resp.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 
-		ApiMethodInfo methodInfo = this.apiMapContainer.findApiMethod(infName, methodName);
+		ApiMethodInfo<BaseResponse> methodInfo = this.apiMapContainer.findApiMethod(infName, methodName);
 
 		BaseResponse res = null;
 		Object param = null;
@@ -141,10 +137,6 @@ public class ApiController {
 				// 执行接口方法
 				res = methodInfo.invoke(param);
 
-				if (res == null && this.debugMode.isDebugMode()) {
-					// 如果为null ,并且要生成模拟数据
-					res = methodInfo.createMockData();
-				}
 			} catch (Exception e) {
 				res = ExceptionUtil.getErrorResponse(resp, e, log.isDebugEnabled());
 			}

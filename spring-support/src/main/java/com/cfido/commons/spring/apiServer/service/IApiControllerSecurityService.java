@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cfido.commons.beans.apiServer.BaseApiException;
-import com.cfido.commons.spring.apiServer.core.ApiMethodInfo;
+import com.cfido.commons.beans.apiServer.BaseResponse;
 
 /**
  * <pre>
@@ -28,7 +28,8 @@ public interface IApiControllerSecurityService {
 	 * @throws BaseApiException
 	 *             如果抛错误，就不会执行apiMethodInfo
 	 */
-	void onBeforeInvoke(HttpServletRequest request, HttpServletResponse response, ApiMethodInfo apiMethodInfo)
+	void onBeforeInvoke(HttpServletRequest request, HttpServletResponse response,
+			ApiMethodInfo<BaseResponse> apiMethodInfo)
 			throws BaseApiException;
 
 }

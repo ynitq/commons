@@ -1,21 +1,21 @@
-package com.cfido.commons.spring.apiServer.core;
+package com.cfido.commons.spring.apiServer.service;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import com.cfido.commons.annotation.api.AForm;
 import com.cfido.commons.annotation.api.AMethod;
 import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
-import com.cfido.commons.beans.apiServer.ApiCommonCode;
-import com.cfido.commons.beans.apiServer.BaseResponse;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
-import com.cfido.commons.spring.apiServer.service.ApiController;
+import com.cfido.commons.spring.apiServer.core.ApiServerInitException;
+import com.cfido.commons.spring.apiServer.core.ApiServerUtils;
+import com.cfido.commons.spring.apiServer.core.FindInferfaceResult;
+import com.cfido.commons.spring.apiServer.core.MethodParamVo;
 import com.cfido.commons.spring.security.LoginContext;
-import com.cfido.commons.spring.utils.MockDataCreater;
 import com.cfido.commons.utils.utils.ClassDescriber;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.web.BinderUtil;
@@ -27,7 +27,7 @@ import com.cfido.commons.utils.web.BinderUtil;
  * 
  * @author 梁韦江 2016年6月28日
  */
-public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
+public class ApiMethodInfo<T> {
 
 	/**
 	 * 根据接口名和方法名生成 key
@@ -39,7 +39,7 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * @return String
 	 */
 	public static String createKey(String infName, String methodName) {
-		String key = String.format("%s/%s", infName, methodName);
+		final String key = String.format("%s/%s", infName, methodName);
 		return key;
 	}
 
@@ -57,10 +57,21 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 
 	private final FindInferfaceResult resBean;
 
-	private final Class<? extends BaseResponse> returnClass; // 接口返还的数据类型
+	private final Class<? extends T> returnClass; // 接口返还的数据类型
 
 	private final String url;
 	private final boolean uploadFile;
+
+	private final Class<T> returnBaseClass; // 返回的数据类型的基类
+
+	public static Comparator<ApiMethodInfo<?>> COMPARATOR = new Comparator<ApiMethodInfo<?>>() {
+
+		@Override
+		public int compare(ApiMethodInfo<?> o1, ApiMethodInfo<?> o2) {
+			return o1.url.compareTo(o2.url);
+		}
+
+	};
 
 	/**
 	 * 构造，并检查合法性
@@ -76,9 +87,11 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * @throws ApiServerInitException
 	 *             ApiServerInitException
 	 */
-	public ApiMethodInfo(Object implObj, FindInferfaceResult resBean, Method imethod, AMethod apiMethodAnno)
+	ApiMethodInfo(Object implObj, FindInferfaceResult resBean, Method imethod, AMethod apiMethodAnno,
+			Class<T> returnBaseClass)
 			throws ApiServerInitException {
-		super();
+
+		this.returnBaseClass = returnBaseClass;
 
 		this.implObj = implObj;
 		this.apiMethod = imethod;
@@ -87,8 +100,9 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 		this.apiMethodAnno = apiMethodAnno;
 
 		try {
-			this.implMethod = this.implObj.getClass().getMethod(this.apiMethod.getName(), this.apiMethod.getParameterTypes());
-		} catch (Exception e) {
+			this.implMethod = this.implObj.getClass().getMethod(this.apiMethod.getName(),
+					this.apiMethod.getParameterTypes());
+		} catch (final Exception e) {
 			throw new RuntimeException("出现了奇怪的错误，实现类中居然找不到接口定义的方法", e);
 		}
 
@@ -102,6 +116,7 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 
 		this.methodKey = this.buildMethodKey();
 		this.url = createKey(this.getInfaceKey(), this.methodKey);
+
 	}
 
 	private ANeedCheckLogin buildLoginCheck() {
@@ -116,7 +131,7 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	}
 
 	private boolean buildUploadFile() {
-		for (MethodParamVo vo : paramVoList) {
+		for (final MethodParamVo vo : paramVoList) {
 			if (vo.isUploadFile()) {
 				return true;
 			}
@@ -147,58 +162,39 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Class<? extends BaseResponse> buildReturnClass() throws ApiServerInitException {
+	private Class<? extends T> buildReturnClass() throws ApiServerInitException {
 		// 检查返回类型是否是 baseResponse
-		Class<?> tmpClass = this.apiMethod.getReturnType();
-		if (!BaseResponse.class.isAssignableFrom(tmpClass)) {
-			String msg = String.format("接口%s 中 %s的返回类型错误，必须是BaseResponse", this.infClass.getSimpleName(),
-					this.apiMethod.getName());
+		final Class<?> tmpClass = this.apiMethod.getReturnType();
+		if (!this.returnBaseClass.isAssignableFrom(tmpClass)) {
+			final String msg = String.format("接口%s 中 %s的返回类型错误，必须是%s的基类", this.infClass.getSimpleName(),
+					this.apiMethod.getName(), this.returnBaseClass.getSimpleName());
 			throw new ApiServerInitException(msg);
 		} else {
-			return (Class<? extends BaseResponse>) tmpClass;
+			return (Class<? extends T>) tmpClass;
 		}
 	}
 
 	private Class<?> buildFormClass() throws ApiServerInitException {
-		int paramCount = this.apiMethod.getParameterTypes().length;
+		final int paramCount = this.apiMethod.getParameterTypes().length;
 		if (paramCount > 1) {
-			String msg = String.format("接口%s 中 %s的参数错误，不能大于1个", this.infClass.getSimpleName(),
+			final String msg = String.format("接口%s 中 %s的参数错误，不能大于1个", this.infClass.getSimpleName(),
 					this.apiMethod.getName());
 			throw new ApiServerInitException(msg);
 		}
 
 		if (paramCount == 1) {
 			// 如果有参数就记录下来
-			Class<?> formClass = this.apiMethod.getParameterTypes()[0];
-			if (!formClass.isAnnotationPresent(AForm.class)) {
-				String msg = String.format("接口%s 中 %s的参数错误，Form的类%s 必须有AFrom注解", this.infClass.getSimpleName(),
-						this.apiMethod.getName(), formClass.getName());
-				throw new ApiServerInitException(msg);
-			}
+			final Class<?> formClass = this.apiMethod.getParameterTypes()[0];
+			// if (!formClass.isAnnotationPresent(AForm.class)) {
+			// String msg = String.format("接口%s 中 %s的参数错误，Form的类%s 必须有AFrom注解",
+			// this.infClass.getSimpleName(),
+			// this.apiMethod.getName(), formClass.getName());
+			// throw new ApiServerInitException(msg);
+			// }
 			return formClass;
 		} else {
 			return null;
 		}
-	}
-
-	@Override
-	public int compareTo(ApiMethodInfo o) {
-		return this.url.compareTo(o.url);
-	}
-
-	/**
-	 * 生成模拟数据
-	 * 
-	 * @return BaseResponse
-	 * @throws Exception
-	 *             Exception
-	 */
-	public BaseResponse createMockData() throws Exception {
-		BaseResponse res = MockDataCreater.newInstance(this.returnClass);
-		if (res != null) {
-			res.setCode(ApiCommonCode.RESPONSE_OK);
-		}
-		return res;
 	}
 
 	/**
@@ -297,15 +293,6 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 		return paramVoList;
 	}
 
-	/**
-	 * 返回该方法返回对象的class
-	 * 
-	 * @return Class extends BaseResponse
-	 */
-	public Class<? extends BaseResponse> getReturnClass() {
-		return returnClass;
-	}
-
 	public String getUrl() {
 		return url;
 	}
@@ -332,7 +319,8 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * @throws Exception
 	 *             Exception
 	 */
-	public BaseResponse invoke(Object form) throws Exception {
+	@SuppressWarnings("unchecked")
+	public T invoke(Object form) throws Exception {
 		Object res = null;
 		if (!this.hasParam() || form == null) {
 			res = this.apiMethod.invoke(implObj);
@@ -341,7 +329,7 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 			res = this.apiMethod.invoke(implObj, form);
 		}
 
-		return (BaseResponse) res;
+		return (T) res;
 	}
 
 	/**
@@ -367,9 +355,11 @@ public class ApiMethodInfo implements Comparable<ApiMethodInfo> {
 	 * @return String
 	 */
 	public String toDebugString() {
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 
 		sb.append("实现类:").append(this.implObj.getClass().getSimpleName());
+		sb.append(" ");
+		sb.append("返回类型:").append(this.returnClass.getSimpleName());
 		sb.append(" ");
 		if (this.hasParam()) {
 			sb.append("参数：").append(this.formClass.getSimpleName());
