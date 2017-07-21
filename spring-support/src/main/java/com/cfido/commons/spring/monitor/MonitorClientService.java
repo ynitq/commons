@@ -157,24 +157,7 @@ public class MonitorClientService {
 	/**
 	 * 异步发送数据的线程池
 	 */
-	private final BaseThreadPool monitorTreadPool = new BaseThreadPool() {
-
-		@Override
-		protected String getName() {
-			return "监控系统发送数据线程池";
-		}
-
-		@Override
-		protected int getPoolSize() {
-			// 单线程就可以了
-			return 1;
-		}
-
-		@Override
-		protected int getUniqueIdSetInitSize() {
-			return 0;
-		}
-	};
+	private BaseThreadPool monitorTreadPool;
 
 	/** 等待5分钟再次重试时用的标志 */
 	private final Object retryFlag = new Object();
@@ -257,27 +240,50 @@ public class MonitorClientService {
 	@PostConstruct
 	protected void init() {
 
-		// 注册MBean
-		this.jmxInWebService.register(new MonitorClientMBean());
-
-		this.connected = false;
-
-		// id的json字符串
-		this.idJsonStr = JSON.toJSONString(this.context.getClientId(), true);
-
-		// 启动报告线程
-		Thread reportThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					MonitorClientService.this.reportToServer();
-				} catch (InterruptedException e) {
-				}
-			}
-		}, "监控客户端报告线程");
-
 		if (this.clientProperties.isEnable()) {
+
+			this.monitorTreadPool = new BaseThreadPool() {
+
+				@Override
+				protected String getName() {
+					return "监控系统发送数据线程池";
+				}
+
+				@Override
+				protected int getPoolSize() {
+					// 单线程就可以了
+					return 1;
+				}
+
+				@Override
+				protected int getUniqueIdSetInitSize() {
+					return 0;
+				}
+			};
+
+			// 注册MBean
+			this.jmxInWebService.register(new MonitorClientMBean());
+
+			this.connected = false;
+
+			// id的json字符串
+			this.idJsonStr = JSON.toJSONString(this.context.getClientId(), true);
+
+			// 启动报告线程
+			Thread reportThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						MonitorClientService.this.reportToServer();
+					} catch (InterruptedException e) {
+					}
+				}
+			}, "监控客户端报告线程");
+
 			reportThread.start();
+
+		} else {
+			log.warn("监控客户端 已经被禁用");
 		}
 
 	}
