@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cfido.commons.beans.exceptions.DaoException;
 import com.cfido.commons.beans.form.IPageForm;
 import com.cfido.commons.utils.utils.LogUtil;
@@ -40,6 +42,7 @@ public abstract class BaseCommomDaoEntityManager implements ICommonDao {
 	 * @throws DaoException
 	 */
 	@Override
+	@Transactional
 	public void delete(Object po) throws DaoException {
 		try {
 			this.checkTransactionForWrite();
@@ -244,6 +247,7 @@ public abstract class BaseCommomDaoEntityManager implements ICommonDao {
 	 * @throws DaoException
 	 */
 	@Override
+	@Transactional
 	public void insert(Object po) throws DaoException {
 		try {
 			this.checkTransactionForWrite();
@@ -262,6 +266,7 @@ public abstract class BaseCommomDaoEntityManager implements ICommonDao {
 	 * @throws DaoException
 	 */
 	@Override
+	@Transactional
 	public void update(Object po) throws DaoException {
 		try {
 			this.checkTransactionForWrite();
