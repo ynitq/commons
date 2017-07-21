@@ -1,10 +1,10 @@
-package com.cfido.commons.utils.sortedLock;
+package com.cfido.commons.spring.sortedLock;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.cfido.commons.utils.sortedLock.INeedSortLockObj;
+import com.cfido.commons.spring.sortedLock.INeedSortLockObj;
 
 public class MockNeedLockObj implements INeedSortLockObj {
 

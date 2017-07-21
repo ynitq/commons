@@ -1,4 +1,4 @@
-package com.cfido.commons.utils.sortedLock;
+package com.cfido.commons.spring.sortedLock;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.annotation.PostConstruct;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.springframework.stereotype.Component;
 
 import com.cfido.commons.utils.utils.LogUtil;
 
@@ -31,11 +35,11 @@ import com.cfido.commons.utils.utils.LogUtil;
  * @author 梁韦江
  * 
  */
-// @Component 声明是spring组件，在子类中必须取消注释
-// @org.aspectj.lang.annotation.Aspect 声明这个是一个切面Bean，在子类中必须取消注释
-public abstract class BaseSortedLockAspect {
+@Component
+@Aspect
+public class SortedLockAspectService {
 
-	private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(BaseSortedLockAspect.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SortedLockAspectService.class);
 
 	private String lastMethodName;
 
@@ -51,7 +55,7 @@ public abstract class BaseSortedLockAspect {
 	 * @param joinPoint
 	 * @throws Throwable
 	 */
-	@Around("@annotation(com.linzi.framework.sortedLock.ANeedSortLock)")
+	@Around("@annotation(com.cfido.commons.spring.sortedLock.ANeedSortLock)")
 	public void around(JoinPoint joinPoint) throws Throwable {
 		// 执行原来的方法
 		this.lastMethodName = joinPoint.getSignature().getName();// 获得最后一次拦截的方法名
@@ -232,6 +236,11 @@ public abstract class BaseSortedLockAspect {
 		}
 
 		return res;
+	}
+
+	@PostConstruct
+	protected void init() {
+		log.info("启动排序加锁的AOP服务");
 	}
 
 }

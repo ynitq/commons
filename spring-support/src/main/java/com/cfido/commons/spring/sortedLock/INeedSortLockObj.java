@@ -1,4 +1,4 @@
-package com.cfido.commons.utils.sortedLock;
+package com.cfido.commons.spring.sortedLock;
 
 import java.util.concurrent.locks.Lock;
 

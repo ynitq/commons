@@ -1,11 +1,11 @@
-package com.cfido.commons.utils.sortedLock;
+package com.cfido.commons.spring.sortedLock;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.cfido.commons.utils.sortedLock.ANeedSortLock;
-import com.cfido.commons.utils.sortedLock.INeedSortLockObj;
+import com.cfido.commons.spring.sortedLock.ANeedSortLock;
+import com.cfido.commons.spring.sortedLock.INeedSortLockObj;
 
 @Service
 public class MockService {
