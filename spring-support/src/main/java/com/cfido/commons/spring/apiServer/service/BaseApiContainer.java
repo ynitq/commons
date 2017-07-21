@@ -125,11 +125,16 @@ public abstract class BaseApiContainer<T> {
 					}
 
 					this.apiMap.put(key, info);
+					this.afterAddToMap(info);
 				}
 			}
 
 		}
 
+	}
+
+	/** 找到接口方法，并且放到map中后调用，方便子类做额外处理 */
+	protected void afterAddToMap(ApiMethodInfo<T> info) {
 	}
 
 	/**

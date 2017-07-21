@@ -50,6 +50,8 @@ public class ApiMethodInfo<T> {
 	private final Object implObj;// 实现类
 	private final Class<?> infClass;// 接口类
 	private final ANeedCheckLogin loginCheck; // 实现类中的 注解
+	private String webUserClasses; // 如果需检查登录情况时，检查的用户类型
+	private boolean needLogin; // 是否需要检查登录
 
 	private final String memo;
 	private final String methodKey;
@@ -126,7 +128,12 @@ public class ApiMethodInfo<T> {
 		if (a == null) {
 			// 如果方法上没有注解，就在实现类上找
 			a = ClassUtil.getAnnotation(this.implObj.getClass(), ANeedCheckLogin.class);
+		} else {
+			this.webUserClasses = a.userClass().getSimpleName();
 		}
+
+		this.needLogin = (a != null);
+
 		return a;
 	}
 
@@ -372,7 +379,7 @@ public class ApiMethodInfo<T> {
 	 * 该方法调用时，是否需要检查登录状态
 	 */
 	public boolean isNeedLogin() {
-		return this.loginCheck != null;
+		return this.needLogin;
 	}
 
 	/**
@@ -402,11 +409,7 @@ public class ApiMethodInfo<T> {
 	 * @return String
 	 */
 	public String getWebUserClasses() {
-		if (this.loginCheck == null) {
-			return null;
-		} else {
-			return this.loginCheck.userClass().getSimpleName();
-		}
+		return this.webUserClasses;
 	}
 
 	/**
@@ -414,6 +417,18 @@ public class ApiMethodInfo<T> {
 	 */
 	public boolean isSaveFormToSession() {
 		return this.apiMethodAnno.saveFormToSession();
+	}
+
+	public void setWebUserClasses(String webUserClasses) {
+		this.webUserClasses = webUserClasses;
+	}
+
+	public void setNeedLogin(boolean needLogin) {
+		this.needLogin = needLogin;
+	}
+
+	public Method getImplMethod() {
+		return implMethod;
 	}
 
 }
