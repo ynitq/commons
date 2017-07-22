@@ -12,7 +12,6 @@ import com.cfido.commons.spring.errorPage.ErrorPageAutoConfig;
 import com.cfido.commons.spring.imageUpload.ImageUploadAutoConfig;
 import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
 import com.cfido.commons.spring.security.LoginCheckAutoConfig;
-import com.cfido.commons.spring.utils.ChangeAllConverterToUtf8;
 
 /**
  * <pre>
@@ -34,7 +33,6 @@ import com.cfido.commons.spring.utils.ChangeAllConverterToUtf8;
 		LoginCheckAutoConfig.class, // loginCheck简易安全框架
 		ErrorPageAutoConfig.class, // 错误页面处理
 		ApiServerAutoConfig.class, // api server
-		ChangeAllConverterToUtf8.class, // 强制转为UTF8
 })
 
 public class JmxInWebAutoConfig {
