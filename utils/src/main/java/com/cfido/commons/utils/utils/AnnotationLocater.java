@@ -10,15 +10,25 @@ import java.util.List;
  * 扫描指定包（包括jar）下的class文件
  * </pre>
  * 
- * @author 梁韦江
- *  2016年6月29日
+ * @author 梁韦江 2016年6月29日
  */
 public class AnnotationLocater {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AnnotationLocater.class);
 
-	public static List<Class<?>> getClassList(String packagePrefix, Class<? extends Annotation> clazz) throws IOException {
-		log.info("search " + clazz.getName());
+	@SafeVarargs
+	public static List<Class<?>> getClassList(String packagePrefix, Class<? extends Annotation>... clazzs) throws IOException {
+
+		if (clazzs == null || clazzs.length == 0) {
+			return null;
+		}
+
+		StringBuilder names = new StringBuilder();
+		for (int i = 0; i < clazzs.length; i++) {
+			names.append(clazzs[i].getName()).append(" ");
+		}
+
+		log.info("扫描带有注解 {} 的类", names.toString());
 
 		List<Class<?>> classes = new LinkedList<>();
 		List<String> resourcelist = ResourceScaner.scan(packagePrefix);
@@ -31,8 +41,12 @@ public class AnnotationLocater {
 			className = className.substring(0, className.length() - 6);
 			try {
 				Class<?> c = classLoader.loadClass(className);
-				if (c.getAnnotation(clazz) != null) {
-					classes.add(c);
+
+				for (int i = 0; i < clazzs.length; i++) {
+					if (c.getAnnotation(clazzs[i]) != null) {
+						classes.add(c);
+						break;
+					}
 				}
 			} catch (ClassNotFoundException e) {
 			}

@@ -1,13 +1,14 @@
 package com.cfido.commons.utils.utils;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.stereotype.Service;
 
-import com.cfido.commons.utils.utils.AnnotationLocater;
+import com.cfido.commons.annotation.api.AClass;
+import com.cfido.commons.annotation.bean.AComment;
+import com.cfido.commons.utils.utils.beans.BeanWithACommentAnno;
 
 /**
  * <pre>
@@ -22,13 +23,13 @@ public class AnnotationLocaterTest {
 
 	@Test
 	public void test() throws IOException {
-		String prefix = "com.linzi.framework.sortedLock";
+		String prefix = BeanWithACommentAnno.class.getPackage().getName();
 
-		Class<? extends Annotation> annoClass = Service.class;
+		List<Class<?>> scanResult = AnnotationLocater.getClassList(prefix, AComment.class, AClass.class);
 
-		List<Class<?>> scanResult = AnnotationLocater.getClassList(prefix, annoClass);
+		log.debug("测试扫描 带指定注解 的类：扫描结果:{}", this.printScanResultToStr(scanResult));
 
-		log.debug("测试扫描 带注解 {} 的类：扫描结果:{}", annoClass.getName(), this.printScanResultToStr(scanResult));
+		Assert.assertTrue("应该能扫描到两个", scanResult.size() == 2);
 	}
 
 	private String printScanResultToStr(List<Class<?>> scanResult) {
