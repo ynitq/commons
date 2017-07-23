@@ -13,6 +13,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
 
@@ -373,6 +375,42 @@ public class ClassUtil {
 			this.annoFromFieldMap.put(target, annoInClass);
 		}
 		return annoInClass.getAnnoFromField(annoClass);
+	}
+
+	/**
+	 * 在指定的包中搜索基类为某个类的所有类
+	 * 
+	 * @param basePackage
+	 *            要扫描指定的包
+	 * @param baseClass
+	 *            基类
+	 */
+	public static List<Class<?>> findClassExtendsBy(Package basePackage, Class<?> baseClass) throws IOException {
+
+		String packagePrefix = basePackage.getName();
+
+		log.info("在 {} 中扫描基类为 {} 的类", packagePrefix, baseClass.getName());
+
+		List<Class<?>> classes = new LinkedList<>();
+		List<String> resourcelist = ResourceScaner.scan(packagePrefix);
+
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+		for (String name : resourcelist) {
+
+			String className = name.replace('/', '.');
+			className = className.substring(0, className.length() - 6);
+			try {
+				Class<?> c = classLoader.loadClass(className);
+				if (baseClass.isAssignableFrom(c)) {
+					classes.add(c);
+				}
+			} catch (ClassNotFoundException e) {
+			}
+		}
+
+		return classes;
+
 	}
 
 }
