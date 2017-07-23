@@ -107,7 +107,7 @@ public class FileUtil {
 
 		// 如果目录不存在，就创建目录
 		File parent = filePath.toFile().getParentFile();
-		if (!parent.exists()) {
+		if (parent != null && !parent.exists()) {
 			parent.mkdirs();
 		}
 
