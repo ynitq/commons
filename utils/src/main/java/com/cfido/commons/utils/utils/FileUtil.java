@@ -102,16 +102,19 @@ public class FileUtil {
 			return;
 		}
 
-		File file = new File(path);
+		// 构建文件全路径
+		Path filePath = FileSystems.getDefault().getPath(path);
+
+		// 如果目录不存在，就创建目录
+		File parent = filePath.toFile().getParentFile();
+		if (!parent.exists()) {
+			parent.mkdirs();
+		}
+
+		File file = filePath.toFile();
 		if (file.exists() && !override) {
 			// 如果文件存在，并且不允许覆盖，就退出了事
 			return;
-		}
-
-		File dir = file.getParentFile();
-		if (!dir.exists()) {
-			// 如果目录不存在，就创建目录
-			dir.mkdirs();
 		}
 
 		if (file.exists()) {
