@@ -36,7 +36,6 @@ public abstract class BaseThreadPool {
 			long now = System.currentTimeMillis();
 			try {
 				this.task.run();
-				this.task.afterRun();
 			} catch (RuntimeException e) {
 				LogUtil.traceError(log, e);
 			}

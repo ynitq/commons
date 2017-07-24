@@ -118,10 +118,6 @@ public class MonitorClientService {
 		}
 
 		@Override
-		public void afterRun() {
-		}
-
-		@Override
 		public String getUniqueId() {
 			return null;
 		}

@@ -43,10 +43,6 @@ public class SendMailService {
 		}
 
 		@Override
-		public void afterRun() {
-		}
-
-		@Override
 		public String getUniqueId() {
 			return "SendMailTask:\t" + this.to;
 		}
