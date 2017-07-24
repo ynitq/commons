@@ -26,6 +26,24 @@ public interface IPageForm {
 		}
 	};
 
+	/** 无限条记录的 */
+	public static final IPageForm UNLIMIT = new IPageForm() {
+
+		@Override
+		public void verifyPageNo() {
+		}
+
+		@Override
+		public int getPageSize() {
+			return Integer.MAX_VALUE;
+		}
+
+		@Override
+		public int getPageNo() {
+			return 1;
+		}
+	};
+
 	public static final int DEFAULT_PAGE_SIZE = 15;
 
 	/**
