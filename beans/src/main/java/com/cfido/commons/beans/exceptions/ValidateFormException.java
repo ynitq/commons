@@ -2,6 +2,7 @@ package com.cfido.commons.beans.exceptions;
 
 import java.util.List;
 
+import com.cfido.commons.annotation.api.ADataInApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.impl.FormValidateErrorInfoBean;
 
@@ -18,9 +19,11 @@ public class ValidateFormException extends BaseApiException {
 	private static final long serialVersionUID = 1L;
 
 	/** 被验证的表单 */
+	@ADataInApiException
 	private final Object form;
 
 	/** 错误信息 */
+	@ADataInApiException
 	private final List<FormValidateErrorInfoBean> errors;
 
 	public ValidateFormException(Object form, List<FormValidateErrorInfoBean> errors) {
