@@ -51,7 +51,7 @@ public class ApiMethodInfo<T> {
 	private final Class<?> infClass;// 接口类
 	private final ANeedCheckLogin loginCheck; // 实现类中的 注解
 	private String webUserClasses; // 如果需检查登录情况时，检查的用户类型
-	private boolean needLogin; // 是否需要检查登录
+	private boolean needLogin = false; // 是否需要检查登录
 
 	private final String memo;
 	private final String methodKey;
@@ -122,17 +122,13 @@ public class ApiMethodInfo<T> {
 	}
 
 	private ANeedCheckLogin buildLoginCheck() {
-		// 先从方法上找注解
-		ANeedCheckLogin a = this.implMethod.getAnnotation(ANeedCheckLogin.class);
+		// 先从方法和类上找注解
+		ANeedCheckLogin a = ClassUtil.getAnnotationFromMethodAndClass(this.implMethod, ANeedCheckLogin.class);
 
-		if (a == null) {
-			// 如果方法上没有注解，就在实现类上找
-			a = ClassUtil.getAnnotation(this.implObj.getClass(), ANeedCheckLogin.class);
-		} else {
+		if (a != null) {
 			this.webUserClasses = a.userClass().getSimpleName();
+			this.needLogin = true;
 		}
-
-		this.needLogin = (a != null);
 
 		return a;
 	}
