@@ -218,7 +218,7 @@
 			<!-- /导入标签页 -->
 			
 			<!-- 预览标签页 -->
-			<div role="tabpanel" class="tab-pane fade" id="div_tab_preview" v-html="editRow.preview">
+			<div role="tabpanel" class="tab-pane fade md" id="div_tab_preview" v-html="editRow.preview">
 			</div>
 			<!-- /导入标签页 -->
 
