@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.beans.others.IFilter;
+
 /**
  * 日志帮助类
  * 
@@ -23,6 +26,13 @@ public class LogUtil {
 
 	public final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	public final static List<String> PACKAGE_FILTER = new LinkedList<>();
+	static {
+		PACKAGE_FILTER.add("com.linzi");
+		PACKAGE_FILTER.add("com.cfido");
+		PACKAGE_FILTER.add("game");
+	}
+
 	/**
 	 * 默认的只显示 com.linzi开头错误信息的 Filter
 	 */
@@ -30,8 +40,15 @@ public class LogUtil {
 
 		@Override
 		public boolean isMatch(StackTraceElement obj) {
-			return obj != null && (obj.getClassName().startsWith("com.linzi")
-					|| obj.getClassName().startsWith("com.cfido") || obj.getClassName().startsWith("game"));
+			if (obj != null) {
+				String className = obj.getClassName();
+				for (String name : PACKAGE_FILTER) {
+					if (className.startsWith(name)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 	};
