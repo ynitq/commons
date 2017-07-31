@@ -70,6 +70,8 @@ public class WeChatProperties {
 		if (StringUtils.hasText(this.authUrl)) {
 			log.info("微信认证配置了额外的url. wechat.authUrl={}", this.authUrl);
 		}
+
+		log.info("微信 AppId={}", this.appId);
 	}
 
 	public WeChatOAuthClient newClient() {
