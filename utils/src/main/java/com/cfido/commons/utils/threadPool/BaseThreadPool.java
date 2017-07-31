@@ -46,8 +46,7 @@ public abstract class BaseThreadPool {
 		}
 	}
 
-	// 要使用基类的log
-	private final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(this.getClass());
+	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 在排队中的任务数量
@@ -160,8 +159,7 @@ public abstract class BaseThreadPool {
 
 	@PreDestroy
 	public void shutdown() {
-		int count = this.counter.get();
-		log.info("开始停止 " + this.getName() + (count > 0 ? (" 剩余任务:" + count) : ""));
+		log.info("开始停止 “{}”， 剩余任务:{} ", this.getName(), this.counter.get());
 		this.executorService.shutdown();
 		try {
 			// 5分钟如果不能停止就强行停止
@@ -175,6 +173,8 @@ public abstract class BaseThreadPool {
 			LogUtil.traceError(log, e);
 			this.executorService.shutdownNow();
 		}
+
+		log.info("成功停止 “{}” ", this.getName());
 	}
 
 	/**
