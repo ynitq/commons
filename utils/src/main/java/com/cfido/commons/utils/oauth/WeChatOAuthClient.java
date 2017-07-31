@@ -248,4 +248,10 @@ public class WeChatOAuthClient {
 		this.token = null;
 	}
 
+	/** token 可以从外面设置进来 */
+	public void setToken(UserTokenBean token) {
+		this.isTokenGot = (token != null);
+		this.token = token;
+	}
+
 }
