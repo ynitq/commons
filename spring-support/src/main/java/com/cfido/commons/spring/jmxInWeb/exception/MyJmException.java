@@ -1,7 +1,5 @@
 package com.cfido.commons.spring.jmxInWeb.exception;
 
-import javax.management.JMException;
-
 import com.cfido.commons.beans.apiServer.BaseApiException;
 
 /**
@@ -18,14 +16,14 @@ public class MyJmException extends BaseApiException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final JMException ex;
+	private final Exception ex;
 
-	public MyJmException(JMException ex) {
+	public MyJmException(Exception ex) {
 		super(ex);
 		this.ex = ex;
 	}
 
-	public JMException getEx() {
+	public Exception getEx() {
 		return ex;
 	}
 

@@ -258,7 +258,7 @@ public class JmxInWebService {
 			if (target instanceof BaseApiException) {
 				throw (BaseApiException) target;
 			} else {
-				throw new MyJmException(e);
+				throw new MyJmException(target);
 			}
 		} catch (JMException e) {
 			throw new MyJmException(e);
