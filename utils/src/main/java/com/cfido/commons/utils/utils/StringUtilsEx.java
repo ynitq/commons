@@ -129,18 +129,18 @@ public class StringUtilsEx {
 
 		StringBuffer sbuf = new StringBuffer();
 
-		int curPostion = 0;
+		int curPosition = 0;
 		while (true) {
-			int keyBegin = val.indexOf(DELIM_START, curPostion);
+			int keyBegin = val.indexOf(DELIM_START, curPosition);
 			if (keyBegin == -1) {
-				if (curPostion == 0) {
+				if (curPosition == 0) {
 					return val;
 				}
-				sbuf.append(val.substring(curPostion, val.length()));
+				sbuf.append(val.substring(curPosition, val.length()));
 				return sbuf.toString();
 			}
 
-			sbuf.append(val.substring(curPostion, keyBegin));
+			sbuf.append(val.substring(curPosition, keyBegin));
 			int keyEnd = val.indexOf(DELIM_STOP, keyBegin);
 			if (keyEnd == -1) {
 				// 如果出现非法的情况，就直接返回原值
@@ -159,7 +159,7 @@ public class StringUtilsEx {
 
 				sbuf.append(recursiveReplacement);
 			}
-			curPostion = keyEnd + DELIM_STOP_LEN;
+			curPosition = keyEnd + DELIM_STOP_LEN;
 		}
 	}
 
@@ -380,25 +380,25 @@ public class StringUtilsEx {
 
 		StringBuilder sbuf = new StringBuilder();
 
-		int curPostion = 0;
+		int curPosition = 0;
 		while (true) {
 			// 先找 < 的位置
-			int keyBegin = val.indexOf("<", curPostion);
+			int keyBegin = val.indexOf("<", curPosition);
 			if (keyBegin == -1) {
 				// 如果已经找不到 < 了，就可以返回结果了
-				if (curPostion == 0) {
+				if (curPosition == 0) {
 					// 如果当前指针在头部，就说明一次都没找到，可直接返回，
 					sbuf.append(val);
 				} else {
 					// 如果不在头部，就需要将指针以后的部分都加进来
-					sbuf.append(val.substring(curPostion, val.length()));
+					sbuf.append(val.substring(curPosition, val.length()));
 				}
 
 				// 找不到就可以退出循环了
 				break;
 			} else {
 				// 如果能找到 < ，就先将指针到 < 之间的都加到buf
-				sbuf.append(val.substring(curPostion, keyBegin));
+				sbuf.append(val.substring(curPosition, keyBegin));
 
 				// 接着找 >的位置
 				int keyEnd = val.indexOf(">", keyBegin);
@@ -408,7 +408,7 @@ public class StringUtilsEx {
 					break;
 				} else {
 					// 如果能找到>,就将指针跳到>之后，略过<>包含的内容
-					curPostion = keyEnd + 1;
+					curPosition = keyEnd + 1;
 				}
 			}
 		}
