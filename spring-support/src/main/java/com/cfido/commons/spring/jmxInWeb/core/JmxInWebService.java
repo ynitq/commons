@@ -255,6 +255,7 @@ public class JmxInWebService {
 			return res;
 		} catch (MBeanException e) {
 			Exception target = e.getTargetException();
+			LogUtil.traceError(log, target);
 			if (target instanceof BaseApiException) {
 				throw (BaseApiException) target;
 			} else {
