@@ -385,13 +385,14 @@ public class ClassUtil {
 	 * @param baseClass
 	 *            基类
 	 */
-	public static List<Class<?>> findClassExtendsBy(Package basePackage, Class<?> baseClass) throws IOException {
+	@SuppressWarnings("unchecked")
+	public static <T> List<Class<T>> findClassExtendsBy(Package basePackage, Class<T> baseClass) throws IOException {
 
 		String packagePrefix = basePackage.getName();
 
 		log.info("在 {} 中扫描基类为 {} 的类", packagePrefix, baseClass.getName());
 
-		List<Class<?>> classes = new LinkedList<>();
+		List<Class<T>> classes = new LinkedList<>();
 		List<String> resourcelist = ResourceScaner.scan(packagePrefix);
 
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -403,7 +404,7 @@ public class ClassUtil {
 			try {
 				Class<?> c = classLoader.loadClass(className);
 				if (baseClass.isAssignableFrom(c)) {
-					classes.add(c);
+					classes.add((Class<T>) c);
 				}
 			} catch (ClassNotFoundException e) {
 			}
