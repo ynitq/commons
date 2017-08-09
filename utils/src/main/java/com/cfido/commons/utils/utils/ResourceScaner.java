@@ -86,10 +86,10 @@ public class ResourceScaner {
 			String protocol = url.getProtocol();
 
 			if ("file".equals(protocol)) {
-				log.info("扫描file类型的class文件 {}", url);
+				log.debug("扫描file类型的class文件 {}", url);
 				doScanPackageClassesByFile(this.pathPrefix, new File(url.getFile()));
 			} else if ("jar".equals(protocol)) {
-				log.info("扫描jar文件中的类...." + url);
+				log.debug("扫描jar文件中的类...." + url);
 				doScanPackageClassesByJar(url);
 			}
 		}

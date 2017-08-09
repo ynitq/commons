@@ -390,7 +390,7 @@ public class ClassUtil {
 
 		String packagePrefix = basePackage.getName();
 
-		log.info("在 {} 中扫描基类为 {} 的类", packagePrefix, baseClass.getName());
+		log.debug("在 {} 中扫描基类为 {} 的类", packagePrefix, baseClass.getName());
 
 		List<Class<T>> classes = new LinkedList<>();
 		List<String> resourcelist = ResourceScaner.scan(packagePrefix);
