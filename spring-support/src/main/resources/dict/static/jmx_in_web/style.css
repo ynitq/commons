@@ -67,6 +67,10 @@ body {
 	overflow: auto;
 }
 
+.attr_container .hide {
+	display: none;
+}
+
 .opt-container {
 	position: absolute;
 	left: 810px;
@@ -92,4 +96,8 @@ body {
 	right: 0px; bottom : 0p;
 	overflow: auto;
 	bottom: 0p;
+}
+
+.w100 {
+	min-width: 100px;
 }

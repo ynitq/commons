@@ -29,31 +29,29 @@
 			<div class="panel panel-default" id="list_table_attr">
 				<div class="panel-heading">
 					属性
+					<button class="btn btn-sm btn-default" @click="allColumn">{{showAllColText}}</button>
 					<button class="btn btn-sm pull-right btn-default" @click="reload">刷新</button>
 				</div>
 				<div class="panel-body">
 					<table class="table table-light table-hover">
 						<thead>
 							<tr>
-								<th width="250">名字</th>
-								<th>说明</th>
+								<th width="250" :class="{'hide':!showAllCol}">名字</th>
+								<th width="150">说明</th>
+								<th>值</th>
 							</tr>
 						</thead>
 						<tbody>
 							<template v-for="attrVo in attrs">
 							<tr>
-								<td><span class="caption">{{attrVo.info.name}}</span>
-								 <span class="label label-warning"
+								<td :class="{'hide':!showAllCol}"><span class="caption">{{attrVo.info.name}}</span> <span class="label label-warning"
 										v-if="attrVo.info.writable && !attrVo.info.readable">只写</span> <span class="label label-success"
-										v-if="!attrVo.info.writable">只读</span>
-										</td>
-								<td class="text-muted" align="right">{{attrVo.info.type}}</td>
-							<tr>
-								<td align="right">{{attrVo.desc}}</td>
+										v-if="!attrVo.info.writable">只读</span> <span class="text-muted" align="right">{{attrVo.info.type}}</span></td>
+								<td>{{attrVo.desc}}</td>
 								<td class="attr_value">
 									<div v-if="!attrVo.info.writable || !attrVo.inputable">
 										<pre v-if="attrVo.jsonValue" v-html="attrVo.value"></pre>
-										<span v-if="!attrVo.jsonValue" v-html="attrVo.value"></span>
+										<span class="text-primary" v-if="!attrVo.jsonValue" v-html="attrVo.value"></span>
 									</div> <attr-value :attr-vo="attrVo" v-if="attrVo.info.writable && attrVo.inputable"></attr-value>
 								</td>
 							</tr>
@@ -80,16 +78,14 @@
 
 			<div class="opt-nav">
 				<ul class="nav nav-pills nav-stacked">
-				<#assign i=0>
-				<#list mbean.opts as optVo>
-				<li role="presentation"><a href="#opt_form_${i}" role="tab" data-toggle="tab" aria-controls="#opt_form_${i}">${optVo.info.name}</a></li>
-				<#assign i=i+1> </#list>
+					<#assign i=0> <#list mbean.opts as optVo>
+					<li role="presentation"><a href="#opt_form_${i}" role="tab" data-toggle="tab" aria-controls="#opt_form_${i}">${optVo.info.name}</a></li>
+					<#assign i=i+1></#list>
 				</ul>
 			</div>
 
 			<div class="tab-content opt-forms">
-				<#assign i=0>
-				<#list mbean.opts as optVo>
+				<#assign i=0> <#list mbean.opts as optVo>
 				<div role="tabpanel" class="tab-pane fade" id="opt_form_${i}">
 					<div class="panel panel-default">
 						<div class="panel-heading">
@@ -141,18 +137,16 @@
 
 								</table>
 								</#if>
-								<a class="btn btn-sm btn-info js_invoke_opt" data-form-name="form_invoke_${i}">执行</a>
+								<a class="btn btn-info w100 js_invoke_opt" data-form-name="form_invoke_${i}">执行</a>
 							</form>
 						</div>
 					</div>
 				</div>
-				<#assign i=i+1> </#list>
-
+				<#assign i=i+1></#list>
 			</div>
 
 			<#assign i=0>
-			<div class="row">
-			</div>
+			<div class="row"></div>
 		</div>
 		<!-- /opt列表 -->
 

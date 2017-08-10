@@ -100,16 +100,27 @@ var mbeanInfo = {
 				'attr-value' : attrValueComp, // 修改属性的链接
 			},
 
+			computed : {
+				showAllColText : function() {
+					return (this.showAllCol) ? "隐藏名字列" : "显示所有列";
+				}
+			},
+
 			methods : {
 				reload : function() {
 					console.log("刷新属性")
 					that.loadAttr();
 					lzUtil.showMsg("刷新属性");
 				},
+
+				allColumn : function() {
+					this.showAllCol = !this.showAllCol;
+				}
 			},
 
 			data : {
-				attrs : [],// 属性列表
+				attrs : [], // 属性列表
+				showAllCol : false,
 			},
 		});
 
@@ -134,13 +145,13 @@ var mbeanInfo = {
 				return d.promise();
 			},
 			success : function() {
-				//修改完成后，刷新所有的属性
+				// 修改完成后，刷新所有的属性
 				that.loadAttr();
 			},
 			type : 'textarea',
 			mode : 'inline',
 			value : '', // 初始值为空
-			pk: that.objectName + attrVo.info.name,
+			pk : that.objectName + attrVo.info.name,
 			display : false,// 默认修改完成后不修改界面上的值
 		}
 
