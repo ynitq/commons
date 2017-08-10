@@ -45,15 +45,51 @@ body {
 	min-height: 500px;
 	min-width: 900px;
 	position: absolute;
-	top: 50px;
+	top: 55px;
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
-	padding: 0px;
 	padding: 10px;
+	overflow: hidden;
 }
 
 .caption {
-	color:#4DB3A2;
+	color: #4DB3A2;
 	font-weight: 700;
+}
+
+.attr_container {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 800px;
+	bottom: 0px;
+	overflow: auto;
+}
+
+.opt-container {
+	position: absolute;
+	left: 810px;
+	right: 10px;
+	bottom: 0px;
+	top: 0px;
+	overflow: hidden;
+}
+
+.opt-container .opt-nav {
+	position: absolute;
+	top: 105px;
+	left: 0px;
+	width: 250px;
+	bottom: 0p;
+	overflow: auto;
+}
+
+.opt-container .opt-forms {
+	position: absolute;
+	top: 105px;
+	left: 260px;
+	right: 0px; bottom : 0p;
+	overflow: auto;
+	bottom: 0p;
 }

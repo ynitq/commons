@@ -23,70 +23,84 @@
 	<#include "include/header"/>
 
 	<div class="main-content">
-		<!-- MBean 基础信息 -->
-		<div class="panel panel-default">
-			<div class="panel-heading">类: ${mbean.className}</div>
-			<div class="panel-body">
-				<p>
-					<b>Object name: </b>${mbean.objectName}
-				</p>
-				<p>
-					<b>说明: </b> ${mbean.desc}
-				</p>
-			</div>
-		</div>
-		<!-- /MBean 基础信息 -->
 
 		<!-- 属性列表 vue-->
-		<div class="panel panel-default" id="list_table_attr">
-			<div class="panel-heading">
-				属性
-				<button class="btn btn-sm pull-right btn-default" @click="reload">刷新</button>
-			</div>
-			<div class="panel-body">
-				<table class="table table-light table-hover">
-					<thead>
-						<tr>
-							<th width="250">名字</th>
-							<th width="150">类型</th>
-							<th width="300">说明</th>
-							<th>值</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr v-for="attrVo in attrs">
-							<td><span class="caption">{{attrVo.info.name}}</span> <span class="label label-warning"
-								v-if="attrVo.info.writable && !attrVo.info.readable">只写</span> <span class="label label-success"
-								v-if="!attrVo.info.writable">只读</span></td>
-							<td>{{attrVo.info.type}}</td>
-							<td>{{attrVo.desc}}</td>
-							<td class="attr_value">
-								<div v-if="!attrVo.info.writable || !attrVo.inputable">
-									<pre v-if="attrVo.jsonValue" v-html="attrVo.value"></pre>
-									<span v-if="!attrVo.jsonValue" v-html="attrVo.value"></span>
-								</div> <attr-value :attr-vo="attrVo" v-if="attrVo.info.writable && attrVo.inputable"></attr-value>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+		<div class="attr_container">
+			<div class="panel panel-default" id="list_table_attr">
+				<div class="panel-heading">
+					属性
+					<button class="btn btn-sm pull-right btn-default" @click="reload">刷新</button>
+				</div>
+				<div class="panel-body">
+					<table class="table table-light table-hover">
+						<thead>
+							<tr>
+								<th width="250">名字</th>
+								<th>说明</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template v-for="attrVo in attrs">
+							<tr>
+								<td><span class="caption">{{attrVo.info.name}}</span>
+								 <span class="label label-warning"
+										v-if="attrVo.info.writable && !attrVo.info.readable">只写</span> <span class="label label-success"
+										v-if="!attrVo.info.writable">只读</span>
+										</td>
+								<td class="text-muted" align="right">{{attrVo.info.type}}</td>
+							<tr>
+								<td align="right">{{attrVo.desc}}</td>
+								<td class="attr_value">
+									<div v-if="!attrVo.info.writable || !attrVo.inputable">
+										<pre v-if="attrVo.jsonValue" v-html="attrVo.value"></pre>
+										<span v-if="!attrVo.jsonValue" v-html="attrVo.value"></span>
+									</div> <attr-value :attr-vo="attrVo" v-if="attrVo.info.writable && attrVo.inputable"></attr-value>
+								</td>
+							</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 		<!-- /属性列表 -->
 
 		<!-- opt列表 -->
-		<div class="container-fluid">
-			<#assign i=0>
-			<div class="row">
+		<div class="opt-container">
+			<!-- MBean 基础信息 -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<b>说明: </b> ${mbean.desc} <b>类:</b> ${mbean.className}
+				</div>
+				<div class="panel-body">
+					<b>Object name: </b>${mbean.objectName}
+				</div>
+			</div>
+			<!-- /MBean 基础信息 -->
+
+			<div class="opt-nav">
+				<ul class="nav nav-pills nav-stacked">
+				<#assign i=0>
 				<#list mbean.opts as optVo>
-				<div class="col-lg-4">
-					<div class="panel panel-default optDiv">
+				<li role="presentation"><a href="#opt_form_${i}" role="tab" data-toggle="tab" aria-controls="#opt_form_${i}">${optVo.info.name}</a></li>
+				<#assign i=i+1> </#list>
+				</ul>
+			</div>
+
+			<div class="tab-content opt-forms">
+				<#assign i=0>
+				<#list mbean.opts as optVo>
+				<div role="tabpanel" class="tab-pane fade" id="opt_form_${i}">
+					<div class="panel panel-default">
 						<div class="panel-heading">
-							<span class="label label-sm label-success">${optVo.info.returnType}</span> <span class="caption">${optVo.info.name}</span> <span class="text-muted">${optVo.info.description}</span>
+							<span class="label label-sm label-success">${optVo.info.returnType}</span>
+							<span class="caption">${optVo.info.name}</span>
+							<span class="text-muted">${optVo.info.description}</span>
 						</div>
 						<div class="panel-body">
 							<form id="form_invoke_${i}">
-								<input type="hidden" name="optName" value="${optVo.info.name}" /> <input type="hidden" name="objectName"
-									value="${mbean.objectName}" />
+								<input type="hidden" name="optName" value="${optVo.info.name}" />
+								<input type="hidden" name="objectName" value="${mbean.objectName}" />
 								<#if !optVo.noParam>
 								<table class="table table-bordered table-hover">
 									<thead>
@@ -105,11 +119,12 @@
 											<td>${paramVo.info.description}</td>
 											<td><span class="label label-sm label-success label-mini"> ${paramVo.info.type}</span></td>
 											<td><#if paramVo.info.type=='boolean'> <label> <input type="checkbox"
-													data-name="p_${i}_${paramVo.id}" class="js_boolean_checkbox"> <span id="p_${i}_${paramVo.id}_txt">false</span>
+														data-name="p_${i}_${paramVo.id}" class="js_boolean_checkbox"> <span id="p_${i}_${paramVo.id}_txt">false</span>
 												</label> <input type="hidden" name="paramValue" value="false" id="p_${i}_${paramVo.id}_input"> <#elseif
 													paramVo.info.type=='java.util.Date'>
 												<div class="input-group date js_form_datetime">
-													<input type="text" size="16" readonly class="form-control" name="paramValue"> <span class="input-group-btn">
+													<input type="text" size="16" readonly class="form-control" name="paramValue">
+													<span class="input-group-btn">
 														<button class="btn btn-default date-set" type="button">
 															<i class="glyphicon glyphicon-calendar"></i>
 														</button>
@@ -131,15 +146,18 @@
 						</div>
 					</div>
 				</div>
-				<#if i%3==2></div><div class="row"></#if>
-				<#assign i=i+1>
-				</#list>
+				<#assign i=i+1> </#list>
+
+			</div>
+
+			<#assign i=0>
+			<div class="row">
 			</div>
 		</div>
 		<!-- /opt列表 -->
 
-		<!-- /main-content -->
 	</div>
+	<!-- /main-content -->
 
 	<!-- INVOKE RESULT MODAL BEGIN -->
 	<div class="modal fade bs-modal-lg" id="invokeResult_modal" tabindex="-1" role="basic" aria-hidden="true">
