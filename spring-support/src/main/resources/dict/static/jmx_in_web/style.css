@@ -85,7 +85,7 @@ body {
 	top: 105px;
 	left: 0px;
 	width: 250px;
-	bottom: 0p;
+	bottom: 0px;
 	overflow: auto;
 }
 
@@ -93,9 +93,10 @@ body {
 	position: absolute;
 	top: 105px;
 	left: 260px;
-	right: 0px; bottom : 0p;
+	right: 0px;
 	overflow: auto;
-	bottom: 0p;
+	bottom: 0px;
+	overflow: auto;
 }
 
 .w100 {
