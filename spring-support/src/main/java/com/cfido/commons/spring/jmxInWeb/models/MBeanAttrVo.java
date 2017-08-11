@@ -6,6 +6,7 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cfido.commons.utils.utils.OpenTypeUtil;
 
 /**
@@ -81,7 +82,10 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 
 				} else {
 					// 如果不是简单类型，就变成json格式
-					this.value = JSON.toJSONString(attributeValue, true);
+					this.value = JSON.toJSONString(attributeValue,
+							SerializerFeature.PrettyFormat,
+							SerializerFeature.UseSingleQuotes,
+							SerializerFeature.MapSortField);
 				}
 			}
 		}
