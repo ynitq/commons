@@ -86,7 +86,7 @@
 
 			<div class="tab-content opt-forms">
 				<#assign i=0> <#list mbean.opts as optVo>
-				<div role="tabpanel" class="tab-pane fade" id="opt_form_${i}">
+				<div role="tabpanel" class="tab-pane fade opt-panel" id="opt_form_${i}">
 					<div class="panel panel-default">
 						<div class="panel-heading">
 							<span class="label label-sm label-success">${optVo.info.returnType}</span>
@@ -98,39 +98,44 @@
 								<input type="hidden" name="optName" value="${optVo.info.name}" />
 								<input type="hidden" name="objectName" value="${mbean.objectName}" />
 								<#if !optVo.noParam>
-								<table class="table table-bordered table-hover">
+								<table class="table table-bordered ">
 									<thead>
 										<tr role="row" class="heading">
-											<th>名字</th>
+											<th width="250px">名字</th>
 											<th>说明</th>
-											<th>类型</th>
-											<th></th>
 										</tr>
 									</thead>
 									<tbody>
 										<#list optVo.params as paramVo>
 										<tr role="row" class="filter">
 											<input type="hidden" name="paramType" value="${paramVo.info.type}" />
-											<td>${paramVo.info.name}</td>
-											<td>${paramVo.info.description}</td>
-											<td><span class="label label-sm label-success label-mini"> ${paramVo.info.type}</span></td>
-											<td><#if paramVo.info.type=='boolean'> <label> <input type="checkbox"
-														data-name="p_${i}_${paramVo.id}" class="js_boolean_checkbox"> <span id="p_${i}_${paramVo.id}_txt">false</span>
-												</label> <input type="hidden" name="paramValue" value="false" id="p_${i}_${paramVo.id}_input"> <#elseif
-													paramVo.info.type=='java.util.Date'>
-												<div class="input-group date js_form_datetime">
-													<input type="text" size="16" readonly class="form-control" name="paramValue">
-													<span class="input-group-btn">
-														<button class="btn btn-default date-set" type="button">
-															<i class="glyphicon glyphicon-calendar"></i>
-														</button>
-														<button class="btn btn-default date-reset" type="button">
-															<i class="glyphicon glyphicon-remove"></i>
-														</button>
-													</span>
-												</div>
-												<#else> <input type="text" class="form-control form-filter input-sm" name="paramValue"
-													value="${paramVo.defaultValue}"></#if></td>
+											<td>${paramVo.info.name}
+											<span class="label label-success" > ${paramVo.info.type}</span>
+											</td>
+											<td><#if paramVo.info.type=='boolean'> 
+													<label> 
+														<input type="checkbox" data-name="p_${i}_${paramVo.id}" class="js_boolean_checkbox">
+														<span id="p_${i}_${paramVo.id}_txt">false</span>
+													</label> <input type="hidden" name="paramValue" value="false" id="p_${i}_${paramVo.id}_input"> 
+												<#elseif paramVo.info.type=='java.util.Date'>
+													<div class="input-group date js_form_datetime">
+														<input type="text" size="16" readonly class="form-control" name="paramValue">
+														<span class="input-group-btn">
+															<button class="btn btn-default date-set" type="button">
+																<i class="glyphicon glyphicon-calendar"></i>
+															</button>
+															<button class="btn btn-default date-reset" type="button">
+																<i class="glyphicon glyphicon-remove"></i>
+															</button>
+														</span>
+													</div>
+												<#else> 
+													<textarea rows="1" class="form-control form-filter input-sm" name="paramValue">${paramVo.defaultValue}</textarea>
+												</#if>
+
+												<div class="text-muted">
+													${paramVo.info.description}
+												</div></td>
 										</tr>
 										</#list>
 									</tbody>
