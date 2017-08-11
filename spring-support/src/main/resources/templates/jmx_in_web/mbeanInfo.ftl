@@ -130,7 +130,7 @@
 														</span>
 													</div>
 												<#else> 
-													<textarea rows="1" class="form-control form-filter input-sm" name="paramValue">${paramVo.defaultValue}</textarea>
+													<textarea rows="2" class="form-control form-filter input-sm" name="paramValue">${paramVo.defaultValue}</textarea>
 												</#if>
 
 												<div class="text-muted">
