@@ -20,7 +20,7 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 
 	private final MBeanAttributeInfo info;
 
-	private AttributeValueTypeEnum valueType = AttributeValueTypeEnum.Normal;
+	private boolean openType;
 
 	private Object attributeValue;
 
@@ -77,9 +77,8 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 			if (this.attributeValue == null) {
 				this.value = "";
 			} else {
-				if (this.valueType == AttributeValueTypeEnum.Normal) {
+				if (this.openType) {
 					this.value = OpenTypeUtil.toString(this.attributeValue, this.info.getType());
-
 				} else {
 					// 如果不是简单类型，就变成json格式
 					this.value = JSON.toJSONString(attributeValue,
@@ -98,7 +97,7 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 	 * @return
 	 */
 	public boolean isJsonValue() {
-		return this.valueType != AttributeValueTypeEnum.Normal;
+		return !this.openType;
 	}
 
 	/**
@@ -127,13 +126,9 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 		if (this.info.isReadable()) {
 			attributeValue = server.getAttribute(objectName, this.info.getName());
 			if (attributeValue != null) {
-				if (attributeValue.getClass().isArray()) {
-					this.valueType = AttributeValueTypeEnum.Array;
-				} else if (attributeValue instanceof java.util.Collection) {
-					this.valueType = AttributeValueTypeEnum.Collection;
-				} else if (attributeValue instanceof java.util.Map) {
-					this.valueType = AttributeValueTypeEnum.Map;
-				}
+				this.openType = OpenTypeUtil.isOpenType(attributeValue.getClass());
+			} else {
+				this.openType = true;
 			}
 		}
 	}

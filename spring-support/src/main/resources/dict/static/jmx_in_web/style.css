@@ -24,7 +24,7 @@ body {
 }
 
 .attr_value pre {
-	max-height: 400px;
+	max-height: 300px;
 	overflow: auto;
 	white-space: pre-wrap;
 	white-space: -moz-pre-wrap;
