@@ -250,7 +250,7 @@ public class JmxInWebService {
 
 			JwInvokeOptResponse res = new JwInvokeOptResponse();
 			res.setReturnData(String.valueOf(returnValue));
-			res.setHasReturn(!targetOperation.getReturnType().equals("void"));
+			res.setHasReturn(!targetOperation.getReturnType().equals("void") && returnValue != null);
 
 			return res;
 		} catch (MBeanException e) {

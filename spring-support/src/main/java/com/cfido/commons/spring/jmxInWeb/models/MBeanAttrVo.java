@@ -20,7 +20,7 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 
 	private final MBeanAttributeInfo info;
 
-	private AttributeValueTypeEnum valueType;
+	private AttributeValueTypeEnum valueType = AttributeValueTypeEnum.Normal;
 
 	private Object attributeValue;
 
@@ -133,8 +133,6 @@ public class MBeanAttrVo implements Comparable<MBeanAttrVo> {
 					this.valueType = AttributeValueTypeEnum.Collection;
 				} else if (attributeValue instanceof java.util.Map) {
 					this.valueType = AttributeValueTypeEnum.Map;
-				} else {
-					this.valueType = AttributeValueTypeEnum.Normal;
 				}
 			}
 		}
