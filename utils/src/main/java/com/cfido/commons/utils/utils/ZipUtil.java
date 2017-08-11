@@ -16,7 +16,7 @@ public class ZipUtil {
 
 	private static int CACHE_SIZE = 1024;
 
-	private static final ThreadLocal<ZipUtil> zipUtilthreadLocal = new ThreadLocal<ZipUtil>();
+	private static final ThreadLocal<ZipUtil> zipUtilthreadLocal = new ThreadLocal<>();
 
 	/**
 	 * 压缩
@@ -25,11 +25,11 @@ public class ZipUtil {
 	 * @return
 	 * @throws IOException
 	 */
-	public static byte[] compressBytes(byte input[]) throws IOException {
+	public static byte[] zip(byte input[]) throws IOException {
 		return getZipUtilFromThreadLocal()._compressBytes(input);
 	}
 
-	public static byte[] decompressBytes(byte input[]) throws DataFormatException, IOException {
+	public static byte[] unzip(byte input[]) throws DataFormatException, IOException {
 		return getZipUtilFromThreadLocal()._decompressBytes(input);
 	}
 
