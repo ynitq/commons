@@ -58,7 +58,7 @@ public abstract class BaseColumnVo implements IColumnBean {
 		// 解析数据库中的字段说明，分析其中的表单设置
 		this.comment = this.form.parserComment(this.info.getComment());
 
-		if (!this.javaClass.isPrimitive()) {
+		if (!this.javaClass.isPrimitive() && !this.javaClass.isArray()) {
 			this.table.addImport(this.javaClass);
 		}
 
