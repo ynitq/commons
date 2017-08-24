@@ -46,8 +46,8 @@ public class BinderEditorSupport {
 					return null;
 				}
 			} else {
-				// 如果不允许空，就文字就表示为真
-				return true;
+				// 如果不允许空，只有两种状态
+				return !"false".equalsIgnoreCase(text);
 			}
 		}
 	}
