@@ -79,7 +79,7 @@
 			<div class="opt-nav">
 				<ul class="nav nav-pills nav-stacked">
 					<#assign i=0> <#list mbean.opts as optVo>
-					<li role="presentation"><a href="#opt_form_${i}" role="tab" data-toggle="tab" aria-controls="#opt_form_${i}">${optVo.info.name}</a></li>
+					<li role="presentation"><a href="#opt_form_${i}" role="tab" data-toggle="tab" aria-controls="#opt_form_${i}">${optVo.info.name} <span class="text-muted">${optVo.info.description}</span></a></li>
 					<#assign i=i+1></#list>
 				</ul>
 			</div>
