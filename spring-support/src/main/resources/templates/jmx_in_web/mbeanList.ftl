@@ -11,7 +11,7 @@
 
 	<#include "include/header"/>
 
-	<div class="main-content">
+	<div class="main-content" style="overflow: auto">
 		<div class="panel panel-default">
 			<div class="panel-heading">MBean列表</div>
 		<!-- List group -->

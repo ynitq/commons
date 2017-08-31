@@ -110,3 +110,9 @@ body {
 .nav-pills>li.active>a>span.text-muted {
 	color: #91BFE7;
 }
+
+.no-break {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

@@ -67,10 +67,10 @@
 		<div class="opt-container">
 			<!-- MBean 基础信息 -->
 			<div class="panel panel-default">
-				<div class="panel-heading">
+				<div class="panel-heading no-break">
 					<b>说明: </b> ${mbean.desc} <b>类:</b> ${mbean.className}
 				</div>
-				<div class="panel-body">
+				<div class="panel-body no-break" >
 					<b>Object name: </b>${mbean.objectName}
 				</div>
 			</div>
