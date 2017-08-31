@@ -98,9 +98,15 @@ body {
 	bottom: 0px;
 	overflow: auto;
 }
+
 .opt-panel {
 	min-width: 550px;
 }
+
 .w100 {
 	min-width: 100px;
+}
+
+.nav-pills>li.active>a>span.text-muted {
+	color: #91BFE7;
 }
