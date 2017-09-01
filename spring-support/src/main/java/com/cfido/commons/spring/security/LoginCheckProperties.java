@@ -26,7 +26,7 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  * 
  * @author 梁韦江 2016年8月26日
  */
-@ManagedResource(description = "LoginCheck 配置")
+@ManagedResource(description = "LoginCheck 配置", objectName = "com.cfido.commons.spring.security:name=LoginCheckProperties")
 @ConfigurationProperties(prefix = "loginCheck")
 @ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
 public class LoginCheckProperties {

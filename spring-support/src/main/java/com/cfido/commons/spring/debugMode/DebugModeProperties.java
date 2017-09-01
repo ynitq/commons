@@ -21,7 +21,7 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  *  2016年8月26日
  */
 @ConfigurationProperties(prefix = "debug")
-@ManagedResource(description = "Debug模式 配置")
+@ManagedResource(description = "Debug模式 配置", objectName = "com.cfido.commons.spring.debugMode:name=DebugModeProperties")
 @ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
 public class DebugModeProperties {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DebugModeProperties.class);
