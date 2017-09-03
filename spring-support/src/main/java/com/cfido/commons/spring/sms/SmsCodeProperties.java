@@ -32,6 +32,18 @@ public class SmsCodeProperties {
 	/** 每天可发送的上限 sms.dayLimit.total 默认2000 */
 	private int preDay = 2000;
 
+	private int expireInMin = 5;
+
+	@ManagedAttribute(description = "sms.limit.expireInMin 短信有效时间（分钟）")
+	public int getExpireInMin() {
+		return expireInMin;
+	}
+
+	@ManagedAttribute()
+	public void setExpireInMin(int expireInMin) {
+		this.expireInMin = expireInMin;
+	}
+
 	/**
 	 * sms.interval 两次发送短信的实际间隔，默认60秒
 	 * 
