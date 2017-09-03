@@ -88,7 +88,11 @@ public class SmsCodeService extends BaseCodeService {
 
 	/** 发送短信验证码 */
 	public void sendCode(String phone, String type, String remoteIp) throws BaseApiException {
+
 		String key = this.buildPhoneKey(phone, type);
+
+		// 检查是否发送过于频繁
+		this.checkTooBusy(key);
 
 		// 生成验证码
 		String code = this.getRandomCode();
