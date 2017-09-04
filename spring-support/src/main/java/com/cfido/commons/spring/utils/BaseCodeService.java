@@ -29,8 +29,6 @@ public abstract class BaseCodeService {
 	@Autowired
 	private DebugModeProperties debugMode;
 
-	private int randomCodeLen = 4;
-
 	/**
 	 * 验证校验码是否正确, 默认是一次性验证
 	 * 
@@ -101,8 +99,8 @@ public abstract class BaseCodeService {
 
 	/** 验证码长度，可有子类通过继承来修改 */
 	@ManagedAttribute(description = "验证码的长度")
-	public int getRandomCodeLen() {
-		return this.randomCodeLen;
+	protected int getRandomCodeLen() {
+		return 4;
 	}
 
 	/** 将code保存到redis中 */
@@ -116,11 +114,6 @@ public abstract class BaseCodeService {
 		this.redisTemplate.opsForValue().set(redisKey, value, getCodeExpireTimeInMin(), TimeUnit.MINUTES);
 
 		return code;
-	}
-
-	@ManagedAttribute
-	public void setRandomCodeLen(int randomCodeLen) {
-		this.randomCodeLen = randomCodeLen;
 	}
 
 	private String createRedisKey(String key) {

@@ -1,4 +1,4 @@
-package com.cfido.commons.spring.sms;
+package com.cfido.commons.utils.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

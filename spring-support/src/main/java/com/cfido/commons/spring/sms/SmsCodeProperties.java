@@ -26,17 +26,31 @@ public class SmsCodeProperties {
 
 	private int interval = 60;
 
-	/** 每个IP每天发送的上限 sms.dayLimit.preIp 默认1000 */
-	private int preIp = 1000;
+	/** 每个IP每天发送的上限 sms.dayLimit.preIp 默认100 */
+	private int preIp = 100;
 
-	/** 每天可发送的上限 sms.dayLimit.total 默认2000 */
-	private int preDay = 2000;
+	/** 每天可发送的上限 sms.dayLimit.total 默认20000 */
+	private int preDay = 20000;
 
+	/** 验证码超时时间 */
 	private int expireInMin = 5;
+
+	/** 验证码长度 */
+	private int codeLen = 4;
 
 	@ManagedAttribute(description = "sms.limit.expireInMin 短信有效时间（分钟）")
 	public int getExpireInMin() {
 		return expireInMin;
+	}
+
+	@ManagedAttribute(description = "sms.limit.codeLen 验证码长度）")
+	public int getCodeLen() {
+		return codeLen;
+	}
+
+	@ManagedAttribute
+	public void setCodeLen(int codeLen) {
+		this.codeLen = codeLen;
 	}
 
 	@ManagedAttribute()
