@@ -29,6 +29,21 @@ public abstract class BaseCodeService {
 	@Autowired
 	private DebugModeProperties debugMode;
 
+	private int randomCodeLen = 4;
+
+	/**
+	 * 验证校验码是否正确, 默认是一次性验证
+	 * 
+	 * @param key
+	 *            键值
+	 * @param code
+	 *            验证码
+	 * @throws InvalidVerifyCodeException
+	 */
+	public void checkRandCode(String key, String code) throws InvalidVerifyCodeException {
+		this.checkRandCode(key, code, true);
+	}
+
 	/**
 	 * 验证校验码是否正确
 	 * 
@@ -44,61 +59,7 @@ public abstract class BaseCodeService {
 		Assert.hasText(key, "key不能为空");
 		Assert.hasText(code, "code不能为空");
 
-		if (this.debugMode.isDebugMode()) {
-			log.warn("开发模式下，自动通过验证 key={} , code={}", key, code);
-			return;
-		}
-
 		this.doVerifyCode(key, code, deleteKey);
-	}
-
-	
-	
-	/**
-	 * 验证校验码是否正确, 默认是一次性验证
-	 * 
-	 * @param key
-	 *            键值
-	 * @param code
-	 *            验证码
-	 * @throws InvalidVerifyCodeException
-	 */
-	public void checkRandCode(String key, String code) throws InvalidVerifyCodeException {
-		this.checkRandCode(key, code, true);
-	}
-
-	@ManagedAttribute(description = "验证码校验模式")
-	public String getCheckMode() {
-		if (this.debugMode.isDebugMode()) {
-			return "当前处于开发模式:不做校验，自动通过";
-		} else {
-			return "当前处于运行模式：需要校验";
-		}
-	}
-
-	@ManagedAttribute(description = "验证码的有效期（分钟）")
-	public abstract int getCodeExpireTimeInMin();
-
-	@ManagedAttribute(description = "两次发送的最小时间间隔(秒)")
-	public abstract int getIntervalInSec();
-
-	/** 检查操作是否太频繁 */
-	protected void checkTooBusy(String key) throws TooBusyException {
-		Assert.hasText(key, "key不能为空");
-
-		// 发送验证码前，先将key保存起来
-		String redisKey = this.createRedisKey(key);
-
-		CodeVerifyBean oldValue = this.redisTemplate.opsForValue().get(redisKey);
-		int intervalInSec = this.getIntervalInSec();
-		if (oldValue != null && intervalInSec > 0) {
-			long now = System.currentTimeMillis();
-			long remainInSec = intervalInSec - (now - oldValue.getTime()) / 1000;
-			if (remainInSec > 0) {
-				// 时间小于时间间隔就抛错
-				throw new TooBusyException(remainInSec);
-			}
-		}
 	}
 
 	/**
@@ -123,8 +84,66 @@ public abstract class BaseCodeService {
 		return code;
 	}
 
+	@ManagedAttribute(description = "验证码校验模式")
+	public String getCheckMode() {
+		if (this.debugMode.isDebugMode()) {
+			return "当前处于开发模式:不做校验，自动通过";
+		} else {
+			return "当前处于运行模式：需要校验";
+		}
+	}
+
+	@ManagedAttribute(description = "验证码的有效期（分钟）")
+	public abstract int getCodeExpireTimeInMin();
+
+	@ManagedAttribute(description = "两次发送的最小时间间隔(秒)")
+	public abstract int getIntervalInSec();
+
+	/** 验证码长度，可有子类通过继承来修改 */
+	@ManagedAttribute(description = "验证码的长度")
+	public int getRandomCodeLen() {
+		return this.randomCodeLen;
+	}
+
+	/** 将code保存到redis中 */
+	public String saveCode(String key, String code) {
+		Assert.hasText(key, "key不能为空");
+
+		String redisKey = this.createRedisKey(key);
+
+		// 将验证码放入redis
+		CodeVerifyBean value = new CodeVerifyBean(code);
+		this.redisTemplate.opsForValue().set(redisKey, value, getCodeExpireTimeInMin(), TimeUnit.MINUTES);
+
+		return code;
+	}
+
+	@ManagedAttribute
+	public void setRandomCodeLen(int randomCodeLen) {
+		this.randomCodeLen = randomCodeLen;
+	}
+
 	private String createRedisKey(String key) {
 		return String.format("%s:%s", this.getRedisKeyPrefix(), key);
+	}
+
+	/** 检查操作是否太频繁 */
+	protected void checkTooBusy(String key) throws TooBusyException {
+		Assert.hasText(key, "key不能为空");
+
+		// 发送验证码前，先将key保存起来
+		String redisKey = this.createRedisKey(key);
+
+		CodeVerifyBean oldValue = this.redisTemplate.opsForValue().get(redisKey);
+		int intervalInSec = this.getIntervalInSec();
+		if (oldValue != null && intervalInSec > 0) {
+			long now = System.currentTimeMillis();
+			long remainInSec = intervalInSec - (now - oldValue.getTime()) / 1000;
+			if (remainInSec > 0) {
+				// 时间小于时间间隔就抛错
+				throw new TooBusyException(remainInSec);
+			}
+		}
 	}
 
 	/**
@@ -164,7 +183,12 @@ public abstract class BaseCodeService {
 		} else {
 			log.debug("校验验证码时，找不到键值:{}", redisKey);
 		}
-		throw new InvalidVerifyCodeException();
+
+		if (this.debugMode.isDebugMode()) {
+			log.warn("验证码不正确，但开发模式下，也自动当验证通过 key={} , code={}", key, code);
+		} else {
+			throw new InvalidVerifyCodeException();
+		}
 	}
 
 	/**
@@ -180,25 +204,7 @@ public abstract class BaseCodeService {
 		return codeBuilder.toString();
 	}
 
-	/** 验证码长度，可有子类通过继承来修改 */
-	protected int getRandomCodeLen() {
-		return 4;
-	}
-
 	/** redis key 前缀 */
 	protected abstract String getRedisKeyPrefix();
-
-	/** 将code保存到redis中 */
-	public String saveCode(String key, String code) {
-		Assert.hasText(key, "key不能为空");
-
-		String redisKey = this.createRedisKey(key);
-
-		// 将验证码放入redis
-		CodeVerifyBean value = new CodeVerifyBean(code);
-		this.redisTemplate.opsForValue().set(redisKey, value, getCodeExpireTimeInMin(), TimeUnit.MINUTES);
-
-		return code;
-	}
 
 }
