@@ -22,7 +22,10 @@ public class NetUtil {
 	 * @param inetAddress
 	 * @return
 	 */
-	private static String address2String(InetAddress inetAddress) {
+	public static String address2String(InetAddress inetAddress) {
+		if (inetAddress == null || inetAddress == null) {
+			return null;
+		}
 		byte[] address = inetAddress.getAddress();
 		StringBuffer res = new StringBuffer();
 		for (int i = 0; i < address.length; i++) {
@@ -49,7 +52,7 @@ public class NetUtil {
 	 * @return
 	 */
 	public static String getLocalHostIP(boolean intraIp) {
-		LinkedList<String> list = new LinkedList<String>();
+		LinkedList<String> list = new LinkedList<>();
 
 		try {
 			// 获取所有的网卡
@@ -92,7 +95,7 @@ public class NetUtil {
 	}
 
 	public static List<String> getAllIpAddress() {
-		LinkedList<String> list = new LinkedList<String>();
+		LinkedList<String> list = new LinkedList<>();
 
 		try {
 			// 获取所有的网卡
