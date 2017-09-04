@@ -15,7 +15,7 @@ import com.cfido.commons.utils.threadPool.BaseThreadPool;
  * @author 梁韦江 2015年7月21日
  */
 @Service
-@ManagedResource(description = "短信发送异步线程池")
+@ManagedResource(description = "短信发送异步线程池", objectName = "SmsCodeService:name=短信验证码-线程池")
 @ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN_SMS)
 public class SendSmsThreadPool extends BaseThreadPool {
 

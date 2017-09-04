@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -22,7 +23,9 @@ import org.springframework.util.StringUtils;
 import com.cfido.commons.beans.apiExceptions.SimpleApiException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.dict.core.DictCoreService;
+import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.BaseCodeService;
+import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.threadPool.IMyTask;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LRULinkedHashMap;
@@ -38,6 +41,8 @@ import com.cfido.commons.utils.utils.TimeKeyUtil;
  * @author 梁韦江
  */
 @Service
+@ManagedResource(description = "短信验证码服务", objectName = "SmsCodeService:name=短信验证码-服务")
+@ADomainOrder(domainName = CommonMBeanDomainNaming.DOMAIN_SMS, order = CommonMBeanDomainNaming.ORDER)
 public class SmsCodeService extends BaseCodeService {
 
 	/** 发送短信的任务 */

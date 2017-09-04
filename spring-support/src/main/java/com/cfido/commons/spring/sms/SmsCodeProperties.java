@@ -19,7 +19,7 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
  * 
  * @author 梁韦江 2016年8月11日
  */
-@ManagedResource(description = "短信服务限制参数")
+@ManagedResource(description = "短信验证码参数", objectName = "SmsCodeService:name=短信验证码-参数")
 @ConfigurationProperties(prefix = "sms.limit")
 @ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN_SMS)
 public class SmsCodeProperties {
