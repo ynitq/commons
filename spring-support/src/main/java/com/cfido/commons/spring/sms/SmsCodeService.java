@@ -310,7 +310,7 @@ public class SmsCodeService extends BaseCodeService {
 	/** 由task调用，发送短信 */
 	private void doSendSms(SendTask task) {
 		try {
-			task.gateWay.sendSms(task.phone, task.text, task.remoteIp);
+			task.gateWay.sendSms(task.phone, task.text, null);
 
 			// 计数器 +1
 			this.incSuccess(task.remoteIp);
