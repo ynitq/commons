@@ -38,6 +38,12 @@ public class SmsCodeProperties {
 	/** 验证码长度 */
 	private int codeLen = 4;
 
+	/** 是否debug **/
+	private boolean debug = false;
+
+	/** 是否真的发送 **/
+	private boolean send = true;
+
 	@ManagedAttribute(description = "sms.limit.expireInMin 短信有效时间（分钟）")
 	public int getExpireInMin() {
 		return expireInMin;
@@ -92,4 +98,25 @@ public class SmsCodeProperties {
 	public void setPreDay(int preDay) {
 		this.preDay = preDay;
 	}
+
+	@ManagedAttribute(description = "sms.limit.debug 是否debug状态 ")
+	public boolean isDebug() {
+		return debug;
+	}
+
+	@ManagedAttribute
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	@ManagedAttribute(description = "sms.limit.send 是否真的发送 ")
+	public boolean isSend() {
+		return send;
+	}
+
+	@ManagedAttribute
+	public void setSend(boolean send) {
+		this.send = send;
+	}
+
 }

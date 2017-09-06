@@ -232,7 +232,9 @@ public class SmsCodeService extends BaseCodeService {
 		String text = this.buildSmsCodeText(type, code);
 
 		// 发送短信
-		this.sendSms(phone, text, remoteIp);
+		if (isSend()) {
+			this.sendSms(phone, text, remoteIp);
+		}
 	}
 
 	/** 发送系统短信 */
@@ -403,6 +405,16 @@ public class SmsCodeService extends BaseCodeService {
 		this.gateWayList.addAll(map.values());
 
 		log.info("初始化 短信验证码服务, 共找到 {} 个短信网关", this.gateWayList.size());
+	}
+
+	@Override
+	public boolean isDebug() {
+		return this.prop.isDebug();
+	}
+
+	@Override
+	public boolean isSend() {
+		return this.prop.isSend();
 	}
 
 }

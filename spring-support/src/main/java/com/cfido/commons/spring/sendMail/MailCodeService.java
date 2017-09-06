@@ -152,4 +152,14 @@ public class MailCodeService extends BaseCodeService {
 		return "mailCode";
 	}
 
+	@Override
+	public boolean isDebug() {
+		return false;
+	}
+
+	@Override
+	public boolean isSend() {
+		return true;
+	}
+
 }

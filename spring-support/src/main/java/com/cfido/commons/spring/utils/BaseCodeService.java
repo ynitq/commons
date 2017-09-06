@@ -10,7 +10,6 @@ import org.springframework.util.Assert;
 import com.cfido.commons.beans.apiExceptions.InvalidVerifyCodeException;
 import com.cfido.commons.beans.apiExceptions.TooBusyException;
 import com.cfido.commons.beans.others.CodeVerifyBean;
-import com.cfido.commons.spring.debugMode.DebugModeProperties;
 
 /**
  * <pre>
@@ -25,9 +24,6 @@ public abstract class BaseCodeService {
 
 	@Autowired
 	private RedisTemplate<String, CodeVerifyBean> redisTemplate;
-
-	@Autowired
-	private DebugModeProperties debugMode;
 
 	/**
 	 * 验证校验码是否正确, 默认是一次性验证
@@ -84,7 +80,7 @@ public abstract class BaseCodeService {
 
 	@ManagedAttribute(description = "验证码校验模式")
 	public String getCheckMode() {
-		if (this.debugMode.isDebugMode()) {
+		if (this.isDebug()) {
 			return "当前处于开发模式:不做校验，自动通过";
 		} else {
 			return "当前处于运行模式：需要校验";
@@ -96,6 +92,12 @@ public abstract class BaseCodeService {
 
 	@ManagedAttribute(description = "两次发送的最小时间间隔(秒)")
 	public abstract int getIntervalInSec();
+
+	/** 是否debug **/
+	public abstract boolean isDebug();
+
+	/** 是否真的发送 **/
+	public abstract boolean isSend();
 
 	/** 验证码长度，可有子类通过继承来修改 */
 	@ManagedAttribute(description = "验证码的长度")
@@ -177,7 +179,7 @@ public abstract class BaseCodeService {
 			log.debug("校验验证码时，找不到键值:{}", redisKey);
 		}
 
-		if (this.debugMode.isDebugMode()) {
+		if (this.isDebug()) {
 			log.warn("验证码不正确，但开发模式下，也自动当验证通过 key={} , code={}", key, code);
 		} else {
 			throw new InvalidVerifyCodeException();
