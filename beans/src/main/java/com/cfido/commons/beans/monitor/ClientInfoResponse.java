@@ -1,5 +1,8 @@
 package com.cfido.commons.beans.monitor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <pre>
  * 服务器回调客户端时，客户端返回的信息
@@ -24,8 +27,20 @@ public class ClientInfoResponse {
 	/** 磁盘信息 */
 	private DiskInfoBean diskInfo = new DiskInfoBean();
 
+
 	/** 操作系统信息 */
 	private OsInfoBean osInfo = new OsInfoBean();
+
+	/** 额外的信息 */
+	private Map<String, Object> extInfo = new HashMap<>();
+
+	public Map<String, Object> getExtInfo() {
+		return extInfo;
+	}
+
+	public void setExtInfo(Map<String, Object> extInfo) {
+		this.extInfo = extInfo;
+	}
 
 	public DiskInfoBean getDiskInfo() {
 		return diskInfo;

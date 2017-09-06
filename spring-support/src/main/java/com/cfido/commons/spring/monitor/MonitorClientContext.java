@@ -42,6 +42,9 @@ public class MonitorClientContext {
 	@Autowired
 	private MonitorClientProperties clientProperties;
 
+	@Autowired(required = false)
+	private IMonitorClientExInfoProvider exInfoProvider;
+
 	private final ClientIdBean clientId = new ClientIdBean();
 
 	private final AtomicInteger requestCounter = new AtomicInteger();
@@ -73,9 +76,10 @@ public class MonitorClientContext {
 			this.clientId.setPort(this.clientProperties.getClient().getPort());
 		}
 
-		log.debug("初始化监控客户端 {} 监控服务器={}",
+		log.debug("初始化监控客户端 {} 监控服务器={}, 额外信息={}",
 				this.clientId.toString(),
-				this.clientProperties.getServerUrlOfReport());
+				this.clientProperties.getServerUrlOfReport(),
+				this.exInfoProvider != null);
 
 	}
 
@@ -142,6 +146,11 @@ public class MonitorClientContext {
 		// 主程序的生成时间
 		if (this.startClassBuildTime != null) {
 			res.setStartClassBuildTime(this.startClassBuildTime.getTime());
+		}
+
+		if (this.exInfoProvider != null) {
+			// 如果需要提供额外的信息，就更新一下
+			this.exInfoProvider.updateExInfo(res, resetRequestCounter);
 		}
 
 		return res;
