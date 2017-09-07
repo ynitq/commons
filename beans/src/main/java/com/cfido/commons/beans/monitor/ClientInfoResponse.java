@@ -27,6 +27,8 @@ public class ClientInfoResponse {
 	/** 磁盘信息 */
 	private DiskInfoBean diskInfo = new DiskInfoBean();
 
+	/** 在线信息 */
+	private int online;
 
 	/** 操作系统信息 */
 	private OsInfoBean osInfo = new OsInfoBean();
@@ -88,6 +90,14 @@ public class ClientInfoResponse {
 
 	public void setStartTime(long startTime) {
 		this.startTime = startTime;
+	}
+
+	public int getOnline() {
+		return online;
+	}
+
+	public void setOnline(int online) {
+		this.online = online;
 	}
 
 }
