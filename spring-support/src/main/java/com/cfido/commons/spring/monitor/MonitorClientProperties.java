@@ -194,7 +194,7 @@ public class MonitorClientProperties {
 		}
 
 		if (StringUtils.isEmpty(this.client.getHost())) {
-			log.error("服务器地址为 {}, 无法通过服务地址找到本机地址");
+			log.error("无法通过服务地址找到本机地址");
 			throw new RuntimeException("请检查参数  monitorClient.client.host");
 		}
 	}
