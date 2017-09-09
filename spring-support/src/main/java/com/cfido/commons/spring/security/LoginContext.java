@@ -94,7 +94,7 @@ public class LoginContext {
 	 * 
 	 * @param user
 	 */
-	public void onLoginSuccess(IWebUser user, boolean remeberMe) {
+	public void onLoginSuccess(IWebUser user, boolean rememberMe) {
 		if (user == null) {
 			return;
 		}
@@ -104,7 +104,7 @@ public class LoginContext {
 
 		this.httpSessionUserHandler.onLoginSuccess(request, response, user);
 
-		if (this.isNeedRememberMe() || remeberMe) {
+		if (this.isNeedRememberMe() || rememberMe) {
 			this.remeberMeUserHandler.onLoginSuccess(request, response, user);
 		}
 	}
