@@ -26,6 +26,8 @@ public class ServerRightsBean {
 			RightsBean bean = new RightsBean();
 			bean.name = name;
 			bean.optId = optId;
+
+			this.rights.add(bean);
 			return this;
 		}
 
@@ -82,6 +84,8 @@ public class ServerRightsBean {
 	public GroupBean addGroup(String name) {
 		GroupBean bean = new GroupBean();
 		bean.name = name;
+
+		this.groups.add(bean);
 		return bean;
 	}
 
