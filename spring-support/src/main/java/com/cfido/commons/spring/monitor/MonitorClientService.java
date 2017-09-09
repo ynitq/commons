@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.cfido.commons.beans.monitor.ClientGetUserForm;
 import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.ClientMsgForm;
 import com.cfido.commons.beans.monitor.ServerRightsBean;
+import com.cfido.commons.beans.monitor.UserInfoInCenterBean;
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
@@ -29,6 +31,7 @@ import com.cfido.commons.utils.threadPool.BaseThreadPool;
 import com.cfido.commons.utils.threadPool.IMyTask;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
+import com.cfido.commons.utils.utils.HttpUtilException;
 import com.cfido.commons.utils.utils.LogUtil;
 
 /**
@@ -182,7 +185,34 @@ public class MonitorClientService {
 	}
 
 	/**
-	 * 向服务器报告一下id。 服务器对应的表单时 {@link ClientMsgForm}
+	 * 向中心服务器获得用户信息
+	 * 
+	 * @see ClientGetUserForm 表单
+	 * 
+	 * @throws IOException
+	 * @throws HttpUtilException
+	 */
+	public UserInfoInCenterBean getUserInfoFromCenter(String account) throws HttpUtilException, IOException {
+		String serverUrl = this.clientProperties.getServerUrlOfReport();
+
+		Map<String, Object> param = new HashMap<>();
+		param.put("idStr", idJsonStr);
+		param.put("account", account);
+
+		log.info("向监控服务器 {} 获取用户 {} 的", serverUrl, account);
+
+		String text = HttpUtil.request(serverUrl, param, true, null);
+		if (StringUtils.hasText(text)) {
+			return JSON.parseObject(text, UserInfoInCenterBean.class);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * 向服务器报告一下id。
+	 * 
+	 * @see ClientMsgForm 表单
 	 */
 	private void postMsgToServer(MonitorMsgTypeEnum level, String msg) throws IOException {
 		String serverUrl = this.clientProperties.getServerUrlOfReport();
