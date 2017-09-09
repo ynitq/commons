@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.ClientMsgForm;
+import com.cfido.commons.beans.monitor.ServerRightsBean;
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
@@ -192,8 +193,16 @@ public class MonitorClientService {
 		param.put("idStr", idJsonStr);
 		param.put("clientInfo", JSON.toJSONString(clientInfo));
 		param.put("msgType", level.code);
+
 		if (StringUtils.hasText(msg)) {
+			// 如果有消息，就传消息过去
 			param.put("msg", msg);
+		} else {
+			// 如果没有消息，就表示只在想中心服务器注册一下，这个时候，就将权限定义也传过去
+			ServerRightsBean rights = this.context.getRightsDef();
+			if (rights != null) {
+				param.put("rightStr", JSON.toJSON(rights));
+			}
 		}
 
 		log.info("向监控服务器 {} 发送信息 {}", serverUrl, msg);

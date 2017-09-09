@@ -18,6 +18,7 @@ import com.cfido.commons.beans.monitor.ClientIdBean;
 import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.DiskInfoBean;
 import com.cfido.commons.beans.monitor.OsInfoBean;
+import com.cfido.commons.beans.monitor.ServerRightsBean;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.OperatingSystemUtil;
 
@@ -124,6 +125,14 @@ public class MonitorClientContext {
 	 */
 	public ClientIdBean getClientId() {
 		return clientId;
+	}
+
+	/** 获得本服务器的权限定义 */
+	public ServerRightsBean getRightsDef() {
+		if (this.exInfoProvider != null) {
+			return this.exInfoProvider.getRights();
+		}
+		return null;
 	}
 
 	/**
