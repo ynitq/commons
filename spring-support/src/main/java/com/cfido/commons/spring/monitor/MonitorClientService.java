@@ -199,7 +199,7 @@ public class MonitorClientService {
 		param.put("idStr", idJsonStr);
 		param.put("account", account);
 
-		log.info("向监控服务器 {} 获取用户 {} 的", serverUrl, account);
+		log.info("向监控服务器 {} 获取用户 {} 的信息", serverUrl, account);
 
 		String text = HttpUtil.request(serverUrl, param, true, null);
 		if (StringUtils.hasText(text)) {
