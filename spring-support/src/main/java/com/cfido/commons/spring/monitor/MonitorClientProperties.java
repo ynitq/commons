@@ -197,6 +197,12 @@ public class MonitorClientProperties {
 			return;
 		}
 
+		if ("127.0.0.1".equals(this.server.getHost())) {
+			// 如果服务器是本机，就直接设置client的ip为本机
+			this.client.setHost("127.0.0.1");
+			return;
+		}
+
 		// 本机可能有很多个ip地址，我们是通过找和服务器同一网段的地址来判断哪一个地址才是我们需要的
 		List<String> ipList = NetUtil.getAllIpAddress();
 
