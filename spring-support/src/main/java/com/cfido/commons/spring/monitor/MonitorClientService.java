@@ -193,7 +193,7 @@ public class MonitorClientService {
 	 * @throws HttpUtilException
 	 */
 	public UserInfoInCenterBean getUserInfoFromCenter(String account) throws HttpUtilException, IOException {
-		String serverUrl = this.clientProperties.getServerUrlOfReport();
+		String serverUrl = this.clientProperties.getServerUrlOfUser();
 
 		Map<String, Object> param = new HashMap<>();
 		param.put("idStr", idJsonStr);
