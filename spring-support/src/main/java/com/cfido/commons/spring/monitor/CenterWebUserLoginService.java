@@ -32,8 +32,8 @@ public class CenterWebUserLoginService {
 	@Autowired
 	private LoginContext loginContext;
 
-	public void login(LoginForm form) throws BaseApiException {
-		this.login(form.getAccount(), form.getPassword(), form.isRememberMe());
+	public CenterWebUser login(LoginForm form) throws BaseApiException {
+		return this.login(form.getAccount(), form.getPassword(), form.isRememberMe());
 	}
 
 	@PostConstruct
@@ -41,7 +41,7 @@ public class CenterWebUserLoginService {
 		log.info("中心用户: 用户系统有中心服务器控制");
 	}
 
-	public void login(String account, String password, boolean rememberMe) throws BaseApiException {
+	public CenterWebUser login(String account, String password, boolean rememberMe) throws BaseApiException {
 		Assert.hasText(account, "账号不能为空");
 		Assert.hasText(password, "密码不能为空");
 
@@ -57,6 +57,8 @@ public class CenterWebUserLoginService {
 			// 如果是超级用户，可登陆jmx和dict
 			this.loginContext.onLoginSuccess(user.createCommonAdminWebUser(), rememberMe);
 		}
+
+		return user;
 	}
 
 	public void logout() {
