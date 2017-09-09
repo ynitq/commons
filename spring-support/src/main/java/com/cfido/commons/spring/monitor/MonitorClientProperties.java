@@ -32,6 +32,7 @@ import com.cfido.commons.utils.utils.NetUtil;
  * monitorClient.client.port 自动配置
  * 
  * monitorClient.enable = true
+ * monitorClient.enableCenterUser=false
  * 
  * monitorClient.report.retryDelay = 5
  * monitorClient.report.retryWhenFail = true
@@ -109,9 +110,20 @@ public class MonitorClientProperties {
 	/** 是否激活 */
 	private boolean enable = true;
 
+	/** 是否使用中心的用户系统 */
+	private boolean enableCenterUser = false;
+
 	public MonitorClientProperties() {
 		// 配置服务器的默认值
 		this.server.setPort(30000);
+	}
+
+	public boolean isEnableCenterUser() {
+		return enableCenterUser;
+	}
+
+	public void setEnableCenterUser(boolean enableCenterUser) {
+		this.enableCenterUser = enableCenterUser;
 	}
 
 	public Server getServer() {
@@ -135,13 +147,23 @@ public class MonitorClientProperties {
 	}
 
 	/**
-	 * 服务器的url
+	 * 服务器的url-汇报
 	 */
 	public String getServerUrlOfReport() {
 		return String.format("http://%s:%s/%s",
 				this.server.getHost(),
 				this.server.getPort(),
 				MonitorUrls.SERVER_REPORT);
+	}
+
+	/**
+	 * 服务器的url-用户信息
+	 */
+	public String getServerUrlOfUser() {
+		return String.format("http://%s:%s/%s",
+				this.server.getHost(),
+				this.server.getPort(),
+				MonitorUrls.SERVER_USER);
 	}
 
 	private void detectServerHost() {
