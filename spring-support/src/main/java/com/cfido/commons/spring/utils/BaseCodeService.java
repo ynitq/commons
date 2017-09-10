@@ -186,6 +186,11 @@ public abstract class BaseCodeService {
 		}
 	}
 
+	protected void deleteCodeKey(String key) {
+		String redisKey = this.createRedisKey(key);
+		this.redisTemplate.delete(redisKey);
+	}
+
 	/**
 	 * 获取随机验证码(0-9的整数)
 	 */
