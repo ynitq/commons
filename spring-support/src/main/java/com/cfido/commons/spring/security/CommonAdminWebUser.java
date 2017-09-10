@@ -14,10 +14,20 @@ public class CommonAdminWebUser implements IWebUser {
 	private final String username;
 	private final String password;
 
+	private boolean superUser;
+
 	public CommonAdminWebUser(String username, String password) {
 		super();
 		this.username = username;
 		this.password = password;
+	}
+
+	public boolean isSuperUser() {
+		return superUser;
+	}
+
+	public void setSuperUser(boolean superUser) {
+		this.superUser = superUser;
 	}
 
 	@Override
