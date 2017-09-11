@@ -3,6 +3,8 @@ package com.cfido.commons.beans.monitor;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.cfido.commons.annotation.bean.AComment;
+
 /**
  * <pre>
  * 服务器的权限
@@ -16,9 +18,10 @@ public class ServerRightsBean {
 
 	/** 权限组 */
 	public static class GroupBean {
-		/** 组的名字 */
+		@AComment("权限组显示用名字")
 		private String name;
 
+		@AComment("这个权限组的权限列表")
 		private List<RightsBean> rights = new LinkedList<>();
 
 		/** 在这个权限组增加权限 */
@@ -51,9 +54,11 @@ public class ServerRightsBean {
 	/** 权限 */
 	public static class RightsBean {
 		/** 显示用的名字 */
+		@AComment("权限显示用的名字")
 		private String name;
 
 		/** 判断权限用的id */
+		@AComment("权限的ID")
 		private String optId;
 
 		public String getName() {
@@ -74,10 +79,10 @@ public class ServerRightsBean {
 
 	}
 
-	/** 服务器权限组的id */
+	@AComment("服务器权限类型id")
 	private String id;
 
-	/** 权限组列表 */
+	@AComment("这个类型的服务器的权限组列表")
 	private List<GroupBean> groups = new LinkedList<>();
 
 	/** 为这个服务器增加一组权限 */
