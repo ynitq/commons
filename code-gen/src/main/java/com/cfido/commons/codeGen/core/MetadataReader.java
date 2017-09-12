@@ -3,6 +3,8 @@ package com.cfido.commons.codeGen.core;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,6 +41,9 @@ public class MetadataReader {
 
 		private boolean primaryKey;
 
+		private static final String INT_PATTERN = "int\\((\\d+)\\)";
+		private final Pattern pattern = Pattern.compile(INT_PATTERN);
+
 		public String getColumnName() {
 			return columnName;
 		}
@@ -65,7 +70,15 @@ public class MetadataReader {
 
 		public int getNumLen() {
 			try {
-				return Integer.parseInt(this.numLenStr);
+				// FIXME 需要从colType中获取，因为数据库返回的numLens
+				
+				Matcher m = pattern.matcher(this.columnType);
+				if (m.find()) {
+					return Integer.parseInt(m.group(1));
+				} else {
+					return 0;
+				}
+				
 			} catch (NumberFormatException ex) {
 				return 0;
 			}

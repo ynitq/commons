@@ -132,7 +132,7 @@ public class MysqlDataTypeConvertor implements IDataTypeConvertor {
 				}
 			}
 
-			if (info.getNumLen() > 10) {
+			if (info.getNumLen() > 11) {
 				// 超过11位的，只能用Long型，其实这个有问题，Integer 最大值是 +/-2147,483,647, 其实不够位数
 				return nullable || info.isPrimaryKey() ? Long.class : long.class;
 			} else {
