@@ -41,7 +41,7 @@ public class CenterWebUserProvider implements IUserServiceForRememberMe {
 		}
 	}
 
-	/** 从中心服务器获取用户，返回内衣一定不为空 */
+	/** 从中心服务器获取用户，返回一定不为空 */
 	public CenterWebUser loadFromCenter(String account) throws BaseApiException {
 		try {
 			UserInfoInCenterBean userInfo = this.service.getUserInfoFromCenter(account);
