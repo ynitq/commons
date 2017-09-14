@@ -82,6 +82,9 @@ public class ServerRightsBean {
 	@AComment("服务器权限类型id")
 	private String id;
 
+	@AComment("服务器权限类型的名字，仅用于显示")
+	private String name;
+
 	@AComment("这个类型的服务器的权限组列表")
 	private List<GroupBean> groups = new LinkedList<>();
 
@@ -98,6 +101,7 @@ public class ServerRightsBean {
 		return groups;
 	}
 
+
 	public String getId() {
 		return id;
 	}
@@ -108,6 +112,14 @@ public class ServerRightsBean {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
