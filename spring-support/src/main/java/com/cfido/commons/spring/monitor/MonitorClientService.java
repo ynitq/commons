@@ -78,11 +78,6 @@ public class MonitorClientService {
 			return connected;
 		}
 
-		@ManagedAttribute(description = "是否汇报给监控服务器")
-		public boolean isEnable() {
-			return MonitorClientService.this.clientProperties.isEnable();
-		}
-
 		@ManagedAttribute()
 		public void setEnable(boolean enable) {
 			MonitorClientService.this.clientProperties.setEnable(enable);

@@ -13,10 +13,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.utils.utils.NetUtil;
@@ -44,9 +41,6 @@ import com.cfido.commons.utils.utils.NetUtil;
  */
 @ConfigurationProperties(prefix = "monitorClient")
 public class MonitorClientProperties {
-
-	@Autowired
-	private ApplicationContext applicationContext;
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientProperties.class);
 
@@ -227,27 +221,8 @@ public class MonitorClientProperties {
 		}
 	}
 
-	private boolean isServer() {
-		String[] names = this.applicationContext.getBeanNamesForAnnotation(SpringBootApplication.class);
-		for (String name : names) {
-			if (name.endsWith(".StartMonitorServer")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	@PostConstruct
 	protected void init() {
-		if (this.isServer()) {
-			// 如果是监控服务器，就无需检查
-			return;
-		}
-
-		if (!this.enable) {
-			// 如果关闭了服务，就无需检查
-			return;
-		}
 
 		this.detectServerHost();
 		this.detectClientHost();

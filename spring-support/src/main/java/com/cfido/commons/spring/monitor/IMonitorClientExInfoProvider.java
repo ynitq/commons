@@ -18,4 +18,7 @@ public interface IMonitorClientExInfoProvider {
 	/** 获取这个服务器的权限 */
 	public ServerRightsBean getRights();
 
+	/** 当用户登录时，回调该方法，通常用于记录登录日志 */
+	public void onUserLogin(CenterWebUser user);
+
 }

@@ -32,6 +32,9 @@ public class CenterWebUserLoginService {
 	@Autowired
 	private LoginContext loginContext;
 
+	@Autowired(required = false)
+	private IMonitorClientExInfoProvider clientExInfoProvider;
+
 	public CenterWebUser login(LoginForm form) throws BaseApiException {
 		return this.login(form.getAccount(), form.getPassword(), form.isRememberMe());
 	}
@@ -54,6 +57,10 @@ public class CenterWebUserLoginService {
 		this.loginContext.onLoginSuccess(user, rememberMe);
 
 		if (user.getUserInfo().isSuperuser()) {
+			if (this.clientExInfoProvider != null) {
+				this.clientExInfoProvider.onUserLogin(user);
+			}
+
 			// 如果是超级用户，可登陆jmx和dict
 			this.loginContext.onLoginSuccess(user.createCommonAdminWebUser(), rememberMe);
 		}
