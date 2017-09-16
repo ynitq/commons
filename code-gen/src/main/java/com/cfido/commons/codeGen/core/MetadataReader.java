@@ -33,7 +33,6 @@ public class MetadataReader {
 		private String nullable;
 		private String dataType;
 		private String lenStr;
-		private String numLenStr;
 		private String numScaleStr;
 		private String extra;
 		private String comment;
@@ -229,7 +228,6 @@ public class MetadataReader {
 				info.nullable = rs.getString("IS_NULLABLE");
 				info.dataType = rs.getString("DATA_TYPE");
 				info.lenStr = rs.getString("CHARACTER_MAXIMUM_LENGTH");
-				info.numLenStr = rs.getString("NUMERIC_PRECISION");
 				info.numScaleStr = rs.getString("NUMERIC_SCALE");
 				info.extra = rs.getString("EXTRA");
 				info.comment = rs.getString("COLUMN_COMMENT");
