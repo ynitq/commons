@@ -30,7 +30,8 @@ public class CenterCommonAdminWebUserProvider implements IUserServiceForRemember
 	@Override
 	public CommonAdminWebUser loadUserByUsername(String account) {
 		CenterWebUser user = this.service.loadUserByUsername(account);
-		if (user != null) {
+		if (user != null && user.checkRights(CommonAdminWebUser.RIGHTS_NAME)) {
+			// 如果有通用管理员的权限，就返回：可登陆
 			return user.createCommonAdminWebUser();
 		} else {
 			return null;

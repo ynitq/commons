@@ -11,6 +11,9 @@ import com.cfido.commons.loginCheck.IWebUser;
  */
 public class CommonAdminWebUser implements IWebUser {
 
+	/** 权限名字，用于中心服务器自动登录 */
+	public final static String RIGHTS_NAME = "CommonAdminWebUser";
+
 	private final String username;
 	private final String password;
 

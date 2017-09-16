@@ -21,11 +21,14 @@ public class CenterWebUser implements IWebUser {
 
 	@Override
 	public boolean checkRights(String optId) {
-		if (userInfo.getRights() == null) {
+		if (this.userInfo.isSuperuser()) {
+			// 如果是超级用户，就直接返回真
 			return true;
-		} else {
+		} else if (userInfo.getRights() != null) {
+			// 如果有权限设置，就按权限设置
 			return userInfo.getRights().contains(optId);
 		}
+		return false;
 	}
 
 	@Override

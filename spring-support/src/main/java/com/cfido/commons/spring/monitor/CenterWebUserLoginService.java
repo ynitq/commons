@@ -54,13 +54,15 @@ public class CenterWebUserLoginService {
 		// 检查密码是否正确
 		PasswordEncoder.checkPassword(password, user.getPassword());
 
+		// 这个用户登录
 		this.loginContext.onLoginSuccess(user, rememberMe);
 
-		if (user.getUserInfo().isSuperuser()) {
-			if (this.clientExInfoProvider != null) {
-				this.clientExInfoProvider.onUserLogin(user);
-			}
+		// 如果需要回调，就回调
+		if (this.clientExInfoProvider != null) {
+			this.clientExInfoProvider.onUserLogin(user);
+		}
 
+		if (user.getUserInfo().isSuperuser()) {
 			// 如果是超级用户，可登陆jmx和dict
 			this.loginContext.onLoginSuccess(user.createCommonAdminWebUser(), rememberMe);
 		}
