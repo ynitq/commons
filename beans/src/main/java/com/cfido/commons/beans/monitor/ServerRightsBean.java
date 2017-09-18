@@ -79,9 +79,6 @@ public class ServerRightsBean {
 
 	}
 
-	@AComment("服务器权限类型id")
-	private String id;
-
 	@AComment("服务器权限类型的名字，仅用于显示")
 	private String name;
 
@@ -101,17 +98,8 @@ public class ServerRightsBean {
 		return groups;
 	}
 
-
-	public String getId() {
-		return id;
-	}
-
 	public void setGroups(List<GroupBean> groups) {
 		this.groups = groups;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {
