@@ -62,8 +62,8 @@ public class CenterWebUserLoginService {
 			this.clientExInfoProvider.onUserLogin(user);
 		}
 
-		if (user.getUserInfo().isSuperuser()) {
-			// 如果是超级用户，可登陆jmx和dict
+		if (user.checkRights(CommonAdminWebUser.RIGHTS_NAME)) {
+			// 如果有通用管理员的权限，就可登陆jmx和dict
 			this.loginContext.onLoginSuccess(user.createCommonAdminWebUser(), rememberMe);
 		}
 
