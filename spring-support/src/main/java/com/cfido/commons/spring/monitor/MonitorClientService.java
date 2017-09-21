@@ -95,6 +95,20 @@ public class MonitorClientService {
 		public void testSendMsg(String msg) throws IOException {
 			MonitorClientService.this.postMsgToServer(MonitorMsgTypeEnum.WARNING, msg);
 		}
+
+		@ManagedOperation(description = "测试发送消息给监控服务器")
+		@ManagedOperationParameters({
+				@ManagedOperationParameter(description = "要发送的信息", name = "msg"),
+		})
+		public String testGetUserInfo(String account) throws IOException {
+			UserInfoInCenterBean info = MonitorClientService.this.getUserInfoFromCenter(account);
+			if (info != null) {
+				return JSON.toJSONString(info, true);
+			} else {
+				return "无此用户";
+			}
+		}
+
 	}
 
 	/**
