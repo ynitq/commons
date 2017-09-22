@@ -1,13 +1,12 @@
 package com.cfido.commons.utils.utils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.Test;
-
-import com.cfido.commons.utils.utils.CookieSavedHttpClient;
-import com.cfido.commons.utils.utils.HttpUtilException;
 
 /**
  * <pre>
@@ -39,10 +38,11 @@ public class CookieSavedHttpClientTest {
 	}
 
 	void postLogin() throws Exception {
-		Map<String, Object> param = new HashMap<>();
-		param.put("openId", 1);
 
-		String content = client.execute("http://192.168.100.10:20010/", param, true);
+		List<NameValuePair> paramList = new LinkedList<NameValuePair>();
+		paramList.add(new BasicNameValuePair("openId", "1"));
+		
+		String content = client.execute("http://192.168.100.10:20010/", paramList, true);
 		log.debug("post后的内容:{}", content);
 	}
 

@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,7 +35,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -58,24 +56,24 @@ public class CookieSavedHttpClient {
 
 	private static final int TIMEOUT = 15000;
 
-	/**
-	 * 将map装成为 httpclient接受的NameValuePair参数
-	 * 
-	 * @param paramMap
-	 * @return
-	 */
-	private static List<NameValuePair> mapToList(Map<String, Object> paramMap) {
-		if (paramMap != null) {
-			List<NameValuePair> list = new LinkedList<>();
-			Set<Map.Entry<String, Object>> set = paramMap.entrySet();
-			for (Entry<String, Object> en : set) {
-				list.add(new BasicNameValuePair(en.getKey(), en.getValue() == null ? "" : en.getValue().toString()));
-			}
-			return list;
-		} else {
-			return null;
-		}
-	}
+//	/**
+//	 * 将map装成为 httpclient接受的NameValuePair参数
+//	 * 
+//	 * @param paramMap
+//	 * @return
+//	 */
+//	private static List<NameValuePair> mapToList(Map<String, Object> paramMap) {
+//		if (paramMap != null) {
+//			List<NameValuePair> list = new LinkedList<>();
+//			Set<Map.Entry<String, Object>> set = paramMap.entrySet();
+//			for (Entry<String, Object> en : set) {
+//				list.add(new BasicNameValuePair(en.getKey(), en.getValue() == null ? "" : en.getValue().toString()));
+//			}
+//			return list;
+//		} else {
+//			return null;
+//		}
+//	}
 
 	/**
 	 * HTTP request 的配置，主要是设置各类timeout
@@ -162,17 +160,17 @@ public class CookieSavedHttpClient {
 	 * @throws HttpUtilException
 	 * @throws IOException
 	 */
-	public <T> T executeJson(Class<T> responseClass, String url, Map<String, Object> paramMap, boolean postMethod,
+	public <T> T executeJson(Class<T> responseClass, String url, List<NameValuePair> paramList, boolean postMethod,
 			Map<String, String> header) throws HttpUtilException, IOException {
-		String res = this.execute(url, paramMap, postMethod, header, null);
+		String res = this.execute(url, paramList, postMethod, header, null);
 
 		log.debug("请求 {} 获得的内容为：\n{}", url, res);
 
 		return JSON.parseObject(res, responseClass);
 	}
 
-	public String execute(String url, Map<String, Object> paramMap, boolean postMethod) throws HttpUtilException, IOException {
-		return this.execute(url, paramMap, postMethod, null, null);
+	public String execute(String url, List<NameValuePair> paramList, boolean postMethod) throws HttpUtilException, IOException {
+		return this.execute(url, paramList, postMethod, null, null);
 	}
 
 	private void clearLast() {
@@ -197,13 +195,13 @@ public class CookieSavedHttpClient {
 	 * @throws HttpUtilException
 	 * @throws IOException
 	 */
-	public String execute(String url, Map<String, Object> paramMap, boolean postMethod,
+	public String execute(String url, List<NameValuePair> paramList, boolean postMethod,
 			Map<String, String> header, String referer) throws HttpUtilException, IOException {
 
 		log.debug("执行 {}:{}", postMethod ? "POST" : "GET", url);
 		this.clearLast();
 		
-		List<NameValuePair> paramList = mapToList(paramMap);
+//		List<NameValuePair> paramList = mapToList(paramMap);
 
 		CloseableHttpClient httpClient = this.createClient(url);
 
