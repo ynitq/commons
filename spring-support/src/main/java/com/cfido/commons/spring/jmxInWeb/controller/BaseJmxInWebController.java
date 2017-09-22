@@ -92,4 +92,8 @@ abstract class BaseJmxInWebController {
 		return menuVo;
 
 	}
+
+	protected String getRedirectUrl(String url) {
+		return "redirect:" + url;
+	}
 }
