@@ -19,8 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.cfido.commons.beans.monitor.ClientGetUserForm;
 import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.ClientMsgForm;
+import com.cfido.commons.beans.monitor.ServerRightsBean;
+import com.cfido.commons.beans.monitor.UserInfoInCenterBean;
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.jmxInWeb.core.JmxInWebService;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
@@ -28,6 +31,7 @@ import com.cfido.commons.utils.threadPool.BaseThreadPool;
 import com.cfido.commons.utils.threadPool.IMyTask;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
+import com.cfido.commons.utils.utils.HttpUtilException;
 import com.cfido.commons.utils.utils.LogUtil;
 
 /**
@@ -74,11 +78,6 @@ public class MonitorClientService {
 			return connected;
 		}
 
-		@ManagedAttribute(description = "是否汇报给监控服务器")
-		public boolean isEnable() {
-			return MonitorClientService.this.clientProperties.isEnable();
-		}
-
 		@ManagedAttribute()
 		public void setEnable(boolean enable) {
 			MonitorClientService.this.clientProperties.setEnable(enable);
@@ -96,6 +95,20 @@ public class MonitorClientService {
 		public void testSendMsg(String msg) throws IOException {
 			MonitorClientService.this.postMsgToServer(MonitorMsgTypeEnum.WARNING, msg);
 		}
+
+		@ManagedOperation(description = "测试发送消息给监控服务器")
+		@ManagedOperationParameters({
+				@ManagedOperationParameter(description = "要发送的信息", name = "msg"),
+		})
+		public String testGetUserInfo(String account) throws IOException {
+			UserInfoInCenterBean info = MonitorClientService.this.getUserInfoFromCenter(account);
+			if (info != null) {
+				return JSON.toJSONString(info, true);
+			} else {
+				return "无此用户";
+			}
+		}
+
 	}
 
 	/**
@@ -181,7 +194,34 @@ public class MonitorClientService {
 	}
 
 	/**
-	 * 向服务器报告一下id。 服务器对应的表单时 {@link ClientMsgForm}
+	 * 向中心服务器获得用户信息
+	 * 
+	 * @see ClientGetUserForm 表单
+	 * 
+	 * @throws IOException
+	 * @throws HttpUtilException
+	 */
+	public UserInfoInCenterBean getUserInfoFromCenter(String account) throws HttpUtilException, IOException {
+		String serverUrl = this.clientProperties.getServerUrlOfUser();
+
+		Map<String, Object> param = new HashMap<>();
+		param.put("idStr", idJsonStr);
+		param.put("account", account);
+
+		log.info("向监控服务器 {} 获取用户 {} 的信息", serverUrl, account);
+
+		String text = HttpUtil.request(serverUrl, param, true, null);
+		if (StringUtils.hasText(text)) {
+			return JSON.parseObject(text, UserInfoInCenterBean.class);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * 向服务器报告一下id。
+	 * 
+	 * @see ClientMsgForm 表单
 	 */
 	private void postMsgToServer(MonitorMsgTypeEnum level, String msg) throws IOException {
 		String serverUrl = this.clientProperties.getServerUrlOfReport();
@@ -192,8 +232,16 @@ public class MonitorClientService {
 		param.put("idStr", idJsonStr);
 		param.put("clientInfo", JSON.toJSONString(clientInfo));
 		param.put("msgType", level.code);
+
 		if (StringUtils.hasText(msg)) {
+			// 如果有消息，就传消息过去
 			param.put("msg", msg);
+		} else {
+			// 如果没有消息，就表示只在想中心服务器注册一下，这个时候，就将权限定义也传过去
+			ServerRightsBean rights = this.context.getRightsDef();
+			if (rights != null) {
+				param.put("rightStr", JSON.toJSON(rights));
+			}
 		}
 
 		log.info("向监控服务器 {} 发送信息 {}", serverUrl, msg);

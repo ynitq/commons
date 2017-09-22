@@ -10,8 +10,12 @@
 package com.cfido.commons.spring.monitor;
 
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
+
+import com.cfido.commons.spring.anno.IsMonitorServer;
 
 /**
  * 监控服务的相关配置
@@ -23,6 +27,8 @@ import org.springframework.context.annotation.ComponentScan;
 @Configurable
 @EnableConfigurationProperties(MonitorClientProperties.class)
 @ComponentScan(basePackageClasses = MonitorClientAutoConfig.class)
+@ConditionalOnMissingBean(annotation = IsMonitorServer.class) // 是监控中心服务器时，自动屏蔽本服务
+@ConditionalOnProperty(prefix = "monitorClient", name = "enable", havingValue = "true", matchIfMissing = true) // 如果enable=false也自动屏蔽本服务
 public class MonitorClientAutoConfig {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory

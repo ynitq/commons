@@ -56,8 +56,8 @@ public class JwLoginController extends BaseJmxInWebController {
 	 * @throws TemplateException
 	 */
 	@RequestMapping(value = "logout")
-	public void logout() throws TemplateException, IOException {
+	public String logout() throws TemplateException, IOException {
 		this.loginContext.onLogout(CommonAdminWebUser.class);
-		response.sendRedirect("login");
+		return this.getRedirectUrl("login");
 	}
 }

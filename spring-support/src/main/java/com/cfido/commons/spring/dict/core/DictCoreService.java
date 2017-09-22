@@ -110,12 +110,27 @@ public class DictCoreService {
 
 	}
 
+	public class DictHtmlModel {
+		public String get(String key) {
+			// 转码
+			return DictCoreService.this.getStringByKey(key, true, false, null);
+		}
+	}
+
+	public class DictRawModel {
+		public String get(String key) {
+			// 原文
+			return DictCoreService.this.getRawText(key);
+		}
+	}
+
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictCoreService.class);
 
 	/* PegDown 解析 Markdown 格式的内容 */
 	private final PegDownProcessor pdp = new PegDownProcessor(Extensions.ALL_WITH_OPTIONALS);
 
-	public static final String VO_NAME = "dict";
+	public static final String VO_NAME_HTML = "dict";
+	public static final String VO_NAME_RAW = "dictRaw";
 
 	/** debug模式下的 输出格式 */
 	public static final String DEBUG_FORMAT = "<span title=\"key=%s\">%s</span>";
@@ -148,6 +163,12 @@ public class DictCoreService {
 
 	private final Configuration freemarkerCfg;
 
+	/** 根据属性转码为html、markdown格式的 model */
+	private final DictHtmlModel dictHtmlModel = new DictHtmlModel();
+
+	/** 不转码，只输出原文的 model */
+	private final DictRawModel dictRawModel = new DictRawModel();
+
 	public DictCoreService() {
 		freemarkerCfg = new Configuration(Configuration.getVersion());
 		// 防止freemarker渲染时对value=null的key 解析出错
@@ -159,7 +180,8 @@ public class DictCoreService {
 	 * 将当前对象放入freemark的model用于非request请求
 	 */
 	public void addToModel(ModelMap model) {
-		model.addAttribute(VO_NAME, this);
+		model.addAttribute(VO_NAME_RAW, this.dictRawModel);
+		model.addAttribute(VO_NAME_HTML, this.dictHtmlModel);
 	}
 
 	/**
@@ -761,7 +783,8 @@ public class DictCoreService {
 			log.info("DictCoreService 初始化失败，需要和LoginCheck一起使用");
 		} else {
 
-			this.loginCheckInterceptor.addCommonModel(VO_NAME, this);
+			this.loginCheckInterceptor.addCommonModel(VO_NAME_HTML, this.dictHtmlModel);
+			this.loginCheckInterceptor.addCommonModel(VO_NAME_RAW, this.dictRawModel);
 
 			DictXml xmlDoc = this.getXml();
 

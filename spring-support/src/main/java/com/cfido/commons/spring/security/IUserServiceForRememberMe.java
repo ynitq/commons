@@ -19,9 +19,9 @@ public interface IUserServiceForRememberMe {
 	/**
 	 * 根据用户名获得用户
 	 * 
-	 * @param username
+	 * @param account
 	 *            账号
 	 * @return 如果有用户，就返回用户，没有就返回null
 	 */
-	IWebUser loadUserByUsername(String username);
+	IWebUser loadUserByUsername(String account);
 }

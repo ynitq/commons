@@ -32,6 +32,13 @@ public class ClientMsgForm {
 	 */
 	private String clientInfo;
 
+	/**
+	 * 客户端的权限
+	 * 
+	 * @see ServerRightsBean
+	 */
+	private String rightStr;
+
 	/** 向服务器发送的消息，可以为空，为空时，服务器不记录 */
 	private String msg;
 
@@ -65,6 +72,14 @@ public class ClientMsgForm {
 
 	public void setClientInfo(String clientInfo) {
 		this.clientInfo = clientInfo;
+	}
+
+	public String getRightStr() {
+		return rightStr;
+	}
+
+	public void setRightStr(String rightStr) {
+		this.rightStr = rightStr;
 	}
 
 }

@@ -245,8 +245,18 @@ public class SmsCodeService extends BaseCodeService {
 
 	/** 验证短信验证码 */
 	public void verifyCode(String phone, String type, String code) throws BaseApiException {
+		this.verifyCode(phone, type, code, true);
+	}
+
+	/** 验证短信验证码 */
+	public void verifyCode(String phone, String type, String code, boolean deleteKey) throws BaseApiException {
 		String key = this.buildPhoneKey(phone, type);
-		this.doVerifyCode(key, code, true);
+		this.doVerifyCode(key, code, deleteKey);
+	}
+
+	public void deleteCode(String phone, String type) throws SimpleApiException {
+		String key = this.buildPhoneKey(phone, type);
+		this.deleteCodeKey(key);
 	}
 
 	/** 根据类型和电话号码，生成key */

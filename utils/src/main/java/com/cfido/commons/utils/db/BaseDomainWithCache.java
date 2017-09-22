@@ -596,7 +596,10 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 			// 将map中的数据，重新组成list，并返回
 			list = new LinkedList<>();
 			for (ID id : idList) {
-				list.add(map.get(id));
+				PO po = map.get(id);
+				if (po != null) {
+					list.add(map.get(id));
+				}
 			}
 
 			// 因为有list时，一定有po，所以没必须做批量查询了

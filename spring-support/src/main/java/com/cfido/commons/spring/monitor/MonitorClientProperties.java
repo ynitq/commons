@@ -13,10 +13,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.cfido.commons.utils.utils.NetUtil;
@@ -32,6 +29,7 @@ import com.cfido.commons.utils.utils.NetUtil;
  * monitorClient.client.port 自动配置
  * 
  * monitorClient.enable = true
+ * monitorClient.enableCenterUser=false
  * 
  * monitorClient.report.retryDelay = 5
  * monitorClient.report.retryWhenFail = true
@@ -43,9 +41,6 @@ import com.cfido.commons.utils.utils.NetUtil;
  */
 @ConfigurationProperties(prefix = "monitorClient")
 public class MonitorClientProperties {
-
-	@Autowired
-	private ApplicationContext applicationContext;
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientProperties.class);
 
@@ -109,9 +104,20 @@ public class MonitorClientProperties {
 	/** 是否激活 */
 	private boolean enable = true;
 
+	/** 是否使用中心的用户系统 */
+	private boolean enableCenterUser = false;
+
 	public MonitorClientProperties() {
 		// 配置服务器的默认值
 		this.server.setPort(30000);
+	}
+
+	public boolean isEnableCenterUser() {
+		return enableCenterUser;
+	}
+
+	public void setEnableCenterUser(boolean enableCenterUser) {
+		this.enableCenterUser = enableCenterUser;
 	}
 
 	public Server getServer() {
@@ -135,13 +141,23 @@ public class MonitorClientProperties {
 	}
 
 	/**
-	 * 服务器的url
+	 * 服务器的url-汇报
 	 */
 	public String getServerUrlOfReport() {
 		return String.format("http://%s:%s/%s",
 				this.server.getHost(),
 				this.server.getPort(),
 				MonitorUrls.SERVER_REPORT);
+	}
+
+	/**
+	 * 服务器的url-用户信息
+	 */
+	public String getServerUrlOfUser() {
+		return String.format("http://%s:%s/%s",
+				this.server.getHost(),
+				this.server.getPort(),
+				MonitorUrls.SERVER_USER);
 	}
 
 	private void detectServerHost() {
@@ -175,6 +191,12 @@ public class MonitorClientProperties {
 			return;
 		}
 
+		if ("127.0.0.1".equals(this.server.getHost())) {
+			// 如果服务器是本机，就直接设置client的ip为本机
+			this.client.setHost("127.0.0.1");
+			return;
+		}
+
 		// 本机可能有很多个ip地址，我们是通过找和服务器同一网段的地址来判断哪一个地址才是我们需要的
 		List<String> ipList = NetUtil.getAllIpAddress();
 
@@ -194,32 +216,13 @@ public class MonitorClientProperties {
 		}
 
 		if (StringUtils.isEmpty(this.client.getHost())) {
-			log.error("服务器地址为 {}, 无法通过服务地址找到本机地址");
+			log.error("无法通过服务地址找到本机地址");
 			throw new RuntimeException("请检查参数  monitorClient.client.host");
 		}
 	}
 
-	private boolean isServer() {
-		String[] names = this.applicationContext.getBeanNamesForAnnotation(SpringBootApplication.class);
-		for (String name : names) {
-			if (name.endsWith(".StartMonitorServer")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	@PostConstruct
 	protected void init() {
-		if (this.isServer()) {
-			// 如果是监控服务器，就无需检查
-			return;
-		}
-
-		if (!this.enable) {
-			// 如果关闭了服务，就无需检查
-			return;
-		}
 
 		this.detectServerHost();
 		this.detectClientHost();
