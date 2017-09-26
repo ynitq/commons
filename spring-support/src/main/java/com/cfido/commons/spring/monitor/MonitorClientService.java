@@ -205,14 +205,8 @@ public class MonitorClientService {
 	public UserInfoInCenterBean getUserInfoFromCenter(String account) throws HttpUtilException, IOException {
 		String serverUrl = this.clientProperties.getServerUrlOfUser();
 
-		long createTime = System.currentTimeMillis();
-		String sign = sign(this.idJsonStr, createTime, this.clientProperties.getMd5Key());
-
-		Map<String, Object> param = new HashMap<>();
-		param.put("idStr", idJsonStr);
+		Map<String, Object> param = this.getParamMapWithIdStrAndSign();
 		param.put("account", account);
-		param.put("createTime", createTime);
-		param.put("sign", sign);
 
 		log.info("向监控服务器 {} 获取用户 {} 的信息", serverUrl, account);
 
@@ -222,6 +216,19 @@ public class MonitorClientService {
 		} else {
 			return null;
 		}
+	}
+
+	/** 获取准备给http请求的参数map,内置了签名 */
+	private Map<String, Object> getParamMapWithIdStrAndSign() {
+		long createTime = System.currentTimeMillis();
+		String sign = sign(this.idJsonStr, createTime, this.clientProperties.getMd5Key());
+
+		Map<String, Object> param = new HashMap<>();
+		param.put("idStr", idJsonStr);
+		param.put("createTime", createTime);
+		param.put("sign", sign);
+
+		return param;
 	}
 
 	public static String sign(String idStr, long now, String md5Key) {
@@ -238,8 +245,7 @@ public class MonitorClientService {
 
 		ClientInfoResponse clientInfo = this.context.getClientInfo(false);
 
-		Map<String, Object> param = new HashMap<>();
-		param.put("idStr", idJsonStr);
+		Map<String, Object> param = this.getParamMapWithIdStrAndSign();
 		param.put("clientInfo", JSON.toJSONString(clientInfo));
 		param.put("msgType", level.code);
 

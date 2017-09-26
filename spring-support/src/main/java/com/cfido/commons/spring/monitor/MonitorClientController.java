@@ -37,6 +37,7 @@ public class MonitorClientController {
 	@RequestMapping(MonitorUrls.CLIENT_CALLBACK)
 	@ResponseBody
 	public ClientInfoResponse callback() {
+		// TODO 注意，这里需要强化安全检查
 		log.debug("监控服务器检测");
 		return this.context.getClientInfo(true);
 	}

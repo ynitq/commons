@@ -1,7 +1,5 @@
 package com.cfido.commons.beans.monitor;
 
-import javax.validation.constraints.NotNull;
-
 import com.cfido.commons.annotation.api.AForm;
 
 /**
@@ -12,18 +10,10 @@ import com.cfido.commons.annotation.api.AForm;
  * @author 梁韦江 2016年12月19日
  */
 @AForm
-public class ClientMsgForm {
+public class ClientMsgForm extends BaseClientSignForm {
 
 	/** 如果有信息时，这表示信息的等级 */
 	private int msgType;
-
-	/**
-	 * 内容是 ClientIdBean的json字符串
-	 * 
-	 * @see ClientIdBean
-	 */
-	@NotNull
-	private String idStr;
 
 	/**
 	 * 客户端信息的json字符串
@@ -42,10 +32,6 @@ public class ClientMsgForm {
 	/** 向服务器发送的消息，可以为空，为空时，服务器不记录 */
 	private String msg;
 
-	public String getIdStr() {
-		return idStr;
-	}
-
 	public String getMsg() {
 		return msg;
 	}
@@ -56,10 +42,6 @@ public class ClientMsgForm {
 
 	public void setMsgType(int msgType) {
 		this.msgType = msgType;
-	}
-
-	public void setIdStr(String idStr) {
-		this.idStr = idStr;
 	}
 
 	public void setMsg(String msg) {
