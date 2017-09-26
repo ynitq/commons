@@ -41,7 +41,7 @@ public class CenterWebUserLoginService {
 
 	@PostConstruct
 	protected void init() {
-		log.info("中心用户: 用户系统有中心服务器控制");
+		log.info("中心用户: 用户系统由中心服务器控制");
 	}
 
 	public CenterWebUser login(String account, String password, boolean rememberMe) throws BaseApiException {
