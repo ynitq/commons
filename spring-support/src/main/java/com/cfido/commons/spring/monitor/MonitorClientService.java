@@ -30,6 +30,7 @@ import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
 import com.cfido.commons.utils.threadPool.BaseThreadPool;
 import com.cfido.commons.utils.threadPool.IMyTask;
 import com.cfido.commons.utils.utils.DateUtil;
+import com.cfido.commons.utils.utils.EncryptUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
 import com.cfido.commons.utils.utils.HttpUtilException;
 import com.cfido.commons.utils.utils.LogUtil;
@@ -204,9 +205,14 @@ public class MonitorClientService {
 	public UserInfoInCenterBean getUserInfoFromCenter(String account) throws HttpUtilException, IOException {
 		String serverUrl = this.clientProperties.getServerUrlOfUser();
 
+		long createTime = System.currentTimeMillis();
+		String sign = sign(this.idJsonStr, createTime, this.clientProperties.getMd5Key());
+
 		Map<String, Object> param = new HashMap<>();
 		param.put("idStr", idJsonStr);
 		param.put("account", account);
+		param.put("createTime", createTime);
+		param.put("sign", sign);
 
 		log.info("向监控服务器 {} 获取用户 {} 的信息", serverUrl, account);
 
@@ -216,6 +222,10 @@ public class MonitorClientService {
 		} else {
 			return null;
 		}
+	}
+
+	public static String sign(String idStr, long now, String md5Key) {
+		return EncryptUtil.md5(idStr + "\t" + now + "\t" + md5Key);
 	}
 
 	/**

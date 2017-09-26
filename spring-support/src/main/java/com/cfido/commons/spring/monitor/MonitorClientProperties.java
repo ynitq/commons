@@ -42,9 +42,7 @@ import com.cfido.commons.utils.utils.NetUtil;
 @ConfigurationProperties(prefix = "monitorClient")
 public class MonitorClientProperties {
 
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientProperties.class);
-
-	public static class Server {
+	public static class ClientInfo {
 		private String host;
 		private int port = 0;
 
@@ -52,18 +50,17 @@ public class MonitorClientProperties {
 			return host;
 		}
 
-		public void setHost(String host) {
-			this.host = host;
-		}
-
 		public int getPort() {
 			return port;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
 		}
 
 		public void setPort(int port) {
 			this.port = port;
 		}
-
 	}
 
 	/** 报告相关 */
@@ -78,12 +75,12 @@ public class MonitorClientProperties {
 			return retryDelay;
 		}
 
-		public void setRetryDelay(long retryDelay) {
-			this.retryDelay = retryDelay;
-		}
-
 		public boolean isRetryWhenFail() {
 			return retryWhenFail;
+		}
+
+		public void setRetryDelay(long retryDelay) {
+			this.retryDelay = retryDelay;
 		}
 
 		public void setRetryWhenFail(boolean retryWhenFail) {
@@ -92,11 +89,34 @@ public class MonitorClientProperties {
 
 	}
 
+	public static class ServerInfo {
+		private String host;
+		private int port = 30000;
+
+		public String getHost() {
+			return host;
+		}
+
+		public int getPort() {
+			return port;
+		}
+
+		public void setHost(String host) {
+			this.host = host;
+		}
+
+		public void setPort(int port) {
+			this.port = port;
+		}
+	}
+
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientProperties.class);
+
 	/** 服务器的配置 */
-	private final Server server = new Server();
+	private final ServerInfo server = new ServerInfo();
 
 	/** 客户端的配置 */
-	private final Server client = new Server();
+	private final ClientInfo client = new ClientInfo();
 
 	/** 和报告相关的配置 */
 	private final Report report = new Report();
@@ -104,40 +124,28 @@ public class MonitorClientProperties {
 	/** 是否激活 */
 	private boolean enable = true;
 
+	private String md5Key = "我是好人";
+
 	/** 是否使用中心的用户系统 */
 	private boolean enableCenterUser = false;
 
 	public MonitorClientProperties() {
-		// 配置服务器的默认值
-		this.server.setPort(30000);
 	}
 
-	public boolean isEnableCenterUser() {
-		return enableCenterUser;
-	}
-
-	public void setEnableCenterUser(boolean enableCenterUser) {
-		this.enableCenterUser = enableCenterUser;
-	}
-
-	public Server getServer() {
-		return server;
-	}
-
-	public Server getClient() {
+	public ClientInfo getClient() {
 		return client;
+	}
+
+	public String getMd5Key() {
+		return md5Key;
 	}
 
 	public Report getReport() {
 		return report;
 	}
 
-	public boolean isEnable() {
-		return enable;
-	}
-
-	public void setEnable(boolean enable) {
-		this.enable = enable;
+	public ServerInfo getServer() {
+		return server;
 	}
 
 	/**
@@ -158,6 +166,70 @@ public class MonitorClientProperties {
 				this.server.getHost(),
 				this.server.getPort(),
 				MonitorUrls.SERVER_USER);
+	}
+
+	public boolean isEnable() {
+		return enable;
+	}
+
+	public boolean isEnableCenterUser() {
+		return enableCenterUser;
+	}
+
+	public void setEnable(boolean enable) {
+		this.enable = enable;
+	}
+
+	public void setEnableCenterUser(boolean enableCenterUser) {
+		this.enableCenterUser = enableCenterUser;
+	}
+
+	public void setMd5Key(String md5Key) {
+		this.md5Key = md5Key;
+	}
+
+	private void detectClientHost() {
+		if (StringUtils.hasText(this.client.getHost())) {
+			// 如果配置本机地址，就直接返回
+			return;
+		}
+
+		if ("127.0.0.1".equals(this.server.getHost())) {
+			// 如果服务器是本机，就直接设置client的ip为本机
+			this.client.setHost("127.0.0.1");
+			return;
+		}
+
+		// 本机可能有很多个ip地址，我们是通过找和服务器同一网段的地址来判断哪一个地址才是我们需要的
+		List<String> ipList = NetUtil.getAllIpAddress();
+
+		// 尝试根据服务器的ip地址找到本机地址
+		String serverHost = this.server.getHost();
+		int index = serverHost.indexOf(".");
+		if (index > 0) {
+			// 如果服务器是用ip，就找本机同网段的的ip
+			String prefix = serverHost.substring(0, index + 1);
+
+			for (String ip : ipList) {
+				if (ip.startsWith(prefix)) {
+					this.client.setHost(ip);
+					break;
+				}
+			}
+		}
+
+		if (StringUtils.isEmpty(this.client.getHost())) {
+			// 默认先给一个127.0.0.1
+			this.client.setHost("127.0.0.1");
+
+			for (String ip : ipList) {
+				// 如果有内网地址，就随便给一个
+				if (ip.startsWith("192.168") || ip.startsWith("10.")) {
+					this.client.setHost(ip);
+					break;
+				}
+			}
+		}
 	}
 
 	private void detectServerHost() {
@@ -185,50 +257,14 @@ public class MonitorClientProperties {
 		}
 	}
 
-	private void detectClientHost() {
-		if (StringUtils.hasText(this.client.getHost())) {
-			// 如果配置本机地址，就直接返回
-			return;
-		}
-
-		if ("127.0.0.1".equals(this.server.getHost())) {
-			// 如果服务器是本机，就直接设置client的ip为本机
-			this.client.setHost("127.0.0.1");
-			return;
-		}
-
-		// 本机可能有很多个ip地址，我们是通过找和服务器同一网段的地址来判断哪一个地址才是我们需要的
-		List<String> ipList = NetUtil.getAllIpAddress();
-
-		// 先找出服务器ip所在的网段
-		String serverHost = this.server.getHost();
-		int index = serverHost.indexOf(".");
-		if (index <= 0) {
-			throw new RuntimeException("监控服务器的地址必须是ip地址，请检查参数monitorClient.server.host");
-		}
-		String prefix = serverHost.substring(0, index + 1);
-
-		for (String ip : ipList) {
-			if (ip.startsWith(prefix)) {
-				this.client.setHost(ip);
-				break;
-			}
-		}
-
-		if (StringUtils.isEmpty(this.client.getHost())) {
-			log.error("无法通过服务地址找到本机地址");
-			throw new RuntimeException("请检查参数  monitorClient.client.host");
-		}
-	}
-
 	@PostConstruct
 	protected void init() {
 
 		this.detectServerHost();
 		this.detectClientHost();
 
-		log.info("监控系统配置: 本机地址={} , 服务器={}:{}",
-				this.client.getHost(),
+		log.info("监控系统配置: 本机地址={}:{} , 服务器={}:{}",
+				this.client.getHost(), this.client.getPort(),
 				this.server.getHost(), this.server.getPort());
 	}
 

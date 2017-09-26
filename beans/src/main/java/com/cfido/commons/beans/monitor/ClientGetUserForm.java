@@ -25,6 +25,12 @@ public class ClientGetUserForm {
 	@NotNull
 	private String account;
 
+	/** 时间 */
+	private long createTime;
+
+	/** 签名 */
+	private String sign;
+
 	public String getIdStr() {
 		return idStr;
 	}
@@ -39,5 +45,21 @@ public class ClientGetUserForm {
 
 	public void setAccount(String account) {
 		this.account = account;
+	}
+
+	public long getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(long createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getSign() {
+		return sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
 	}
 }
