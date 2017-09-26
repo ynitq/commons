@@ -263,8 +263,8 @@ public class MonitorClientProperties {
 		this.detectServerHost();
 		this.detectClientHost();
 
-		log.info("监控系统配置: 本机地址={}:{} , 服务器={}:{}",
-				this.client.getHost(), this.client.getPort(),
+		log.info("监控系统配置: 本机地址={} , 服务器={}:{}",
+				this.client.getHost(), 
 				this.server.getHost(), this.server.getPort());
 	}
 
