@@ -20,6 +20,7 @@ public class LoginForm {
 	private String account;
 
 	@NotNull(message = "请输入密码")
+	@AMock("linzi777")
 	private String password;
 
 	private boolean rememberMe;
