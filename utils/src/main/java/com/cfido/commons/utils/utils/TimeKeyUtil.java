@@ -21,6 +21,18 @@ public class TimeKeyUtil {
 		return year * 10000 + mon * 100 + day;
 	}
 
+	/** 获取昨天的key **/
+	public static int getYesterdayKey() {
+		Calendar c = Calendar.getInstance();
+		c.add(Calendar.DAY_OF_MONTH, -1);
+
+		int year = c.get(Calendar.YEAR);
+		int mon = c.get(Calendar.MONTH) + 1;
+		int day = c.get(Calendar.DAY_OF_MONTH);
+
+		return year * 10000 + mon * 100 + day;
+	}
+
 	/** 获取当前的小时的key */
 	public static int getHourKey() {
 		Calendar c = Calendar.getInstance();
