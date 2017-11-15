@@ -243,7 +243,7 @@ public class WhereBuilder {
 
 				if (info.getReturnTypeClass() == String.class) {
 					// 字符串类型的特殊处理
-					String old = (String) value;
+					String old = ((String) value);
 
 					if (StringUtils.isEmpty(old)) {
 						// 字符串没有内容，如果没有内容，也返回null
@@ -273,18 +273,13 @@ public class WhereBuilder {
 				} else if (info.getReturnTypeClass() == Date.class) {
 					// 日期型 也要特殊处理
 					Date src = (Date) value;
-					if (((String) value).length() > 10) {
-						if (">=".equals(optStr) || ">".equals(optStr)) {
-							// 如果是开始时间，需要设置为 00:00:00
-							value = DateUtil.parserTimestapForDate(src, true);
-						} else if ("<=".equals(optStr) || "<".equals(optStr)) {
-							// 如果是结束时间，需要设置为 23:59:59
-							value = DateUtil.parserTimestapForDate(src, false);
-						}
-					} else {
-						value = src;
+					if (">=".equals(optStr) || ">".equals(optStr)) {
+						// 如果是开始时间，需要设置为 00:00:00
+						value = DateUtil.parserTimestapForDate(src, true);
+					} else if ("<=".equals(optStr) || "<".equals(optStr)) {
+						// 如果是结束时间，需要设置为 23:59:59
+						value = DateUtil.parserTimestapForDate(src, false);
 					}
-
 				}
 			}
 		} catch (Exception e) {
