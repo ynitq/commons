@@ -152,9 +152,9 @@ public class DateUtil {
 	public static String dateFormat(Date date, String format) {
 		String result = null;
 		try {
-			if (date == null)
+			if (date == null) {
 				result = "";
-			else {
+			} else {
 				SimpleDateFormat sdf = new SimpleDateFormat(format);
 				result = sdf.format(date).toString();
 			}
@@ -194,9 +194,9 @@ public class DateUtil {
 			String newFormat) {
 		String result = null;
 		try {
-			if (date == null || date.equals(""))
+			if (date == null || date.equals("")) {
 				return "";
-			else {
+			} else {
 				SimpleDateFormat sdf = new SimpleDateFormat(oldFormat);
 				Date tmp = sdf.parse(date);
 				sdf.applyPattern(newFormat);
@@ -296,6 +296,18 @@ public class DateUtil {
 			}
 		}
 		return str;
+	}
+
+	/**
+	 * 获取当前日期+100年
+	 * 
+	 * @return
+	 */
+	public static Date get100YearDay() {
+		Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR) + 100;
+		c.set(Calendar.YEAR, year);
+		return c.getTime();
 	}
 
 }
