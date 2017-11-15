@@ -30,7 +30,7 @@ public class BinderUtil {
 
 	public final static String DATE_FORMAT = "yyyy-MM-dd";
 
-	public final static String DATE_FORMAT_HAS_TIME = "yyyy-MM-dd HH:mm";
+	public final static String DATE_FORMAT_HAS_TIME = "yyyy-MM-dd HH:mm:ss";
 
 	/** 默认的重置表单的参数名 */
 	public final static String RESET_PARAM_NAME = "reset";
