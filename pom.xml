@@ -158,13 +158,13 @@
 	<distributionManagement>
 		<repository>
 			<id>LinziRepo</id>
-			<name>LinZi Repository Release</name>
-			<url>http://maven.lin-zi.com/nexus/content/repositories/releases</url>
+			<name>liangwj Repository Release</name>
+			<url>http://maven.liangwj.com/nexus/content/repositories/releases</url>
 		</repository>
 		<snapshotRepository>
 			<id>LinziRepo</id>
-			<name>LinZi Repository Snapshots</name>
-			<url>http://maven.lin-zi.com/nexus/content/repositories/snapshots</url>
+			<name>liangwj Repository Snapshots</name>
+			<url>http://maven.liangwj.com/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
