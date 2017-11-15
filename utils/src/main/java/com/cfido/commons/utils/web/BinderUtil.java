@@ -30,6 +30,8 @@ public class BinderUtil {
 
 	public final static String DATE_FORMAT = "yyyy-MM-dd";
 
+	public final static String DATE_FORMAT_HAS_TIME = "yyyy-MM-dd HH:mm";
+
 	/** 默认的重置表单的参数名 */
 	public final static String RESET_PARAM_NAME = "reset";
 
@@ -181,7 +183,7 @@ public class BinderUtil {
 	 */
 	public static <T> T getFormFromSession(HttpServletRequest request, Class<T> formClazz, String sessionName) {
 
-		Assert.hasText(sessionName,"sessionName不能为空");
+		Assert.hasText(sessionName, "sessionName不能为空");
 
 		@SuppressWarnings("unchecked")
 		T form = (T) request.getSession().getAttribute(sessionName);

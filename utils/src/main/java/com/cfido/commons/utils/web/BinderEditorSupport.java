@@ -10,12 +10,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import com.cfido.commons.annotation.form.AFormNotHtml;
 import com.cfido.commons.annotation.form.AFormValidateMethod;
-import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.MethodUtil;
 import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfSetter;
@@ -54,31 +54,27 @@ public class BinderEditorSupport {
 
 	private class ToDate implements IValue<Date> {
 
-		private final ThreadLocal<SimpleDateFormat> savedDateFormat = new ThreadLocal<>();
-
 		@Override
 		public Date toValue(MethodInfoOfSetter m, String text) {
 			// 日期的处理方式
-			String propName = m.getPropName();
-			boolean toBegin = !"endDate".equals(propName);
-			try {
-				Date date = this.getDefaultDateFormat().parse(text);
-				return DateUtil.ceilDateToDay(date, toBegin);
-			} catch (Exception e) {
-				return null;
+			if (StringUtils.hasText(text)) {
+				try {
+					if (text.length() == BinderUtil.DATE_FORMAT.length()) {
+						// 如果是yyyy-MM-dd格式
+						SimpleDateFormat sdf = new SimpleDateFormat(BinderUtil.DATE_FORMAT);
+						Date date = sdf.parse(text);
+						return date;
+					} else {
+						// 如果不是默认格式，就当是 yyyy-MM-dd HH:mm 格式, 长度不对就只能是天灾人祸了
+						SimpleDateFormat sdf = new SimpleDateFormat(BinderUtil.DATE_FORMAT_HAS_TIME);
+						Date date = sdf.parse(text);
+						return date;
+					}
+				} catch (Exception e) {
+					// 如果解析出错，就返回null
+				}
 			}
-		}
-
-		/**
-		 * 这个是一种线程安全的做法，可以避免多个线程同时要求paser日期时，可能发生的错误
-		 */
-		private SimpleDateFormat getDefaultDateFormat() {
-			SimpleDateFormat sdf = this.savedDateFormat.get();
-			if (sdf == null) {
-				sdf = new SimpleDateFormat(BinderUtil.DATE_FORMAT);
-				this.savedDateFormat.set(sdf);
-			}
-			return sdf;
+			return null;
 		}
 	}
 
