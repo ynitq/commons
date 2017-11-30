@@ -16,7 +16,7 @@
 	<!-- /主项目信息 -->
 
 	<!-- 这个是聚合项目，下面的所有模块都是独立项目，不存在继承关系的 -->
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<name>commons-root</name>
@@ -32,7 +32,7 @@
 		<!-- 时间变量，用于自动写在各个项目的banner中 -->
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<version.cfido.commons>1.0.0-SNAPSHOT</version.cfido.commons>
+		<version.cfido.commons>1.0.0</version.cfido.commons>
 	</properties>
 
 	<!-- 项目块列表 -->
