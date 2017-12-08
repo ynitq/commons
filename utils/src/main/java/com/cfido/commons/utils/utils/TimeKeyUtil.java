@@ -23,8 +23,12 @@ public class TimeKeyUtil {
 
 	/** 获取昨天的key **/
 	public static int getYesterdayKey() {
+		return getBeforeDayKey(1);
+	}
+
+	public static int getBeforeDayKey(int before) {
 		Calendar c = Calendar.getInstance();
-		c.add(Calendar.DAY_OF_MONTH, -1);
+		c.add(Calendar.DAY_OF_MONTH, -before);
 
 		int year = c.get(Calendar.YEAR);
 		int mon = c.get(Calendar.MONTH) + 1;
