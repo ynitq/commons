@@ -56,14 +56,14 @@ public class SortedLockAspectService {
 	 * @throws Throwable
 	 */
 	@Around("@annotation(com.cfido.commons.spring.sortedLock.ANeedSortLock)")
-	public void around(JoinPoint joinPoint) throws Throwable {
+	public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
 		// 执行原来的方法
 		this.lastMethodName = joinPoint.getSignature().getName();// 获得最后一次拦截的方法名
 		this.lastClass = joinPoint.getTarget().getClass();
 		int count = this.counter.incrementAndGet();
 
 		if (log.isDebugEnabled()) {
-			log.debug(LogUtil.format("累计执行 %d次，当前拦截方法 %s", count, joinPoint.toShortString()));
+			log.debug("累计执行 {}次，当前拦截方法 {}", count, joinPoint.toShortString());
 		}
 
 		// 先把所有要加锁的对象找出来，放到一个list中
@@ -82,13 +82,19 @@ public class SortedLockAspectService {
 		}
 		if (log.isDebugEnabled()) {
 			if (!sortedList.isEmpty()) {
-				log.debug(LogUtil.format("执行前，%d 个对象加锁", sortedList.size()));
+				log.debug("执行前，{} 个对象加锁", sortedList.size());
 			}
 		}
 
 		try {
 			// 执行目标代码
-			((ProceedingJoinPoint) joinPoint).proceed();
+			Object obj = joinPoint.proceed();
+
+			if (log.isDebugEnabled()) {
+				log.debug("返回的内容是 {}", obj);
+			}
+
+			return obj;
 		} catch (Throwable e) {
 			// 如果有异常，必须抛回出去
 			throw e;
@@ -100,7 +106,7 @@ public class SortedLockAspectService {
 
 			if (log.isDebugEnabled()) {
 				if (!sortedList.isEmpty()) {
-					log.debug(LogUtil.format("执行后， %d 个对象解锁", sortedList.size()));
+					log.debug("执行后， {} 个对象解锁", sortedList.size());
 				}
 			}
 		}

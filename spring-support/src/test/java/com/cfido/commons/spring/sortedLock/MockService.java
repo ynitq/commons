@@ -13,8 +13,9 @@ public class MockService {
 	private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(MockService.class);
 
 	@ANeedSortLock
-	public void testMethod(MockNeedLockObj obj, List<INeedSortLockObj> list, MockNeedLockObj[] ary) throws Exception {
+	public String testMethod(MockNeedLockObj obj, List<INeedSortLockObj> list, MockNeedLockObj[] ary) throws Exception {
 		log.debug("此方法需要加锁");
+		return "testMethod";
 	}
 
 	public void test2() {
