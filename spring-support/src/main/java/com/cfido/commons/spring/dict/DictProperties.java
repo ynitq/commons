@@ -42,7 +42,7 @@ public class DictProperties {
 	private String xmlFile = "dict";
 
 	/** 数据文件的目录 */
-	private String dataDir = "dictData";
+	private String dataDir = "work/dictData";
 
 	/** 定时保存数据的周期 单位：秒 */
 	private long savePeriod = 60 * 5;

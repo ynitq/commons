@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class DictAutoConfig extends WebMvcConfigurerAdapter {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictAutoConfig.class);
 
-	public final static String ATTACHMENT_PATH = "dict/attachment";
+	public final static String ATTACHMENT_PATH = "work/dict_attachment";
 	// public final static String ATTACHMENT_PATH = "dict";
 
 	public DictAutoConfig() {

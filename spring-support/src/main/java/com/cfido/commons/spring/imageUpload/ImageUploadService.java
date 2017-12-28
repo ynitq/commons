@@ -42,7 +42,7 @@ public class ImageUploadService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ImageUploadService.class);
 
-	public final static String DEFAULT_ROOT_PATH = "attachments";
+	public final static String DEFAULT_ROOT_PATH = "work/attachments";
 
 	@Autowired
 	private ImageUploadProperties prop;
