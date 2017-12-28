@@ -551,7 +551,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	 * @return
 	 * @throws DaoException
 	 */
-	protected List<PO> idListToPoList(List<ID> idList) throws DaoException {
+	public List<PO> idListToPoList(List<ID> idList) throws DaoException {
 		if (idList == null) {
 			return null;
 		}
