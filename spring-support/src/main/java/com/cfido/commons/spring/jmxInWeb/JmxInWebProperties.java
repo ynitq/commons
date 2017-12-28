@@ -6,7 +6,7 @@ import java.util.Set;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.cfido.commons.spring.jmxInWeb.core.IDomainNameFilter;
-import com.cfido.commons.spring.security.IUserServiceForRememberMe;
+import com.cfido.commons.spring.security.IWebUserProvider;
 
 /**
  * <pre>
@@ -14,7 +14,7 @@ import com.cfido.commons.spring.security.IUserServiceForRememberMe;
  * 
  * </pre>
  * 
- * @see IUserServiceForRememberMe
+ * @see IWebUserProvider
  *      如果spring能找到一个实现了IUserServiceForRememberMe接口的服务，并且该接口是提供给{@link JwWebUser}的，则使用这个服务来验证用户，否则就用系统内置的
  * 
  * @author 梁韦江 2016年8月26日

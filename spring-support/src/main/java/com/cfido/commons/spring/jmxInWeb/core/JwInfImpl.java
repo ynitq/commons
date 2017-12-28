@@ -20,7 +20,7 @@ import com.cfido.commons.spring.jmxInWeb.inf.response.JwMBeanInfoResponse;
 import com.cfido.commons.spring.jmxInWeb.inf.response.JwMBeanListResponse;
 import com.cfido.commons.spring.jmxInWeb.models.MBeanVo;
 import com.cfido.commons.spring.security.CommonAdminWebUser;
-import com.cfido.commons.spring.security.IUserServiceForRememberMe;
+import com.cfido.commons.spring.security.IWebUserProvider;
 import com.cfido.commons.spring.security.LoginContext;
 import com.cfido.commons.spring.security.RememberMeUserHandler;
 import com.cfido.commons.utils.utils.PasswordEncoder;
@@ -55,10 +55,10 @@ public class JwInfImpl implements IJmxInWeb {
 		log.debug("管理用户 {} 登录后台", form.getAccount());
 
 		// 寻找用户认证供应者
-		IUserServiceForRememberMe userProvider = this.rememberMeUserHandler.getUserProvider(CommonAdminWebUser.class);
+		IWebUserProvider userProvider = this.rememberMeUserHandler.getUserProvider(CommonAdminWebUser.class);
 		if (userProvider != null) {
 			// 如果存在，就尝试获取用户
-			IWebUser user = userProvider.loadUserByUsername(form.getAccount());
+			IWebUser user = userProvider.loadUserByAccount(form.getAccount());
 			if (user != null) {
 				// 如过能获取用户,就检查密码
 				PasswordEncoder.checkPassword(form.getPassword(), user.getEncryptedPassword());

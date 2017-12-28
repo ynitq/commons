@@ -9,7 +9,7 @@ import com.cfido.commons.loginCheck.IWebUser;
  * 
  * @author 梁韦江 2016年8月23日
  */
-public interface IUserServiceForRememberMe {
+public interface IWebUserProvider {
 
 	/**
 	 * 需要声明这个类支持那些WebUser类
@@ -23,5 +23,5 @@ public interface IUserServiceForRememberMe {
 	 *            账号
 	 * @return 如果有用户，就返回用户，没有就返回null
 	 */
-	IWebUser loadUserByUsername(String account);
+	IWebUser loadUserByAccount(String account);
 }

@@ -89,7 +89,7 @@ public class LoginCheckProperties {
 	 * 
 	 * @author 梁韦江 2016年11月16日
 	 */
-	public class AdminUserProvider implements IUserServiceForRememberMe {
+	public class AdminUserProvider implements IWebUserProvider {
 
 		@Override
 		public Class<? extends IWebUser> getSupportUserClassNames() {
@@ -97,7 +97,7 @@ public class LoginCheckProperties {
 		}
 
 		@Override
-		public IWebUser loadUserByUsername(String username) {
+		public IWebUser loadUserByAccount(String username) {
 			Admin admin = LoginCheckProperties.this.admin;
 			if (admin.isValid()) {
 				return new CommonAdminWebUser(admin);

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.security.CommonAdminWebUser;
-import com.cfido.commons.spring.security.IUserServiceForRememberMe;
+import com.cfido.commons.spring.security.IWebUserProvider;
 
 /**
  * <pre>
@@ -17,7 +17,7 @@ import com.cfido.commons.spring.security.IUserServiceForRememberMe;
  */
 @Service
 @ConditionalOnProperty(prefix = "monitorClient", name = "enableCenterUser", havingValue = "true", matchIfMissing = false)
-public class CenterCommonAdminWebUserProvider implements IUserServiceForRememberMe {
+public class CenterCommonAdminWebUserProvider implements IWebUserProvider {
 
 	@Autowired
 	private CenterWebUserProvider service;
@@ -28,8 +28,8 @@ public class CenterCommonAdminWebUserProvider implements IUserServiceForRemember
 	}
 
 	@Override
-	public CommonAdminWebUser loadUserByUsername(String account) {
-		CenterWebUser user = this.service.loadUserByUsername(account);
+	public CommonAdminWebUser loadUserByAccount(String account) {
+		CenterWebUser user = this.service.loadUserByAccount(account);
 		if (user != null && user.checkRights(CommonAdminWebUser.RIGHTS_NAME)) {
 			// 如果有通用管理员的权限，就返回：可登陆
 			return user.createCommonAdminWebUser();

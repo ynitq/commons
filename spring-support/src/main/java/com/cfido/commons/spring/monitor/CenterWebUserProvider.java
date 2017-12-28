@@ -10,8 +10,7 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.exceptions.security.CenterServerErrorException;
 import com.cfido.commons.beans.exceptions.security.UserNotFoundException;
 import com.cfido.commons.beans.monitor.UserInfoInCenterBean;
-import com.cfido.commons.loginCheck.IWebUser;
-import com.cfido.commons.spring.security.IUserServiceForRememberMe;
+import com.cfido.commons.spring.security.IWebUserProvider;
 
 /**
  * <pre>
@@ -22,18 +21,18 @@ import com.cfido.commons.spring.security.IUserServiceForRememberMe;
  */
 @Service
 @ConditionalOnProperty(prefix = "monitorClient", name = "enableCenterUser", havingValue = "true", matchIfMissing = false)
-public class CenterWebUserProvider implements IUserServiceForRememberMe {
+public class CenterWebUserProvider implements IWebUserProvider {
 
 	@Autowired
 	private MonitorClientService service;
 
 	@Override
-	public Class<? extends IWebUser> getSupportUserClassNames() {
+	public Class<CenterWebUser> getSupportUserClassNames() {
 		return CenterWebUser.class;
 	}
 
 	@Override
-	public CenterWebUser loadUserByUsername(String account) {
+	public CenterWebUser loadUserByAccount(String account) {
 		try {
 			return this.loadFromCenter(account);
 		} catch (BaseApiException e) {

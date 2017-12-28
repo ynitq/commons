@@ -31,7 +31,7 @@ import com.cfido.commons.utils.utils.ExceptionUtil;
  * </pre>
  * 
  * @see LoginCheckProperties.RememberMe RememberMe参数
- * @see IUserServiceForRememberMe RememberMe需要根据用户名查询用户，所以需要实现该接口的一个方法
+ * @see IWebUserProvider RememberMe需要根据用户名查询用户，所以需要实现该接口的一个方法
  * @see LoginContext#onLoginSuccess(com.linzi.common.others.IWebUser)
  *      登录成功后，要调用该方法保存用户
  * @see LoginContext#onLogout(Class) logout时，要调用该方法，清理session和cookie

@@ -46,27 +46,27 @@ public class RememberMeUserHandler {
 	/** 管理用户是否是在配置文件中定义的 */
 	private boolean adminInPorp;
 
-	private final Map<Class<? extends IWebUser>, IUserServiceForRememberMe> userProviderMap = new HashMap<>();
+	private final Map<Class<? extends IWebUser>, IWebUserProvider> userProviderMap = new HashMap<>();
 
 	protected static class CookieValue {
-		String username;
+		String account;
 		long expireTime;
 		String signatureValue;
 
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			sb.append(username).append(DELIMITER).append(expireTime).append(DELIMITER).append(signatureValue);
+			sb.append(account).append(DELIMITER).append(expireTime).append(DELIMITER).append(signatureValue);
 			return sb.toString();
 		}
 	}
 
 	@PostConstruct
 	protected void init() {
-		Map<String, IUserServiceForRememberMe> map = this.applicationContext
-				.getBeansOfType(IUserServiceForRememberMe.class);
+		Map<String, IWebUserProvider> map = this.applicationContext
+				.getBeansOfType(IWebUserProvider.class);
 
-		for (IUserServiceForRememberMe userProvider : map.values()) {
+		for (IWebUserProvider userProvider : map.values()) {
 			this.addUserProvider(userProvider);
 		}
 
@@ -112,7 +112,7 @@ public class RememberMeUserHandler {
 			return null;
 		}
 
-		String sign = this.makeTokenSignature(value.expireTime, value.username, user.getEncryptedPassword());
+		String sign = this.makeTokenSignature(value.expireTime, value.account, user.getEncryptedPassword());
 		if (!sign.equals(value.signatureValue)) {
 			log.debug("remember me 用户验证。 签名错误， 实际={}, 期待={}", value.signatureValue, sign);
 			return null;
@@ -172,10 +172,10 @@ public class RememberMeUserHandler {
 
 		if (value != null) {
 			// 根据用户class寻找这个用户类型的数据提供者
-			IUserServiceForRememberMe userProvider = this.userProviderMap.get(clazz);
+			IWebUserProvider userProvider = this.userProviderMap.get(clazz);
 			if (userProvider != null) {
 				// 如果能找到
-				IWebUser tmpUser = userProvider.loadUserByUsername(value.username);
+				IWebUser tmpUser = userProvider.loadUserByAccount(value.account);
 				user = this.check(clazz, tmpUser, value);
 			}
 		}
@@ -200,9 +200,9 @@ public class RememberMeUserHandler {
 
 		// 合成要保存到cookie的内容
 		CookieValue value = new CookieValue();
-		value.username = user.getAccount();
+		value.account = user.getAccount();
 		value.expireTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(maxAge);
-		value.signatureValue = this.makeTokenSignature(value.expireTime, value.username, user.getEncryptedPassword());
+		value.signatureValue = this.makeTokenSignature(value.expireTime, value.account, user.getEncryptedPassword());
 		String cookieValue = encodeCookie(value);
 
 		CookieUtils.addEncryptCookie(response, "/", cookieName, cookieValue, "", maxAge);
@@ -290,7 +290,7 @@ public class RememberMeUserHandler {
 		}
 
 		CookieValue value = new CookieValue();
-		value.username = tokens[0];
+		value.account = tokens[0];
 		value.signatureValue = tokens[2];
 		try {
 			value.expireTime = Long.parseLong(tokens[1]);
@@ -299,12 +299,12 @@ public class RememberMeUserHandler {
 			return null;
 		}
 
-		if (!StringUtils.hasLength(value.username) || !StringUtils.hasLength(value.signatureValue)) {
+		if (!StringUtils.hasLength(value.account) || !StringUtils.hasLength(value.signatureValue)) {
 			log.debug("remember me Cookie解码，但内容无法解析来 ， str={}", cookieAsPlainText);
 			return null;
 		}
 
-		log.debug("remember me Cookie解码成功，username={}, expire={} , sign={}", value.username, value.expireTime,
+		log.debug("remember me Cookie解码成功，username={}, expire={} , sign={}", value.account, value.expireTime,
 				value.signatureValue);
 
 		return value;
@@ -313,11 +313,11 @@ public class RememberMeUserHandler {
 	/**
 	 * 判断是否已经存在了一种用户类型的属性提供者
 	 */
-	public IUserServiceForRememberMe getUserProvider(Class<? extends IWebUser> clazz) {
+	public IWebUserProvider getUserProvider(Class<? extends IWebUser> clazz) {
 		return this.userProviderMap.get(clazz);
 	}
 
-	public void addUserProvider(IUserServiceForRememberMe userProvider) {
+	public void addUserProvider(IWebUserProvider userProvider) {
 		Class<? extends IWebUser> clazz = userProvider.getSupportUserClassNames();
 		this.userProviderMap.put(clazz, userProvider);
 
