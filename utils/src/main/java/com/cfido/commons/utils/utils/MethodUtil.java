@@ -122,7 +122,8 @@ public class MethodUtil {
 
 			if (anno == null && isTarget(targetAnno, ElementType.FIELD)) {
 				// 如果方法上没有，就在字段中找
-				Map<String, A> annoInFieldMap = ClassUtil.getAllAnnoFromField(this.method.getDeclaringClass(), annoClass);
+				Map<String, A> annoInFieldMap = ClassUtil.getAllAnnoFromField(this.method.getDeclaringClass(),
+						annoClass);
 				anno = annoInFieldMap.get(this.propName);
 			}
 
@@ -184,6 +185,37 @@ public class MethodUtil {
 	 */
 	public static List<MethodInfoOfGetter> findGetter(Class<?> clazz) {
 		return findMethod(clazz, instance.getterFilter);
+	}
+
+	/**
+	 * 寻找po中的getId方法
+	 * 
+	 * @param clazz
+	 *            po的类
+	 * @return
+	 */
+	public static Method getIdMethod(Class<?> clazz) {
+
+		List<MethodInfoOfGetter> list = findGetter(clazz);
+
+		MethodInfoOfGetter found = null;
+		for (MethodInfoOfGetter getter : list) {
+			if (getter.getAnnotation(javax.persistence.Id.class) != null) {
+				found = getter;
+				break;
+			}
+			if (getter.getAnnotation(javax.persistence.EmbeddedId.class) != null) {
+				found = getter;
+				break;
+			}
+		}
+
+		if (found != null) {
+			return found.getOriginMethod();
+		} else {
+			return null;
+		}
+
 	}
 
 	/**

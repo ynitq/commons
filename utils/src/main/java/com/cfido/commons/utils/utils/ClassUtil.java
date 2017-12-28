@@ -18,9 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Id;
-
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -270,60 +267,6 @@ public class ClassUtil {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * 寻找po中的getId方法
-	 * 
-	 * @param clazz
-	 *            po的类
-	 * @return
-	 */
-	public static Method getIdMethod(Class<?> clazz) {
-		Method method = null;
-
-		// 先从属性中找
-		Field[] fields = clazz.getDeclaredFields();
-		Field idField = null;
-		for (Field f : fields) {
-			if (f.isAnnotationPresent(javax.persistence.EmbeddedId.class)) {
-				idField = f;
-				break;
-			}
-
-			if (f.isAnnotationPresent(javax.persistence.Id.class)) {
-				idField = f;
-				break;
-			}
-		}
-
-		if (idField != null) {
-			log.debug("找到 id 字段:{}", idField.getName());
-
-			String name = "get" + StringUtils.capitalize(idField.getName());
-
-			try {
-				method = clazz.getMethod(name);
-				log.debug("通过 field 找到了 getter方法 ：{}", name);
-			} catch (Exception e) {
-			}
-		}
-
-		if (method == null) {
-			// 如果在属性中没有找到，就找getter
-			Method[] methods = clazz.getDeclaredMethods();
-			for (Method m : methods) {
-				if (m.getName().startsWith("get") && m.getParameterTypes().length == 0) {
-					if (m.isAnnotationPresent(Id.class) || m.isAnnotationPresent(EmbeddedId.class)) {
-						log.debug("通过 getter找到了方法:{}", m.getName());
-						method = m;
-						break;
-					}
-				}
-			}
-		}
-
-		return method;
 	}
 
 	/**

@@ -22,6 +22,7 @@ import com.cfido.commons.beans.exceptions.DaoException;
 import com.cfido.commons.beans.form.IPageForm;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.EncryptUtil;
+import com.cfido.commons.utils.utils.MethodUtil;
 import com.cfido.commons.utils.utils.SqlUtils;
 
 /**
@@ -80,7 +81,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	public BaseDomainWithCache(Class<ID> idClass) {
 		this.entityClass = (Class<PO>) ClassUtil.getGenericType(this.getClass(), 0);
 		this.idClass = this.buildIdClass(idClass);
-		this.methodOfGetId = ClassUtil.getIdMethod(entityClass);
+		this.methodOfGetId = MethodUtil.getIdMethod(entityClass);
 
 		Assert.notNull(this.entityClass, "应该可找到PO的Class");
 		Assert.notNull(this.idClass, "应该可找到ID的Class");
