@@ -32,12 +32,12 @@ public class CenterWebUser implements IWebUser {
 	}
 
 	@Override
-	public String getUsername() {
+	public String getAccount() {
 		return userInfo.getAccount();
 	}
 
 	@Override
-	public String getPassword() {
+	public String getEncryptedPassword() {
 		return userInfo.getEncodedPassword();
 	}
 
@@ -46,7 +46,12 @@ public class CenterWebUser implements IWebUser {
 	}
 
 	public CommonAdminWebUser createCommonAdminWebUser() {
-		return new CommonAdminWebUser(this.getUsername(), this.getPassword());
+		return new CommonAdminWebUser(this);
+	}
+
+	@Override
+	public String getName() {
+		return this.userInfo.getName();
 	}
 
 }

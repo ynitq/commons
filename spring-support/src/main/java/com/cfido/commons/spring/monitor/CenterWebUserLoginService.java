@@ -52,7 +52,7 @@ public class CenterWebUserLoginService {
 		CenterWebUser user = this.userProvider.loadFromCenter(account);
 
 		// 检查密码是否正确
-		PasswordEncoder.checkPassword(password, user.getPassword());
+		PasswordEncoder.checkPassword(password, user.getEncryptedPassword());
 
 		// 这个用户登录
 		this.loginContext.onLoginSuccess(user, rememberMe);

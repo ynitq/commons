@@ -56,18 +56,15 @@ public class RememberMeUserHandler {
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			sb.append(username)
-					.append(DELIMITER)
-					.append(expireTime)
-					.append(DELIMITER)
-					.append(signatureValue);
+			sb.append(username).append(DELIMITER).append(expireTime).append(DELIMITER).append(signatureValue);
 			return sb.toString();
 		}
 	}
 
 	@PostConstruct
 	protected void init() {
-		Map<String, IUserServiceForRememberMe> map = this.applicationContext.getBeansOfType(IUserServiceForRememberMe.class);
+		Map<String, IUserServiceForRememberMe> map = this.applicationContext
+				.getBeansOfType(IUserServiceForRememberMe.class);
 
 		for (IUserServiceForRememberMe userProvider : map.values()) {
 			this.addUserProvider(userProvider);
@@ -115,19 +112,18 @@ public class RememberMeUserHandler {
 			return null;
 		}
 
-		String sign = this.makeTokenSignature(value.expireTime, value.username, user.getPassword());
+		String sign = this.makeTokenSignature(value.expireTime, value.username, user.getEncryptedPassword());
 		if (!sign.equals(value.signatureValue)) {
 			log.debug("remember me 用户验证。 签名错误， 实际={}, 期待={}", value.signatureValue, sign);
 			return null;
 		}
 
 		if (!clazz.isAssignableFrom(user.getClass())) {
-			log.debug("remember me 用户验证。 class错误， 实际={}, 期待={}",
-					user.getClass().getSimpleName(), clazz.getSimpleName());
+			log.debug("remember me 用户验证。 class错误， 实际={}, 期待={}", user.getClass().getSimpleName(),
+					clazz.getSimpleName());
 		}
 
-		log.debug("remember me 用户验证成功。username={}, 有效期还剩 {}小时",
-				user.getUsername(), TimeUnit.MILLISECONDS.toHours(time));
+		log.debug("remember me 用户验证成功。account={}, 有效期还剩 {}小时", user.getAccount(), TimeUnit.MILLISECONDS.toHours(time));
 
 		return (T) user;
 	}
@@ -187,7 +183,7 @@ public class RememberMeUserHandler {
 		if (user == null) {
 			this.onLogout(request, response, clazz);
 		} else {
-			log.debug("成功找回用户 {}", user.getUsername());
+			log.debug("成功找回用户 {}", user.getAccount());
 		}
 		return user;
 	}
@@ -204,17 +200,17 @@ public class RememberMeUserHandler {
 
 		// 合成要保存到cookie的内容
 		CookieValue value = new CookieValue();
-		value.username = user.getUsername();
+		value.username = user.getAccount();
 		value.expireTime = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(maxAge);
-		value.signatureValue = this.makeTokenSignature(value.expireTime, value.username, user.getPassword());
+		value.signatureValue = this.makeTokenSignature(value.expireTime, value.username, user.getEncryptedPassword());
 		String cookieValue = encodeCookie(value);
 
 		CookieUtils.addEncryptCookie(response, "/", cookieName, cookieValue, "", maxAge);
 
 		if (log.isDebugEnabled()) {
 			Date expire = new Date(value.expireTime);
-			log.debug("为用户生成 RememberMe的cookie: name={}, value={} , 到期时间:{}",
-					cookieName, cookieValue, this.dateFormat.format(expire));
+			log.debug("为用户生成 RememberMe的cookie: name={}, value={} , 到期时间:{}", cookieName, cookieValue,
+					this.dateFormat.format(expire));
 		}
 	}
 
@@ -262,8 +258,7 @@ public class RememberMeUserHandler {
 	/**
 	 * 计算签名
 	 */
-	private String makeTokenSignature(long tokenExpireTime, String username,
-			String password) {
+	private String makeTokenSignature(long tokenExpireTime, String username, String password) {
 
 		String data = username + DELIMITER + tokenExpireTime + DELIMITER + password + DELIMITER
 				+ this.prop.getRememberMe().getKey();
@@ -287,8 +282,7 @@ public class RememberMeUserHandler {
 
 		String cookieAsPlainText = new String(byteAry);
 
-		String[] tokens = StringUtils.delimitedListToStringArray(cookieAsPlainText,
-				DELIMITER);
+		String[] tokens = StringUtils.delimitedListToStringArray(cookieAsPlainText, DELIMITER);
 
 		if (tokens.length != 3) {
 			log.debug("remember me Cookie解码，但解出来的长度有错 ， str={}", cookieAsPlainText);
@@ -310,8 +304,8 @@ public class RememberMeUserHandler {
 			return null;
 		}
 
-		log.debug("remember me Cookie解码成功，username={}, expire={} , sign={}",
-				value.username, value.expireTime, value.signatureValue);
+		log.debug("remember me Cookie解码成功，username={}, expire={} , sign={}", value.username, value.expireTime,
+				value.signatureValue);
 
 		return value;
 	}
@@ -327,8 +321,7 @@ public class RememberMeUserHandler {
 		Class<? extends IWebUser> clazz = userProvider.getSupportUserClassNames();
 		this.userProviderMap.put(clazz, userProvider);
 
-		log.debug("找到类型:{} 的用户信息提供者 {}",
-				clazz.getName(), userProvider.getClass().getName());
+		log.debug("找到类型:{} 的用户信息提供者 {}", clazz.getName(), userProvider.getClass().getName());
 	}
 
 	public boolean isAdminInPorp() {

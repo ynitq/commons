@@ -17,17 +17,21 @@ public interface IWebUser {
 	boolean checkRights(String optId);
 
 	/**
-	 * 返回用户名
+	 * 返回用户登录账号
 	 * 
-	 * @return
 	 */
-	String getUsername();
+	String getAccount();
 
 	/**
-	 * 返回用于生成签名的密码，不需要是明文
+	 * 返回用户显示用的名字
 	 * 
-	 * @return
 	 */
-	String getPassword();
+	String getName();
+
+	/**
+	 * 返回用于生成加密后的密码，不需要是明文
+	 * 
+	 */
+	String getEncryptedPassword();
 
 }

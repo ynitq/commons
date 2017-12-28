@@ -14,15 +14,12 @@ public class CommonAdminWebUser implements IWebUser {
 	/** 权限名字，用于中心服务器自动登录 */
 	public final static String RIGHTS_NAME = "CommonAdminWebUser";
 
-	private final String username;
-	private final String password;
+	private IWebUser webUser;
 
 	private boolean superUser;
 
-	public CommonAdminWebUser(String username, String password) {
-		super();
-		this.username = username;
-		this.password = password;
+	public CommonAdminWebUser(IWebUser webUser) {
+		this.webUser = webUser;
 	}
 
 	public boolean isSuperUser() {
@@ -39,12 +36,18 @@ public class CommonAdminWebUser implements IWebUser {
 	}
 
 	@Override
-	public String getUsername() {
-		return this.username;
+	public String getAccount() {
+		return this.webUser.getAccount();
 	}
 
 	@Override
-	public String getPassword() {
-		return this.password;
+	public String getName() {
+		return this.webUser.getName();
 	}
+
+	@Override
+	public String getEncryptedPassword() {
+		return this.webUser.getEncryptedPassword();
+	}
+
 }

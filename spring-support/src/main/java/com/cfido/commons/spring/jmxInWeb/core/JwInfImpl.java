@@ -61,7 +61,7 @@ public class JwInfImpl implements IJmxInWeb {
 			IWebUser user = userProvider.loadUserByUsername(form.getAccount());
 			if (user != null) {
 				// 如过能获取用户,就检查密码
-				PasswordEncoder.checkPassword(form.getPassword(), user.getPassword());
+				PasswordEncoder.checkPassword(form.getPassword(), user.getEncryptedPassword());
 
 				// 如果密码正确，就返回正常信息
 				this.loginContext.onLoginSuccess(user, form.isRememberMe());

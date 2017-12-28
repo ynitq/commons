@@ -21,7 +21,7 @@ public class HttpSessionUserHandler {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HttpSessionUserHandler.class);
 
 	public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, IWebUser user) {
-		log.debug("将用户 {} 的信息保存到Session中", user.getUsername());
+		log.debug("将用户 {} 的信息保存到Session中", user.getAccount());
 
 		String sessionName = getSessionName(request, user.getClass());
 		request.getSession().setAttribute(sessionName, user);

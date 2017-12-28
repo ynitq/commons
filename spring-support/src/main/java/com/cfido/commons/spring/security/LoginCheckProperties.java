@@ -38,12 +38,13 @@ public class LoginCheckProperties {
 	 * 
 	 * @author 梁韦江 2016年11月16日
 	 */
-	public static class Admin {
+	public static class Admin implements IWebUser {
 		private String account = "admin";
 
 		/** 默认密码是 linzi777 **/
 		private String password = "d70623d9b2ea2d300662bf27c75b45bd";
 
+		@Override
 		public String getAccount() {
 			return account;
 		}
@@ -62,6 +63,21 @@ public class LoginCheckProperties {
 
 		public void setPassword(String password) {
 			this.password = password;
+		}
+
+		@Override
+		public boolean checkRights(String optId) {
+			return false;
+		}
+
+		@Override
+		public String getName() {
+			return account;
+		}
+
+		@Override
+		public String getEncryptedPassword() {
+			return password;
 		}
 
 	}
@@ -84,7 +100,7 @@ public class LoginCheckProperties {
 		public IWebUser loadUserByUsername(String username) {
 			Admin admin = LoginCheckProperties.this.admin;
 			if (admin.isValid()) {
-				return new CommonAdminWebUser(admin.account, admin.password);
+				return new CommonAdminWebUser(admin);
 			} else {
 				return null;
 			}
