@@ -3,7 +3,6 @@ package com.cfido.commons.utils.utils;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,9 +46,9 @@ public class ClassDescriber {
 	 * @author 梁韦江 2017年5月9日
 	 * 
 	 */
-	private class DefaultFieldDescFilter implements IFieldDescFilter {
+	private static class DefaultFieldDescFilter implements IFieldDescFilter {
 
-		private final List<String> packageList = new LinkedList<>();
+		private final Set<String> packageList = new HashSet<>();
 
 		public DefaultFieldDescFilter() {
 			this.packageList.add("com.cfido");
@@ -74,6 +73,13 @@ public class ClassDescriber {
 
 	}
 
+	/** 为默认的过滤器增加包名 */
+	public static void addPackageToDefaultFilter(String packageName) {
+		if (StringUtils.hasText(packageName)) {
+			DEFAULT_FILTER.packageList.add(packageName);
+		}
+	}
+
 	/**
 	 * 生成类的描述
 	 * 
@@ -93,8 +99,8 @@ public class ClassDescriber {
 	public static String create(Class<?> clazz, IFieldDescFilter filter) {
 		ClassDescriber cd = new ClassDescriber(filter);
 		cd.parser(clazz, cd.rootMap);
-		String jsonStr = JSON.toJSONString(cd.rootMap, SerializerFeature.PrettyFormat, SerializerFeature.UseSingleQuotes,
-				SerializerFeature.MapSortField);
+		String jsonStr = JSON.toJSONString(cd.rootMap, SerializerFeature.PrettyFormat,
+				SerializerFeature.UseSingleQuotes, SerializerFeature.MapSortField);
 
 		return jsonStr.replace("\t", "    ");
 	}
@@ -102,7 +108,7 @@ public class ClassDescriber {
 	private final Map<String, Object> rootMap = new HashMap<>();
 
 	/** 默认过滤器 */
-	private final IFieldDescFilter defaultFilter = new DefaultFieldDescFilter();
+	private static final DefaultFieldDescFilter DEFAULT_FILTER = new DefaultFieldDescFilter();
 
 	private final IFieldDescFilter filter;
 
@@ -111,7 +117,7 @@ public class ClassDescriber {
 
 	private ClassDescriber(IFieldDescFilter filter) {
 		super();
-		this.filter = filter == null ? this.defaultFilter : filter;
+		this.filter = filter == null ? DEFAULT_FILTER : filter;
 	}
 
 	/**
