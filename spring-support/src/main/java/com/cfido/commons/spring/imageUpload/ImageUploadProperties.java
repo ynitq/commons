@@ -12,6 +12,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "imageUpload")
 public class ImageUploadProperties {
 
+	/** 工作目录 */
+	public final static String WORK_DIR = "work/";
+
+	/** 上传文件存放的目录，运行时，会在当前目录下创建这个目录 */
+	public final static String UPLOAD_DIR_PREFIX = "upload";
+
+	/** 附件存放的默认目录 */
+	public final static String DEFAULT_ATTACHMENTS_PATH = "attachments";
+
 	/** 缩略图的参数 */
 	public static class Thumb {
 		/** 图片最大宽度 */

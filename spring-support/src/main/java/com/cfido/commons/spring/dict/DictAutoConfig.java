@@ -21,21 +21,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class DictAutoConfig extends WebMvcConfigurerAdapter {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DictAutoConfig.class);
 
-	public final static String ATTACHMENT_PATH = "work/dict_attachment";
-	// public final static String ATTACHMENT_PATH = "dict";
-
 	public DictAutoConfig() {
 		log.debug("自动配置  DictAutoConfig");
 	}
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		// 字典管理界面的静态资源
 		registry.addResourceHandler("/dict/static/**").addResourceLocations("classpath:/dict/static/");
-
-		// 附件
-		String attachmentPathPatterns = String.format("/%s/**", ATTACHMENT_PATH);
-		String attachmentResourceLocations = String.format("file:%s/", ATTACHMENT_PATH);
-		registry.addResourceHandler(attachmentPathPatterns).addResourceLocations(attachmentResourceLocations);
 
 		super.addResourceHandlers(registry);
 	}

@@ -6,6 +6,8 @@ import java.util.Date;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 
+import com.cfido.commons.spring.imageUpload.ImageUploadProperties;
+
 /**
  * <pre>
  * 字典 配置
@@ -37,12 +39,11 @@ public class DictProperties {
 	/** Js的url */
 	public final static String DICT_JS = "/dict/dictJs.js";
 
-
 	/** xml文件名 */
 	private String xmlFile = "dict";
 
 	/** 数据文件的目录 */
-	private String dataDir = "work/dictData";
+	private String dataDir = ImageUploadProperties.WORK_DIR;
 
 	/** 定时保存数据的周期 单位：秒 */
 	private long savePeriod = 60 * 5;

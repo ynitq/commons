@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cfido.commons.annotation.bean.AComment;
 import com.cfido.commons.beans.apiExceptions.InvalidImageFormatException;
-import com.cfido.commons.spring.dict.DictAutoConfig;
+import com.cfido.commons.spring.utils.UniqueIdCreater;
 import com.cfido.commons.utils.utils.DateUtil;
 import com.cfido.commons.utils.utils.FileUtil;
 import com.cfido.commons.utils.utils.ImageEX;
@@ -42,8 +42,6 @@ public class ImageUploadService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ImageUploadService.class);
 
-	public final static String DEFAULT_ROOT_PATH = "work/attachments";
-
 	@Autowired
 	private ImageUploadProperties prop;
 
@@ -51,9 +49,7 @@ public class ImageUploadService {
 
 	public ImageUploadService() {
 		// 可支持的图片格式
-		this.imageFormats = Arrays.asList(new String[] {
-				"bmp", "gif", "png", "jpg"
-		});
+		this.imageFormats = Arrays.asList(new String[] { "bmp", "gif", "png", "jpg" });
 	}
 
 	public class ExifLocationInfo {
@@ -209,7 +205,8 @@ public class ImageUploadService {
 			if (image) {
 				this.imageProp = new ImageProp();
 				// 如果是图片，需要有缩略图
-				this.imageProp.thumbFullPath = prefix + name + ImageUploadService.this.prop.getThumb().getPostfix() + extStr;
+				this.imageProp.thumbFullPath = prefix + name + ImageUploadService.this.prop.getThumb().getPostfix()
+						+ extStr;
 			}
 		}
 
@@ -221,22 +218,23 @@ public class ImageUploadService {
 
 	/** 根据名字删除旧的附件 */
 	public void deleteOldFile(String name, String oldExtName) throws IOException {
+		// 查看扩展名
 		String extStr = "";
 		if (StringUtils.hasText(oldExtName)) {
 			extStr = "." + oldExtName;
 		}
 
-		String prefix = DictAutoConfig.ATTACHMENT_PATH + "/";
-
-		String fullPath = prefix + name + extStr;
-		String thumbFullPath = prefix + name + ImageUploadService.this.prop.getThumb().getPostfix() + extStr;
-
+		// 原始文件的路径 = 前缀 + 文件名 + 扩展名
+		String fullPath = ImageUploadProperties.WORK_DIR + name + extStr;
 		Files.deleteIfExists(FileSystems.getDefault().getPath(fullPath));
+
+		// 删除缩略图
+		String thumbFullPath = ImageUploadProperties.WORK_DIR + name + this.prop.getThumb().getPostfix() + extStr;
 		Files.deleteIfExists(FileSystems.getDefault().getPath(thumbFullPath));
 	}
 
 	/**
-	 * 保存上传的文件, 保存在默认目录下 attectments/yyyyMMdd/465768715787.jpg
+	 * 保存上传的文件, 保存在默认目录下 upload/attectments/yyyyMMdd/465768715787.jpg
 	 * 
 	 * @param multipartFile
 	 *            上传的数据
@@ -244,9 +242,14 @@ public class ImageUploadService {
 	 */
 	public SaveResult save(MultipartFile multipartFile)
 			throws FileNotFoundException, InvalidImageFormatException, IOException {
+
+		/** 目录例子：upload/attectments/yyyyMMdd */
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		String path = String.format("%s/%s", DEFAULT_ROOT_PATH, sdf.format(new Date()));
-		String fileName = String.valueOf(System.nanoTime());
+		String path = String.format("%s%s/%s", ImageUploadProperties.UPLOAD_DIR_PREFIX,
+				ImageUploadProperties.DEFAULT_ATTACHMENTS_PATH, sdf.format(new Date()));
+
+		// 生成一个唯一性的文件名，避免重复
+		String fileName = UniqueIdCreater.createIdInStr();
 
 		return this.save(multipartFile, path, fileName);
 	}
@@ -278,7 +281,7 @@ public class ImageUploadService {
 		res.updatePath(path);
 
 		// 分析是否图片前，先将图片保存下来
-		Path filePath = FileUtil.save(multipartFile, res.fullPath);
+		Path filePath = FileUtil.save(multipartFile, ImageUploadProperties.WORK_DIR + res.fullPath);
 		res.originFile = filePath.toFile();
 		res.fileSize = res.originFile.length();
 
@@ -289,8 +292,9 @@ public class ImageUploadService {
 				res.imageProp.imageHeight = old.getHeight();
 
 				// 生成缩略图
-				ImageEX thumb = old.chageImageSizeKeepScaled(this.prop.getThumb().getWidth(), this.prop.getThumb().getHeight());
-				thumb.outPutImage(res.extName, new File(res.imageProp.thumbFullPath));
+				ImageEX thumb = old.chageImageSizeKeepScaled(this.prop.getThumb().getWidth(),
+						this.prop.getThumb().getHeight());
+				thumb.outPutImage(res.extName, new File(ImageUploadProperties.WORK_DIR + res.imageProp.thumbFullPath));
 				res.imageProp.thumbWidth = thumb.getWidth();
 				res.imageProp.thumbHeight = thumb.getHeight();
 

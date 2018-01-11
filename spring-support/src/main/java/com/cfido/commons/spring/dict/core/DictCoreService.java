@@ -38,7 +38,6 @@ import com.cfido.commons.beans.apiExceptions.SimpleApiException;
 import com.cfido.commons.beans.apiExceptions.SystemErrorException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
-import com.cfido.commons.spring.dict.DictAutoConfig;
 import com.cfido.commons.spring.dict.DictProperties;
 import com.cfido.commons.spring.dict.constants.DictValueTypeConstant;
 import com.cfido.commons.spring.dict.inf.form.DictAttachmentEditForm;
@@ -49,6 +48,7 @@ import com.cfido.commons.spring.dict.inf.responses.DictVo;
 import com.cfido.commons.spring.dict.schema.DictXml;
 import com.cfido.commons.spring.dict.schema.DictXml.DictAttachmentRow;
 import com.cfido.commons.spring.dict.schema.DictXml.DictXmlRow;
+import com.cfido.commons.spring.imageUpload.ImageUploadProperties;
 import com.cfido.commons.spring.imageUpload.ImageUploadService;
 import com.cfido.commons.spring.imageUpload.ImageUploadService.SaveResult;
 import com.cfido.commons.spring.security.LoginCheckInterceptor;
@@ -204,7 +204,8 @@ public class DictCoreService {
 			if (deletedRow == null) {
 				throw new IdNotFoundException("无此附件", key);
 			} else {
-				this.imageUploadService.deleteOldFile(deletedRow.getKey(), deletedRow.getExtName());
+				this.imageUploadService.deleteOldFile(deletedRow.getPathPrefix() + deletedRow.getKey(),
+						deletedRow.getExtName());
 			}
 		} finally {
 			lockForMap.unlock();
@@ -279,8 +280,7 @@ public class DictCoreService {
 	 * @return
 	 */
 	public PageQueryResult<DictVo> findInPage(KeySearchPageForm form) {
-		log.debug("搜索字典关键字: [{}] , pageNo={} pageSize={}",
-				form.getKey(), form.getPageNo(), form.getPageSize());
+		log.debug("搜索字典关键字: [{}] , pageNo={} pageSize={}", form.getKey(), form.getPageNo(), form.getPageSize());
 
 		List<DictXmlRow> all = this.getAllFromMap();
 
@@ -503,9 +503,11 @@ public class DictCoreService {
 
 		Assert.hasText(form.getKey(), "key不能为空");
 
+		String pathPrefix = ImageUploadProperties.UPLOAD_DIR_PREFIX + "/" + "dict";
+
 		SaveResult res = null;
 		if (form.getFile() != null && !form.getFile().isEmpty()) {
-			res = this.imageUploadService.save(form.getFile(), DictAutoConfig.ATTACHMENT_PATH, form.getKey());
+			res = this.imageUploadService.save(form.getFile(), pathPrefix, form.getKey());
 			log.debug("上传的文件保存在 {}", res.getFullPath());
 		}
 
@@ -528,7 +530,7 @@ public class DictCoreService {
 				// 如果原来已经存在，并且这次又上传了文件，就需要比较一下扩展名
 				if (res != null && !row.getExtName().equals(res.getExtName())) {
 					// 如果扩展名不同，就需要将原来的存在的文件删除
-					this.imageUploadService.deleteOldFile(form.getKey(), row.getExtName());
+					this.imageUploadService.deleteOldFile(row.getPathPrefix() + "/" + row.getKey(), row.getExtName());
 				}
 			}
 
@@ -539,7 +541,7 @@ public class DictCoreService {
 				// 如果有上传文件，就保存上传文件内存，非空判断已经在上班做了
 				row.setExtName(res.getExtName());
 				row.setImageFile(res.isImage());
-				row.setPathPrefix(DictAutoConfig.ATTACHMENT_PATH);
+				row.setPathPrefix(pathPrefix);
 				if (res.isImage()) {
 					// 如果是图片，就需要填写和图片相关的参数
 					row.setImageHeight(res.getImageProp().getImageHeight());
@@ -630,9 +632,7 @@ public class DictCoreService {
 
 		if (debugMode) {
 			// 如果是debug模式，就用debug的格式
-			return String.format(DEBUG_FORMAT,
-					row.getKey(),
-					value);
+			return String.format(DEBUG_FORMAT, row.getKey(), value);
 		} else {
 			// 否则就直接输出
 			return value;
@@ -746,8 +746,7 @@ public class DictCoreService {
 			row.setValue(key);
 
 			// 在备注里面说明这个是自动添加的，需要处理
-			row.setMemo(String.format("第一次发现于: %s (%s)",
-					WebContextHolderHelper.getRequestURL(false),
+			row.setMemo(String.format("第一次发现于: %s (%s)", WebContextHolderHelper.getRequestURL(false),
 					DateUtil.dateFormat(new Date())));
 		}
 
@@ -808,18 +807,16 @@ public class DictCoreService {
 			for (DictAttachmentRow row : xmlDoc.getDictAttachmentRow()) {
 				this.attahcmentMap.put(row.getKey(), row);
 			}
-			log.info("初始化 DictCoreService 字典，共 {} 条记录，其中 {} 条待处理中, {} 个附件",
-					xmlDoc.getDictXmlRow().size(), todo, xmlDoc.getDictAttachmentRow().size());
+			log.info("初始化 DictCoreService 字典，共 {} 条记录，其中 {} 条待处理中, {} 个附件", xmlDoc.getDictXmlRow().size(), todo,
+					xmlDoc.getDictAttachmentRow().size());
 
 			// 启动定时器，定时检查是否需要保存数据
-			this.scheduledExecutorService.scheduleAtFixedRate(
-					new Runnable() {
-						@Override
-						public void run() {
-							DictCoreService.this.doSaveAll();
-						}
-					},
-					0, this.prop.getSavePeriod(), TimeUnit.SECONDS);
+			this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+				@Override
+				public void run() {
+					DictCoreService.this.doSaveAll();
+				}
+			}, 0, this.prop.getSavePeriod(), TimeUnit.SECONDS);
 		}
 	}
 
