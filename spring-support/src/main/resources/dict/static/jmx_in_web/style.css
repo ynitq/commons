@@ -62,7 +62,7 @@ body {
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	width: 800px;
+	width: 40%;
 	bottom: 0px;
 	overflow: auto;
 }
@@ -73,11 +73,12 @@ body {
 
 .opt-container {
 	position: absolute;
-	left: 810px;
+	left: 40%;
 	right: 10px;
 	bottom: 0px;
 	top: 0px;
 	overflow: hidden;
+	margin-left: 10px;
 }
 
 .opt-container .opt-nav {
