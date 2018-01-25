@@ -245,7 +245,7 @@ public class ImageUploadService {
 
 		/** 目录例子：upload/attectments/yyyyMMdd */
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		String path = String.format("%s%s/%s", ImageUploadProperties.UPLOAD_DIR_PREFIX,
+		String path = String.format("%s/%s/%s", ImageUploadProperties.UPLOAD_DIR_PREFIX,
 				ImageUploadProperties.DEFAULT_ATTACHMENTS_PATH, sdf.format(new Date()));
 
 		// 生成一个唯一性的文件名，避免重复
