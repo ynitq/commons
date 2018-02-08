@@ -30,7 +30,7 @@ public class LogUtil {
 	static {
 		PACKAGE_FILTER.add("com.linzi");
 		PACKAGE_FILTER.add("com.cfido");
-		PACKAGE_FILTER.add("game");
+		PACKAGE_FILTER.add("haimain");
 	}
 
 	/**
