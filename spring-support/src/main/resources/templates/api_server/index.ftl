@@ -87,6 +87,8 @@ pre {
 	word-wrap: break-word;
 }
 
+
+
 .my-panel-heading {
 	background-color: #e6e6e6;
 	border-bottom: 1px solid #ddd;
@@ -254,7 +256,7 @@ a:VISITED {
 				<div id="coll-${group.infKey}" class="panel-collapse collapse" role="tabpanel">
 					<div class="list-group">
 						<#list group.methods as m> <a href="#" onclick="show('${m.key}Div');return false" class="list-group-item">
-							${m.methodKey} <#if !m.needLogin> <span class="label label-danger">open</span></#if>
+							${m.methodKey} <#if !m.needLogin> <span class="label label-danger pull-right">open</span><#else><span class="label label-default pull-right">${m.optId}</span></#if>
 						</a> </#list>
 					</div>
 				</div>
