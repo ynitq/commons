@@ -53,6 +53,7 @@ public class ClassDescriber {
 		public DefaultFieldDescFilter() {
 			this.packageList.add("com.cfido");
 			this.packageList.add("com.linzi");
+			this.packageList.add("haimian");
 		}
 
 		@Override
