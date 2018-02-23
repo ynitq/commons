@@ -3,6 +3,7 @@ package com.cfido.commons.spring.security;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cfido.commons.loginCheck.IWebUser;
@@ -18,6 +19,9 @@ import com.cfido.commons.loginCheck.IWebUser;
 @Component
 public class HttpSessionUserHandler {
 
+	@Autowired(required = false)
+	private ILoginSuccessCallBack loginSuccessCallBack;
+
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HttpSessionUserHandler.class);
 
 	public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, IWebUser user) {
@@ -25,6 +29,11 @@ public class HttpSessionUserHandler {
 
 		String sessionName = getSessionName(request, user.getClass());
 		request.getSession().setAttribute(sessionName, user);
+
+		// 如果外部有实现登录成功的回调，就调用回调
+		if (this.loginSuccessCallBack != null) {
+			this.loginSuccessCallBack.onLoginSuccess(user);
+		}
 	}
 
 	public void onLogout(HttpServletRequest request, HttpServletResponse response, Class<? extends IWebUser> clazz) {
