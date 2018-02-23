@@ -17,3 +17,4 @@
 - [spring-support](https://github.com/ynitq/commons/tree/dev/spring-support) : 自动化配置，一行注解就可以使用相关服务，我们将各类共用类都放到这个项目了
 - [beans](https://github.com/ynitq/commons/tree/dev/beans): 通用的beans,可给安卓使用的代码
 - [code-gen](https://github.com/ynitq/commons/tree/dev/code-gen): 代码生成工具，用于从数据库生成orm文件，无外键的
+  
