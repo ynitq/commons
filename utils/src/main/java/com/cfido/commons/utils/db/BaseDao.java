@@ -70,7 +70,8 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 
 		@Override
 		public String toString() {
-			return String.format("setter:%s getter:%s 长度:%d", this.setter.getName(), this.getter.getName(), this.length);
+			return String.format("setter:%s getter:%s 长度:%d", this.setter.getName(), this.getter.getName(),
+					this.length);
 		}
 	}
 
@@ -97,9 +98,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 
 	protected final Log log = LogFactory.getLog(getClass());
 
-	@SuppressWarnings({
-			"unchecked"
-	})
+	@SuppressWarnings({ "unchecked" })
 	public BaseDao() {
 		this.entityClass = (Class<T>) ClassUtil.getGenericType(this.getClass(), 0);
 		this.idClass = (Class<K>) ClassUtil.getGenericType(this.getClass(), 1);
@@ -172,15 +171,23 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 	}
 
 	public List<T> find(String hsql, Object value) {
-		Object[] values = new Object[] {
-				value
-		};
+		Object[] values = new Object[] { value };
 		return this.findForClass(hsql, null, this.entityClass, values);
 	}
 
 	@Override
 	public List<T> find(String hsql, Object... values) {
 		return this.findForClass(hsql, null, this.entityClass, values);
+	}
+
+	@Override
+	public T findOne(String sqlStartWithFrom, Object... params) {
+		List<T> poList = this.findForClass(sqlStartWithFrom, PageForm.ONE, this.entityClass, params);
+		if (poList != null && poList.size() > 1) {
+			return poList.get(0);
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -196,7 +203,8 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 	 *            其他参数
 	 * @return
 	 */
-	public <L> List<L> findForClass(final String hsql, final IPageForm pageForm, Class<L> clazz, final Object[] params) {
+	public <L> List<L> findForClass(final String hsql, final IPageForm pageForm, Class<L> clazz,
+			final Object[] params) {
 		long start = System.currentTimeMillis();
 		if (log.isDebugEnabled()) {
 			log.debug(LogUtil.printSql(hsql, params));
@@ -576,9 +584,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 	 * @return
 	 */
 	public List<T> pageQuery(String hql, Object param, IPageForm form) {
-		Object[] params = new Object[] {
-				param
-		};
+		Object[] params = new Object[] { param };
 		return this.pageQuery(hql, params, form);
 	}
 
@@ -660,7 +666,8 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 		}
 		try {
 			log.debug(String.format("===========delete cache：", po.getClass().getSimpleName()));
-			String poName = com.cfido.commons.utils.utils.StringUtilsEx.toUpperCamelCase(po.getClass().getSimpleName(), false);
+			String poName = com.cfido.commons.utils.utils.StringUtilsEx.toUpperCamelCase(po.getClass().getSimpleName(),
+					false);
 			Method[] ms = po.getClass().getMethods();
 			for (Method m : ms) {
 				if (m.getName().equals("getId")) {
@@ -721,9 +728,10 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 					String newvalue = com.cfido.commons.utils.utils.StringUtilsEx.substring(value, 0, en.length);
 					en.setter.invoke(po, newvalue);
 
-					log.warn(LogUtil.format("存储对象 %s 时，字段%s的值的长度过长，自动将长度截取到%d, 新的值为:%s", this.entityClass.getSimpleName(),
-							com.cfido.commons.utils.utils.StringUtilsEx.substring(en.getter.getName(), 3, 100), en.length,
-							newvalue));
+					log.warn(LogUtil.format("存储对象 %s 时，字段%s的值的长度过长，自动将长度截取到%d, 新的值为:%s",
+							this.entityClass.getSimpleName(),
+							com.cfido.commons.utils.utils.StringUtilsEx.substring(en.getter.getName(), 3, 100),
+							en.length, newvalue));
 				}
 			}
 		} catch (Exception e) {
@@ -833,8 +841,7 @@ public abstract class BaseDao<T, K extends Serializable> implements IObjFactoryD
 		} else {
 			StringBuffer sql = new StringBuffer(100);
 			for (String str : this.foreignKeyList) {
-				sql.append(String.format(" left join fetch %s.%s", tableShortName,
-						StringUtils.uncapitalize(str)));
+				sql.append(String.format(" left join fetch %s.%s", tableShortName, StringUtils.uncapitalize(str)));
 			}
 			return sql.toString();
 		}

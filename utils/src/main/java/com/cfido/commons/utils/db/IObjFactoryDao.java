@@ -18,6 +18,8 @@ public interface IObjFactoryDao<T, K extends Serializable> {
 
 	List<T> find(String sqlStartWithFrom, Object... params);
 
+	T findOne(String sqlStartWithFrom, Object... params);
+
 	List<T> findAll();
 
 	PageQueryResult<T> findInPage(String sqlStartWithForm, IPageForm form, Object... params);

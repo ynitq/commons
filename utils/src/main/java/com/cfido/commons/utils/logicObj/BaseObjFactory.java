@@ -237,9 +237,9 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	 * @return 对象列表
 	 */
 	public OBJ findOne(String sqlStartWithFrom, Object... params) {
-		List<PO> poList = this.getDaoForObjFactory().find(sqlStartWithFrom, params);
-		if (poList != null && poList.size() > 0) {
-			return this.convertToObj(poList.get(0));
+		PO po = this.getDaoForObjFactory().findOne(sqlStartWithFrom, params);
+		if (po != null) {
+			return this.convertToObj(po);
 		}
 		return null;
 	}
