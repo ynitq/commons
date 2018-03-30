@@ -20,6 +20,7 @@ import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.monitor.MonitorClientContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
+import com.cfido.commons.utils.web.WebUtils;
 
 /**
  * 认证安全拦截器
@@ -83,10 +84,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		// 如果需要做ajax跨域处理，就增加相应的header
 		if (info.isAjax()) {
 			/** Ajax跨域header */
-			response.setHeader("Cache-Control", "no-cache");
-			response.setHeader("Access-Control-Allow-Origin", "*");
-			response.setHeader("Access-Control-Allow-Methods", "*");
-			response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+			WebUtils.addCrossDomainHeader(response, request);
 		}
 
 		try {
@@ -114,7 +112,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	private void writeErrorResponse(HttpServletResponse response, BaseApiException ex) {
 		try {
 
-			CommonErrorResponse res = ExceptionUtil.getErrorResponse(response, ex, this.debugModeProperties.isDebugMode());
+			CommonErrorResponse res = ExceptionUtil.getErrorResponse(response, ex,
+					this.debugModeProperties.isDebugMode());
 
 			response.getWriter().print(JSON.toJSONString(res));
 		} catch (IOException e) {
@@ -189,8 +188,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public void afterCompletion(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse,
-			Object paramObject, Exception paramException) throws Exception {
+	public void afterCompletion(HttpServletRequest paramHttpServletRequest,
+			HttpServletResponse paramHttpServletResponse, Object paramObject, Exception paramException)
+			throws Exception {
 
 		ActionInfo info = this.context.getActionInfo();
 		info.showDebugMsg();

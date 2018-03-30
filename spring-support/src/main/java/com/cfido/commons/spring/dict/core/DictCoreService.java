@@ -337,7 +337,7 @@ public class DictCoreService {
 
 		List<DictAttachmentVo> voList = new LinkedList<>();
 		for (DictAttachmentRow row : listAll) {
-			String basePath = WebContextHolderHelper.getFullPath(null);
+			String basePath = WebContextHolderHelper.getBasePath();
 			String thumbPostfix = this.imageUploadService.getThumbPostfix();
 
 			DictAttachmentVo vo = new DictAttachmentVo();
