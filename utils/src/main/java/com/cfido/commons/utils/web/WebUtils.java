@@ -201,7 +201,8 @@ public class WebUtils {
 
 		/** Ajax跨域header */
 		response.setHeader("Cache-Control", "no-cache");
-		response.setHeader("Access-Control-Allow-Origin", getSchemeAndServerName(request));
+//		response.setHeader("Access-Control-Allow-Origin", getSchemeAndServerName(request));
+		response.setHeader("Access-Control-Allow-Origin", *);
 		response.setHeader("Access-Control-Allow-Methods", "*");
 	}
 
