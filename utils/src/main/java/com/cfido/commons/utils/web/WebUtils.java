@@ -203,7 +203,7 @@ public class WebUtils {
 		response.setHeader("Cache-Control", "no-cache");
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		response.setHeader("Access-Control-Allow-Methods", "*");
-		response.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token");
+		response.setHeader("Access-Control-Allow-Headers", "*");
 	}
 
 	/**
