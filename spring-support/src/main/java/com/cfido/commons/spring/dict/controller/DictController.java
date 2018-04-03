@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.DictProperties;
@@ -92,16 +93,7 @@ public class DictController {
 	@ResponseBody
 	public String js() throws TemplateException, IOException {
 
-//		// 获得所有数据
-//		List<DictXmlRow> srcList = this.coreService.getAllFromMap();
-//
-//		// 将数据转化成为map,其实就是js中的object
-//		Map<String, String> jsonMap = new HashMap<>();
-//		for (DictXmlRow row : srcList) {
-//			jsonMap.put(row.getKey(), row.isHtml() ? row.getValue() : EncodeUtil.html(row.getValue(), false));
-//		}
-//		String jsonStr = JSON.toJSONString(jsonMap, true);
-		String jsonStr = this.coreService.js();
+		String jsonStr = JSON.toJSONString(this.coreService.toJsonMap(), true);
 		
 		Map<String, Object> model = new HashMap<>();
 		model.put("jsonStr", jsonStr);
