@@ -75,6 +75,30 @@ public class XLSExport {
 	}
 
 	/**
+	 * 设置自动列宽--按中文宽度来
+	 * 
+	 */
+	private void setMaxSizeColumn() {
+		if (sheet.getRow(0) != null) {
+			int coloumNum = sheet.getRow(0).getPhysicalNumberOfCells();
+			for (int i = 0; i <= coloumNum; i++) {
+				this.sheet.autoSizeColumn(i);
+			}
+			// 由于对中文自动宽度支持不好，这个地方把所有宽度*1.5
+			int curColWidth = 0;
+			for (int i = 0; i <= coloumNum; i++) {
+				curColWidth = sheet.getColumnWidth(i);
+
+				if (curColWidth * 1.5 < 255 * 256) {
+					sheet.setColumnWidth(i, (int) (curColWidth * 1.5));
+				} else {
+					sheet.setColumnWidth(i, 6000);
+				}
+			}
+		}
+	}
+
+	/**
 	 * 导出Excel文件
 	 * 
 	 */
@@ -89,7 +113,8 @@ public class XLSExport {
 
 			response.reset();
 			response.setContentType("application/msexcel;charset=utf-8");
-			response.setHeader("Content-disposition", "attachment;filename*=utf-8'zh_cn'"+URLEncoder.encode(fileName, "UTF-8")+".xls ");
+			response.setHeader("Content-disposition",
+					"attachment;filename*=utf-8'zh_cn'" + URLEncoder.encode(fileName, "UTF-8") + ".xls ");
 			response.getOutputStream().write(bytes);
 			response.getOutputStream().flush();
 			response.getOutputStream().close();
@@ -100,7 +125,7 @@ public class XLSExport {
 			LogUtil.traceError(log, e);
 		}
 	}
-	
+
 	/**
 	 * 写Excel文件到服务器地址
 	 * 
@@ -108,6 +133,20 @@ public class XLSExport {
 	public void writeXLS() {
 		try {
 			setAutoSizeColumn();
+			FileOutputStream fOut = new FileOutputStream(xlsFileName);
+			workbook.write(fOut);
+			fOut.flush();
+			fOut.close();
+		} catch (FileNotFoundException e) {
+			LogUtil.traceError(log, e);
+		} catch (IOException e) {
+			LogUtil.traceError(log, e);
+		}
+	}
+
+	public void writeXLSMaxAuto() {
+		try {
+			setMaxSizeColumn();
 			FileOutputStream fOut = new FileOutputStream(xlsFileName);
 			workbook.write(fOut);
 			fOut.flush();
@@ -226,7 +265,7 @@ public class XLSExport {
 	 */
 	public static void main(String[] args) {
 		System.out.println(" 开始导出Excel文件 ");
-		XLSExport e = new XLSExport("d:/test.xls");
+		XLSExport e = new XLSExport("d:/test1.xls");
 		e.createRow(0);
 		e.setCell(0, " 编号 ");
 		e.setCell(1, " 名称 ");
