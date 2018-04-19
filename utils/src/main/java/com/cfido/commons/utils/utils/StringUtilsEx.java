@@ -416,4 +416,24 @@ public class StringUtilsEx {
 		// 返回前顺手将>都删除
 		return sbuf.toString();
 	}
+
+	/**
+	 * 获取缩减版的字符串。如果字符串的长度超过了参数的长度，则只截取前len个
+	 * 
+	 * @param str
+	 * @param len
+	 * @return
+	 */
+	public static String getStrSummary(String str, int len) {
+		if (str == null) {
+			return "NULL";
+		} else {
+			if (str.length() < len) {
+				return str;
+			} else {
+				return String.format("%s...(%d)", str.substring(0, len), str.length());
+			}
+		}
+	}
+
 }

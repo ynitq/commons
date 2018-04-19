@@ -18,6 +18,24 @@ import com.cfido.commons.utils.web.WebUtils;
  */
 public class WebContextHolderHelper {
 
+	public static String getBasePath() {
+		return WebUtils.getFullPath(getRequest(), null);
+	}
+
+	/**
+	 * 获得用户的ip
+	 * 
+	 * @return
+	 */
+	public static String getRemoteIp() {
+		HttpServletRequest request = getRequest();
+		if (request != null) {
+			return WebUtils.findRealRemoteAddr(request);
+		} else {
+			return null;
+		}
+	}
+
 	/**
 	 * 从 ThreadLocal 中 获取 HttpServletRequest
 	 */
@@ -28,6 +46,22 @@ public class WebContextHolderHelper {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * 获得全路径
+	 * 
+	 * @param needQueryString
+	 *            是否需要加上 ?后面的内容
+	 * @return
+	 */
+	public static String getRequestURL(boolean needQueryString) {
+
+		HttpServletRequest request = getRequest();
+		if (request != null) {
+			return WebUtils.getRequestURL(request, needQueryString);
+		}
+		return null;
 	}
 
 	/**
@@ -45,20 +79,6 @@ public class WebContextHolderHelper {
 	private static ServletRequestAttributes getServletRequestAttributes() {
 		ServletRequestAttributes res = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		return res;
-	}
-
-	/**
-	 * 获得用户的ip
-	 * 
-	 * @return
-	 */
-	public static String getRemoteIp() {
-		HttpServletRequest request = getRequest();
-		if (request != null) {
-			return WebUtils.findRealRemoteAddr(request);
-		} else {
-			return null;
-		}
 	}
 
 	/**
@@ -97,112 +117,6 @@ public class WebContextHolderHelper {
 				request.getSession().setAttribute(name, value);
 			}
 		}
-	}
-
-	/**
-	 * 获得全路径
-	 * 
-	 * @param needQueryString
-	 *            是否需要加上 ?后面的内容
-	 * @return
-	 */
-	public static String getRequestURL(boolean needQueryString) {
-
-		HttpServletRequest request = getRequest();
-		if (request != null) {
-			StringBuilder sb = new StringBuilder(request.getRequestURL());
-
-			if (needQueryString) {
-
-				String queryString = request.getQueryString();
-				if (StringUtils.hasText(queryString)) {
-					sb.append("?").append(queryString);
-				}
-			}
-
-			return sb.toString();
-		}
-		return null;
-
-	}
-
-	/**
-	 * 获得全Uri路径，包含queryString
-	 * 
-	 * @return
-	 */
-	public static String getRequestURIAndQueryString() {
-
-		HttpServletRequest request = getRequest();
-		if (request != null) {
-			StringBuilder sb = new StringBuilder(request.getRequestURI());
-
-			String queryString = request.getQueryString();
-			if (StringUtils.hasText(queryString)) {
-				sb.append("?").append(queryString);
-			}
-
-			return sb.toString();
-		}
-		return null;
-
-	}
-
-	/**
-	 * 获得全路径， 默认是带queryString
-	 */
-	public static String getRequestURL() {
-		return getRequestURL(true);
-	}
-
-	public static String getBasePath() {
-		return getFullPath(null);
-	}
-
-	/**
-	 * 获得全路径
-	 * 
-	 * @param path
-	 *            相对路径
-	 * @return
-	 */
-	public static String getFullPath(String path) {
-		HttpServletRequest request = getRequest();
-		if (request == null) {
-			return null;
-		}
-
-		StringBuffer url = new StringBuffer();
-		String scheme = request.getScheme();
-		int port = request.getServerPort();
-		if (port < 0)
-			port = 80; // Work around java.net.URL bug
-
-		// http或者https
-		url.append(scheme);
-		url.append("://");
-
-		url.append(request.getServerName());// xxx.com
-
-		if ((scheme.equals("http") && (port != 80))
-				|| (scheme.equals("https") && (port != 443))) {
-			// 如果不是默认端口，需要加上端口
-			url.append(':');
-			url.append(port);
-		}
-
-		String contextPath = request.getContextPath();
-		if (StringUtils.hasText(contextPath)) {
-			url.append(contextPath);
-		}
-
-		if (StringUtils.hasText(path)) {
-			if (!path.startsWith("/")) {
-				url.append('/');
-			}
-			url.append(path);
-		}
-		return url.toString();
 	}
 
 }

@@ -97,9 +97,7 @@ public class ApiController {
 			HttpServletResponse resp) {
 
 		/** Ajax跨域header */
-		resp.setHeader("Cache-Control", "no-cache");
-		resp.setHeader("Access-Control-Allow-Origin", "*");
-		resp.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+		WebUtils.addCrossDomainHeader(resp, req);
 
 		ApiMethodInfo<BaseResponse> methodInfo = this.apiMapContainer.findApiMethod(infName, methodName);
 

@@ -10,17 +10,33 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
+import com.cfido.commons.utils.utils.StringUtilsEx;
+
+/**
+ * <pre>
+ * 常用的和request和response相关的工具
+ * </pre>
+ * 
+ * @author 梁韦江
+ * 
+ */
 public class WebUtils {
 	private final static Log log = LogFactory.getLog(WebUtils.class);
 
+	/**
+	 * 获取访问者的ip
+	 */
 	public static String findRealRemoteAddr(HttpServletRequest request) {
+		Assert.notNull(request, "request 参数不能为空");
 
 		String ip = request.getHeader("x-real-ip");
 		if (StringUtils.isEmpty(ip)) {
@@ -37,26 +53,6 @@ public class WebUtils {
 		}
 
 		return ip;
-	}
-
-
-	/**
-	 * 或者缩减版的字符串。如果字符串的长度超过了参数的长度，则只截取前len个
-	 * 
-	 * @param str
-	 * @param len
-	 * @return
-	 */
-	private static String getStrSummary(String str, int len) {
-		if (str == null) {
-			return "NULL";
-		} else {
-			if (str.length() < len) {
-				return str;
-			} else {
-				return String.format("%s...(%d)", str.substring(0, len), str.length());
-			}
-		}
 	}
 
 	/**
@@ -111,6 +107,8 @@ public class WebUtils {
 	 * @return
 	 */
 	public static Map<String, String> getParamsFromRequest(HttpServletRequest request) {
+		Assert.notNull(request, "request 参数不能为空");
+
 		// 获取支付宝POST过来反馈信息
 		Map<String, String> params = new HashMap<>();
 		Enumeration<String> e = request.getParameterNames();
@@ -127,10 +125,112 @@ public class WebUtils {
 				} else {
 					first = false;
 				}
-				buff.append(getStrSummary(values[i], 20));
+				buff.append(StringUtilsEx.getStrSummary(values[i], 20));
 			}
 			params.put(name, buff.toString());
 		}
 		return params;
 	}
+
+	/**
+	 * 获取 http://mydomain.com:7000
+	 */
+	public static String getSchemeAndServerName(HttpServletRequest request) {
+		Assert.notNull(request, "request 参数不能为空");
+
+		StringBuffer url = new StringBuffer();
+		String scheme = request.getScheme();
+		int port = request.getServerPort();
+
+		if (port < 0) {
+			if (scheme.equals("http")) {
+				port = 80;
+			} else {
+				port = 443;
+			}
+		}
+
+		// http或者https
+		url.append(scheme);
+		url.append("://");
+
+		url.append(request.getServerName());// xxx.com
+
+		if ((scheme.equals("http") && (port != 80)) || (scheme.equals("https") && (port != 443))) {
+			// 如果不是默认端口，需要加上端口
+			url.append(':');
+			url.append(port);
+		}
+		return url.toString();
+
+	}
+
+	/**
+	 * 获得全路径
+	 */
+	public static String getFullPath(HttpServletRequest request, String path) {
+		Assert.notNull(request, "request 参数不能为空");
+
+		StringBuilder url = new StringBuilder();
+
+		// https://xxx.com:7080
+		url.append(getSchemeAndServerName(request));
+
+		// 增加 contextPath
+		String contextPath = request.getContextPath();
+		if (StringUtils.hasText(contextPath)) {
+			url.append(contextPath);
+		}
+
+		// 补充后面的路径
+		if (StringUtils.hasText(path)) {
+			if (!path.startsWith("/")) {
+				url.append('/');
+			}
+			url.append(path);
+		}
+		return url.toString();
+	}
+
+	/**
+	 * 为ajax 设置跨域的头
+	 */
+	public static void addCrossDomainHeader(HttpServletResponse response, HttpServletRequest request) {
+		Assert.notNull(request, "request 参数不能为空");
+		Assert.notNull(response, "response 参数不能为空");
+
+		/** Ajax跨域header */
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "*");
+		response.setHeader("Access-Control-Allow-Headers", "*");
+	}
+
+	/**
+	 * 获得全路径
+	 * 
+	 * @param needQueryString
+	 *            是否需要加上 ?后面的内容
+	 * @return
+	 */
+	public static String getRequestURL(HttpServletRequest request, boolean needQueryString) {
+		Assert.notNull(request, "request 参数不能为空");
+
+		if (request != null) {
+			StringBuilder sb = new StringBuilder(request.getRequestURL());
+
+			if (needQueryString) {
+
+				String queryString = request.getQueryString();
+				if (StringUtils.hasText(queryString)) {
+					sb.append("?").append(queryString);
+				}
+			}
+
+			return sb.toString();
+		}
+		return null;
+
+	}
+
 }

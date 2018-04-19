@@ -31,7 +31,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.apiExceptions.IdNotFoundException;
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiExceptions.SimpleApiException;
@@ -337,7 +336,7 @@ public class DictCoreService {
 
 		List<DictAttachmentVo> voList = new LinkedList<>();
 		for (DictAttachmentRow row : listAll) {
-			String basePath = WebContextHolderHelper.getFullPath(null);
+			String basePath = WebContextHolderHelper.getBasePath();
 			String thumbPostfix = this.imageUploadService.getThumbPostfix();
 
 			DictAttachmentVo vo = new DictAttachmentVo();
@@ -379,8 +378,7 @@ public class DictCoreService {
 		return listAll;
 	}
 
-	public String js() throws TemplateException, IOException {
-
+	public Map<String, String> toJsonMap() {
 		List<DictXmlRow> srcList = this.getAllFromMap();
 
 		// 将数据转化成为map,其实就是js中的object
@@ -396,8 +394,10 @@ public class DictCoreService {
 			}
 			jsonMap.put(row.getKey(), value);
 		}
-		return JSON.toJSONString(jsonMap, true);
+
+		return jsonMap;
 	}
+
 
 	/**
 	 * 根据key返回key对应的原始文本，不做html转化
