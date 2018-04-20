@@ -38,7 +38,8 @@ public class WhereBuilder {
 
 	public final static String OPT_LIKE = "like";
 
-	private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory.getLog(WhereBuilder.class);
+	private static final org.apache.commons.logging.Log log = org.apache.commons.logging.LogFactory
+			.getLog(WhereBuilder.class);
 
 	/**
 	 * 最常用的，只有一个参数
@@ -60,6 +61,20 @@ public class WhereBuilder {
 	 */
 	public static WhereBuilder create(Object form, String wherePrefix) {
 		WhereBuilder builder = new WhereBuilder(form, wherePrefix);
+		return builder;
+	}
+
+	/**
+	 * app server用的最多的，那边的where前缀是 deleted=true,并设置为 jpa风格
+	 * 
+	 * @param form
+	 * @param wherePrefix
+	 * @return
+	 */
+	public static WhereBuilder create(Object form, String wherePrefix, boolean jpa) {
+		JPA_STYLE = jpa;
+		WhereBuilder builder = new WhereBuilder(form, wherePrefix);
+		JPA_STYLE = false;// 恢复默认false
 		return builder;
 	}
 
@@ -176,8 +191,7 @@ public class WhereBuilder {
 
 				where.append(" and ").append(fieldName);
 
-				if (m.getReturnType() == Integer.class
-						&& Integer.parseInt(value.toString()) == INT_VALUE_IS_NULL) {
+				if (m.getReturnType() == Integer.class && Integer.parseInt(value.toString()) == INT_VALUE_IS_NULL) {
 					// 整形要特殊处理，可以条件为is null时
 					where.append(" is null ");
 				} else {
@@ -252,7 +266,6 @@ public class WhereBuilder {
 
 					// 如果是字符串行，要特别检测一下是否声明是 like的操作符
 					if (OPT_LIKE.equals(optStr)) {
-
 
 						// 将所有的"%"去掉，避免用户在输入的字符串中有%号时，可能导致的全表扫描问题
 						String escapedValue = processLikeParam(old);
