@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.security.CommonAdminWebUser;
 import com.cfido.commons.spring.security.IWebUserProvider;
 
@@ -17,13 +16,13 @@ import com.cfido.commons.spring.security.IWebUserProvider;
  */
 @Service
 @ConditionalOnProperty(prefix = "monitorClient", name = "enableCenterUser", havingValue = "true", matchIfMissing = false)
-public class CenterCommonAdminWebUserProvider implements IWebUserProvider {
+public class CenterCommonAdminWebUserProvider implements IWebUserProvider<CommonAdminWebUser> {
 
 	@Autowired
 	private CenterWebUserProvider service;
 
 	@Override
-	public Class<? extends IWebUser> getSupportUserClassNames() {
+	public Class<CommonAdminWebUser> getSupportUserClassNames() {
 		return CommonAdminWebUser.class;
 	}
 

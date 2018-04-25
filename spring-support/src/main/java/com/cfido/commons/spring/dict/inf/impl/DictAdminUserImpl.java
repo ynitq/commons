@@ -70,7 +70,8 @@ public class DictAdminUserImpl implements IDictAdminUser {
 		log.debug("字典管理用户 {} 登录后台", form.getAccount());
 
 		// 寻找用户认证供应者
-		IWebUserProvider userProvider = this.rememberMeUserHandler.getUserProvider(CommonAdminWebUser.class);
+		IWebUserProvider<CommonAdminWebUser> userProvider = this.rememberMeUserHandler
+				.getUserProvider(CommonAdminWebUser.class);
 		if (userProvider != null) {
 			// 如果存在，就尝试获取用户
 			IWebUser user = userProvider.loadUserByAccount(form.getAccount());

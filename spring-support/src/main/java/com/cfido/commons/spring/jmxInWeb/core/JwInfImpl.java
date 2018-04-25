@@ -10,7 +10,6 @@ import com.cfido.commons.beans.apiServer.impl.CommonSuccessResponse;
 import com.cfido.commons.beans.exceptions.security.InvalidPasswordException;
 import com.cfido.commons.beans.form.LoginForm;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
-import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.jmxInWeb.inf.IJmxInWeb;
 import com.cfido.commons.spring.jmxInWeb.inf.form.JwChangeAttrForm;
 import com.cfido.commons.spring.jmxInWeb.inf.form.JwInvokeOptForm;
@@ -55,10 +54,11 @@ public class JwInfImpl implements IJmxInWeb {
 		log.debug("管理用户 {} 登录后台", form.getAccount());
 
 		// 寻找用户认证供应者
-		IWebUserProvider userProvider = this.rememberMeUserHandler.getUserProvider(CommonAdminWebUser.class);
+		IWebUserProvider<CommonAdminWebUser> userProvider = this.rememberMeUserHandler
+				.getUserProvider(CommonAdminWebUser.class);
 		if (userProvider != null) {
 			// 如果存在，就尝试获取用户
-			IWebUser user = userProvider.loadUserByAccount(form.getAccount());
+			CommonAdminWebUser user = userProvider.loadUserByAccount(form.getAccount());
 			if (user != null) {
 				// 如过能获取用户,就检查密码
 				PasswordEncoder.checkPassword(form.getPassword(), user.getEncryptedPassword());

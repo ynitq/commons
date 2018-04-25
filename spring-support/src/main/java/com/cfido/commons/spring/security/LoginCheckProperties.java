@@ -89,15 +89,15 @@ public class LoginCheckProperties {
 	 * 
 	 * @author 梁韦江 2016年11月16日
 	 */
-	public class AdminUserProvider implements IWebUserProvider {
+	public class AdminUserProvider implements IWebUserProvider<CommonAdminWebUser> {
 
 		@Override
-		public Class<? extends IWebUser> getSupportUserClassNames() {
+		public Class<CommonAdminWebUser> getSupportUserClassNames() {
 			return CommonAdminWebUser.class;
 		}
 
 		@Override
-		public IWebUser loadUserByAccount(String username) {
+		public CommonAdminWebUser loadUserByAccount(String username) {
 			Admin admin = LoginCheckProperties.this.admin;
 			if (admin.isValid()) {
 				return new CommonAdminWebUser(admin);

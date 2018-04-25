@@ -46,7 +46,7 @@ public class RememberMeUserHandler {
 	/** 管理用户是否是在配置文件中定义的 */
 	private boolean adminInPorp;
 
-	private final Map<Class<? extends IWebUser>, IWebUserProvider> userProviderMap = new HashMap<>();
+	private final Map<Class<? extends IWebUser>, IWebUserProvider<?>> userProviderMap = new HashMap<>();
 
 	protected static class CookieValue {
 		String account;
@@ -61,10 +61,10 @@ public class RememberMeUserHandler {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@PostConstruct
 	protected void init() {
-		Map<String, IWebUserProvider> map = this.applicationContext
-				.getBeansOfType(IWebUserProvider.class);
+		Map<String, IWebUserProvider> map = this.applicationContext.getBeansOfType(IWebUserProvider.class);
 
 		for (IWebUserProvider userProvider : map.values()) {
 			this.addUserProvider(userProvider);
@@ -150,7 +150,7 @@ public class RememberMeUserHandler {
 	 * @return
 	 */
 	public <T extends IWebUser> T getUser(HttpServletRequest request, HttpServletResponse response,
-			Class<? extends IWebUser> clazz) {
+			Class<T> clazz) {
 
 		if (!this.isEnable()) {
 			return null;
@@ -172,10 +172,10 @@ public class RememberMeUserHandler {
 
 		if (value != null) {
 			// 根据用户class寻找这个用户类型的数据提供者
-			IWebUserProvider userProvider = this.userProviderMap.get(clazz);
+			IWebUserProvider<T> userProvider = this.getUserProvider(clazz);
 			if (userProvider != null) {
 				// 如果能找到
-				IWebUser tmpUser = userProvider.loadUserByAccount(value.account);
+				T tmpUser = userProvider.loadUserByAccount(value.account);
 				user = this.check(clazz, tmpUser, value);
 			}
 		}
@@ -313,11 +313,16 @@ public class RememberMeUserHandler {
 	/**
 	 * 判断是否已经存在了一种用户类型的属性提供者
 	 */
-	public IWebUserProvider getUserProvider(Class<? extends IWebUser> clazz) {
-		return this.userProviderMap.get(clazz);
+	@SuppressWarnings("unchecked")
+	public <T extends IWebUser> IWebUserProvider<T> getUserProvider(Class<T> clazz) {
+		Assert.notNull(clazz, "clazz 不能为空 ");
+
+		return (IWebUserProvider<T>) this.userProviderMap.get(clazz);
 	}
 
-	public void addUserProvider(IWebUserProvider userProvider) {
+	public void addUserProvider(IWebUserProvider<?> userProvider) {
+		Assert.notNull(userProvider, "userProvider 不能为空 ");
+
 		Class<? extends IWebUser> clazz = userProvider.getSupportUserClassNames();
 		this.userProviderMap.put(clazz, userProvider);
 

@@ -9,12 +9,12 @@ import com.cfido.commons.loginCheck.IWebUser;
  * 
  * @author 梁韦江 2016年8月23日
  */
-public interface IWebUserProvider {
+public interface IWebUserProvider<T extends IWebUser> {
 
 	/**
 	 * 需要声明这个类支持那些WebUser类
 	 */
-	Class<? extends IWebUser> getSupportUserClassNames();
+	Class<T> getSupportUserClassNames();
 
 	/**
 	 * 根据用户名获得用户
@@ -23,5 +23,5 @@ public interface IWebUserProvider {
 	 *            账号
 	 * @return 如果有用户，就返回用户，没有就返回null
 	 */
-	IWebUser loadUserByAccount(String account);
+	T loadUserByAccount(String account);
 }

@@ -21,7 +21,7 @@ import com.cfido.commons.spring.security.IWebUserProvider;
  */
 @Service
 @ConditionalOnProperty(prefix = "monitorClient", name = "enableCenterUser", havingValue = "true", matchIfMissing = false)
-public class CenterWebUserProvider implements IWebUserProvider {
+public class CenterWebUserProvider implements IWebUserProvider<CenterWebUser> {
 
 	@Autowired
 	private MonitorClientService service;

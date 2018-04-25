@@ -59,7 +59,7 @@ public class LoginContext {
 	 * @param clazz
 	 * @return
 	 */
-	public <T extends IWebUser> T getUser(Class<? extends IWebUser> clazz) {
+	public <T extends IWebUser> T getUser(Class<T> clazz) {
 		HttpServletRequest request = WebContextHolderHelper.getRequest();
 		HttpServletResponse response = WebContextHolderHelper.getResponse();
 
