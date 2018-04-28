@@ -1,5 +1,7 @@
 package com.cfido.commons.utils.web;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
@@ -230,7 +232,21 @@ public class WebUtils {
 			return sb.toString();
 		}
 		return null;
+	}
 
+	/** 读取request中post方式提交的数据，只支持utf-8 */
+	public static byte[] readRequestPostBody(HttpServletRequest request) throws IOException {
+		int clength = request.getContentLength();
+		if (clength > 0) {
+			byte[] bytes = new byte[clength];
+			DataInputStream dataIs = new DataInputStream(request.getInputStream());
+
+			dataIs.readFully(bytes);
+			dataIs.close();
+			return bytes;
+		}
+
+		return new byte[0];
 	}
 
 }

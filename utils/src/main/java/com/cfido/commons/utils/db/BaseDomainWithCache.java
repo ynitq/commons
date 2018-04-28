@@ -186,6 +186,7 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 	 * @return
 	 * @throws DaoException
 	 */
+	@Override
 	public PO findOne(String sqlStartWithFrom, Object... params) throws DaoException {
 		List<PO> list = this.findPo(sqlStartWithFrom, idFieldName, IPageForm.ONE, params);
 		if (list != null && list.size() > 0) {
@@ -503,10 +504,10 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 		}
 
 		if (this.isNeedCache()) {
-			String nameForPo = String.format("%s_po", this.entityClass.getSimpleName());
+			String nameForPo = String.format("dbCache:%s:po", this.entityClass.getSimpleName());
 			this.cacheOfPo = this.cacheManager.getCache(nameForPo);
 
-			String nameForList = String.format("%s_list", this.entityClass.getSimpleName());
+			String nameForList = String.format("dbCache:%s:list", this.entityClass.getSimpleName());
 			this.cacheOfList = this.cacheManager.getCache(nameForList);
 		}
 	}
