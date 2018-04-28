@@ -3,9 +3,11 @@ package com.cfido.commons.utils.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfGetter;
+
 /**
  * 通过http协议抓起页面的工具类
  * 
@@ -55,7 +59,8 @@ public class HttpUtil implements IHttpUtil {
 	 * 统一为 request()
 	 */
 	@Deprecated
-	public static String getContentUseGet(String urlStr, Map<String, Object> paramMap) throws IOException, HttpUtilException {
+	public static String getContentUseGet(String urlStr, Map<String, Object> paramMap)
+			throws IOException, HttpUtilException {
 
 		return instance.doExecute(urlStr, paramMap, false, null);
 	}
@@ -83,8 +88,8 @@ public class HttpUtil implements IHttpUtil {
 	 * 统一为 request()
 	 */
 	@Deprecated
-	public static String getContentUseHttpClientForRESTFul(String urlStr, Map<String, Object> paramMap, boolean postMethod)
-			throws IOException, HttpUtilException {
+	public static String getContentUseHttpClientForRESTFul(String urlStr, Map<String, Object> paramMap,
+			boolean postMethod) throws IOException, HttpUtilException {
 
 		return instance.doExecute(urlStr, paramMap, postMethod, null);
 	}
@@ -103,8 +108,8 @@ public class HttpUtil implements IHttpUtil {
 	 * @throws IOException
 	 * @throws HttpUtilException
 	 */
-	public static String request(String urlStr, Map<String, Object> paramMap, boolean postMethod, Map<String, String> header)
-			throws IOException, HttpUtilException {
+	public static String request(String urlStr, Map<String, Object> paramMap, boolean postMethod,
+			Map<String, String> header) throws IOException, HttpUtilException {
 
 		return instance.doExecute(urlStr, paramMap, postMethod, header);
 	}
@@ -121,8 +126,30 @@ public class HttpUtil implements IHttpUtil {
 	 * @throws HttpUtilException
 	 * @throws IOException
 	 */
-	public static <T> T requestJson(Class<T> responseClass, String url, Map<String, Object> paramMap, boolean postMethod,
+	public static <T> T requestJson(Class<T> responseClass, String url, Map<String, Object> paramMap,
+			boolean postMethod, Map<String, String> header) throws HttpUtilException, IOException {
+		return instance.executeJson(responseClass, url, paramMap, postMethod, header);
+	}
+
+	public static <T> T requestJsonFromForm(Class<T> responseClass, String url, Object form, boolean postMethod,
 			Map<String, String> header) throws HttpUtilException, IOException {
+
+		Map<String, Object> paramMap = new HashMap<>();
+		if (form != null) {
+
+			List<MethodInfoOfGetter> methods = MethodUtil.findGetter(form.getClass());
+			for (MethodInfoOfGetter m : methods) {
+				Object value = null;
+				try {
+					value = m.getOriginMethod().invoke(form);
+					if (value != null) {
+						paramMap.put(m.getPropName(), value);
+					}
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				}
+			}
+		}
+
 		return instance.executeJson(responseClass, url, paramMap, postMethod, header);
 	}
 
@@ -247,8 +274,8 @@ public class HttpUtil implements IHttpUtil {
 	 * @throws IOException
 	 */
 	@Override
-	public String doExecute(String url, Map<String, Object> paramMap, boolean postMethod,
-			Map<String, String> header) throws HttpUtilException, IOException {
+	public String doExecute(String url, Map<String, Object> paramMap, boolean postMethod, Map<String, String> header)
+			throws HttpUtilException, IOException {
 
 		List<NameValuePair> paramList = mapToList(paramMap);
 
@@ -315,8 +342,7 @@ public class HttpUtil implements IHttpUtil {
 	 * @throws HttpUtilException
 	 */
 	public String executePostFile(String url, String fieldName, File file, Map<String, Object> paramMap,
-			Map<String, String> header)
-			throws IOException, HttpUtilException {
+			Map<String, String> header) throws IOException, HttpUtilException {
 
 		CloseableHttpClient httpClient = this.createClient(url);
 
@@ -365,11 +391,8 @@ public class HttpUtil implements IHttpUtil {
 
 	public RequestConfig getRequestConfig() {
 		if (this.requestConfig == null) {
-			requestConfig = RequestConfig.custom()
-					.setSocketTimeout(TIMEOUT)
-					.setConnectTimeout(TIMEOUT)
-					.setConnectionRequestTimeout(TIMEOUT)
-					.build();
+			requestConfig = RequestConfig.custom().setSocketTimeout(TIMEOUT).setConnectTimeout(TIMEOUT)
+					.setConnectionRequestTimeout(TIMEOUT).build();
 		}
 		return this.requestConfig;
 	}
@@ -418,8 +441,7 @@ public class HttpUtil implements IHttpUtil {
 				TrustStrategy trustStrategy = new TrustStrategy() {
 
 					@Override
-					public boolean isTrusted(X509Certificate[] chain, String authType)
-							throws CertificateException {
+					public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 						// 信任所有
 						return true;
 					}
