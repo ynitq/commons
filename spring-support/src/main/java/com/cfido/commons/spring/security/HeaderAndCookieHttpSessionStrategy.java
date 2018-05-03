@@ -32,7 +32,8 @@ public class HeaderAndCookieHttpSessionStrategy implements HttpSessionStrategy {
 
 	public static final String ID_ATTR_NAME = HeaderAndCookieHttpSessionStrategy.class.getName() + ".sessionId";
 
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(HeaderAndCookieHttpSessionStrategy.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
+			.getLogger(HeaderAndCookieHttpSessionStrategy.class);
 
 	private final CookieSerializer cookieSerializer = new DefaultCookieSerializer();
 
@@ -71,21 +72,25 @@ public class HeaderAndCookieHttpSessionStrategy implements HttpSessionStrategy {
 	}
 
 	@Override
-	public void onNewSession(Session session, HttpServletRequest request,
-			HttpServletResponse response) {
+	public void onNewSession(Session session, HttpServletRequest request, HttpServletResponse response) {
 
 		String sessionId = session.getId();
 
 		log.debug("onNewSession时，保存SessionId:{} 到 header和 cookie", sessionId);
 
+		String old = response.getHeader("Access-Control-Expose-Headers");
+		if (StringUtils.hasText(old)) {
+			response.setHeader("Access-Control-Expose-Headers", "*");
+		} else {
+			response.setHeader("Access-Control-Expose-Headers", HEADER_NAME);
+		}
 		response.setHeader(HEADER_NAME, sessionId);
 
 		this.cookieSerializer.writeCookieValue(new CookieValue(request, response, sessionId));
 	}
 
 	@Override
-	public void onInvalidateSession(HttpServletRequest request,
-			HttpServletResponse response) {
+	public void onInvalidateSession(HttpServletRequest request, HttpServletResponse response) {
 
 		log.debug("onInvalidateSession时，删除SessionId");
 
