@@ -44,31 +44,41 @@ public class HeaderAndCookieHttpSessionStrategy implements HttpSessionStrategy {
 
 		if (StringUtils.isEmpty(sessionId)) {
 			// 如果找不到，就从header中找
-			sessionId = request.getHeader(HEADER_NAME);
-
-			if (StringUtils.isEmpty(sessionId)) {
-				// 如果header中没有，就在cookie中找
-				sessionId = this.getSessionIdFromCookie(request);
-
-				if (log.isDebugEnabled()) {
-					if (StringUtils.isEmpty(sessionId)) {
-						log.debug("无法在Header和Cookie中找到SessionId");
-					} else {
-						log.debug("在Cookie中找到 SessionId:{}", sessionId);
-					}
-				}
-
-			} else {
-				log.debug("在Header中找到 SessionId:{}", sessionId);
-			}
+			sessionId = this.findSessionIdFromRequest(request);
 
 			if (!StringUtils.isEmpty(sessionId)) {
 				// 如果在header或者cookie中找到了，就保存到request中
+				log.debug("找到 sessionId ，保存到request.attribute中");
 				request.setAttribute(ID_ATTR_NAME, sessionId);
 			}
 		}
 
 		return sessionId;
+	}
+
+	private String findSessionIdFromRequest(HttpServletRequest request) {
+		// 尝试header
+		String sessionId = request.getHeader(HEADER_NAME);
+		if (StringUtils.hasText(sessionId)) {
+			log.debug("在Headere中找到 SessionId:{}", sessionId);
+			return sessionId;
+		}
+
+		// 尝试参数
+		sessionId = request.getParameter(HEADER_NAME);
+		if (StringUtils.hasText(sessionId)) {
+			log.debug("在参数中找到 SessionId:{}", sessionId);
+			return sessionId;
+		}
+
+		// 尝试cookie
+		sessionId = this.getSessionIdFromCookie(request);
+		if (StringUtils.hasText(sessionId)) {
+			log.debug("在Cookie中找到 SessionId:{}", sessionId);
+			return sessionId;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -78,12 +88,7 @@ public class HeaderAndCookieHttpSessionStrategy implements HttpSessionStrategy {
 
 		log.debug("onNewSession时，保存SessionId:{} 到 header和 cookie", sessionId);
 
-		String old = response.getHeader("Access-Control-Expose-Headers");
-		if (StringUtils.hasText(old)) {
-			response.setHeader("Access-Control-Expose-Headers", "*");
-		} else {
-			response.setHeader("Access-Control-Expose-Headers", HEADER_NAME);
-		}
+		response.setHeader("Access-Control-Expose-Headers", HEADER_NAME);
 		response.setHeader(HEADER_NAME, sessionId);
 
 		this.cookieSerializer.writeCookieValue(new CookieValue(request, response, sessionId));
