@@ -96,8 +96,6 @@ public class ApiController {
 	public String invoke(@PathVariable String infName, @PathVariable String methodName, HttpServletRequest req,
 			HttpServletResponse resp) {
 
-		log.warn("请求方式:{}",req.getMethod());
-		
 		/** Ajax跨域header */
 		WebUtils.addCrossDomainHeader(resp, req);
 
