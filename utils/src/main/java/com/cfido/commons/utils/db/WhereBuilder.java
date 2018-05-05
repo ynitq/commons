@@ -196,12 +196,18 @@ public class WhereBuilder {
 					where.append(" is null ");
 				} else {
 					// 如果条件不是 is null，就拼接sql
-					where.append(" ").append(optStr).append(" ?");
-
-					if (JPA_STYLE) {
-						// jpa风格的sql
-						where.append(jpaStyleIndex);
-						jpaStyleIndex++;
+					if ("in".equalsIgnoreCase(optStr)) {
+						// in 操作是 "id in (?1)" 需要加括号
+						// 特别注意事项，in 的参数最好是Set，不能是List<Integer>类型，Integer是个特殊的例子
+						where.append(" in (");
+						where.append(this.getWhereParamStr());
+						where.append(") ");
+					} else {
+						// 正常的操作符是 "id=?1"
+						where.append(" ");
+						where.append(optStr);
+						where.append(" ");
+						where.append(this.getWhereParamStr());
 					}
 
 					// 将值加入参数列表
@@ -209,6 +215,16 @@ public class WhereBuilder {
 				}
 			}
 		}
+	}
+
+	private String getWhereParamStr() {
+		String res = "?";
+		if (JPA_STYLE) {
+			// jpa风格的sql
+			res = res + jpaStyleIndex;
+			jpaStyleIndex++;
+		}
+		return res;
 	}
 
 	/**
