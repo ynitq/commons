@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -94,6 +95,7 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	 * @throws BaseApiException
 	 *             逻辑错误
 	 */
+	@Transactional
 	public OBJ create(PO po) throws BaseApiException {
 
 		this.checkBeforeCreate(po);
@@ -251,6 +253,7 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	 *            要保存的数据
 	 * @param cleanListCache
 	 */
+	@Transactional
 	public void update(OBJ obj, boolean cleanListCache) throws BaseApiException {
 		if (obj == null) {
 			return;
@@ -277,6 +280,7 @@ public abstract class BaseObjFactory<OBJ extends BasePoObj<PO>, PO, ID extends S
 	 * @throws BaseApiException
 	 *             逻辑错误
 	 */
+	@Transactional
 	public void delete(OBJ obj) throws BaseApiException {
 		if (obj == null) {
 			return;
