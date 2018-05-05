@@ -58,18 +58,19 @@ public class BinderEditorSupport {
 		public Date toValue(MethodInfoOfSetter m, String text) {
 			// 日期的处理方式
 			if (StringUtils.hasText(text)) {
+
+				// 根据输入的长宽，判断应该用什么日期格式
+				String dateFormat = BinderUtil.DATE_FORMAT; // 默认 yyyy-MM-dd
+				if (text.length() == BinderUtil.DATE_FORMAT1.length()) {
+					dateFormat = BinderUtil.DATE_FORMAT1; // yyyy-MM-dd HH:mm
+				} else if (text.length() == BinderUtil.DATE_FORMAT2.length()) {
+					dateFormat = BinderUtil.DATE_FORMAT2; // yyyy-MM-dd HH:mm:ss
+				}
+
 				try {
-					if (text.length() == BinderUtil.DATE_FORMAT.length()) {
-						// 如果是yyyy-MM-dd格式
-						SimpleDateFormat sdf = new SimpleDateFormat(BinderUtil.DATE_FORMAT);
-						Date date = sdf.parse(text);
-						return date;
-					} else {
-						// 如果不是默认格式，就当是 yyyy-MM-dd HH:mm 格式, 长度不对就只能是天灾人祸了
-						SimpleDateFormat sdf = new SimpleDateFormat(BinderUtil.DATE_FORMAT_HAS_TIME);
-						Date date = sdf.parse(text);
-						return date;
-					}
+					SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+					Date date = sdf.parse(text);
+					return date;
 				} catch (Exception e) {
 					// 如果解析出错，就返回null
 				}
