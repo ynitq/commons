@@ -126,7 +126,7 @@ public class MockDataCreater {
 					return null;
 				}
 
-				if (ClassUtil.isList(returnCalss)) {
+				if (ClassUtil.isCollection(returnCalss)) {
 					if (this.deep < DEEP_LIMIT) {
 						// 如果是list
 						// 如果需要返回一个list
