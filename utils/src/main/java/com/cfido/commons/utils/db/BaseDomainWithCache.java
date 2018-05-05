@@ -625,11 +625,19 @@ public abstract class BaseDomainWithCache<PO, ID extends Serializable> implement
 
 	/**
 	 * po发送变更时，要将整个list都清空，因为我们没有办法知道那些查询会发生变化
-	 * 
 	 */
-	void resetListCache() {
-		if (this.cacheOfList != null)
+	public void resetListCache() {
+		if (this.cacheOfList != null) {
 			this.cacheOfList.clear();// 清除List的缓存
+		}
+	}
+
+	/** 清空所有的cache，用于在批量删除以后 */
+	public void resetAllCache() {
+		if (this.cacheOfPo != null) {
+			this.cacheOfPo.clear();
+		}
+		this.resetListCache();
 	}
 
 	@Override
