@@ -278,7 +278,7 @@ public class ClassUtil {
 		if (c.isArray()) {
 			// 如果是数组类的，返回数组的组成类型
 			return c.getComponentType();
-		} else if (isList(c)) {
+		} else if (isCollection(c)) {
 			// 如果是List类的，返回泛型的定义类型
 			Type genType = m.getGenericReturnType();
 			if (genType != null && genType instanceof ParameterizedType) {
@@ -298,9 +298,16 @@ public class ClassUtil {
 
 	}
 
-	/** 是否是一个list */
-	public static boolean isList(Class<?> clazz) {
-		return clazz.isAssignableFrom(java.util.List.class);
+	/** 是否是一个Iterator */
+	public static boolean isCollection(Class<?> clazz) {
+
+		Method m;
+		try {
+			m = clazz.getMethod("iterator");
+			return m.getReturnType() == java.util.Iterator.class;
+		} catch (NoSuchMethodException | SecurityException e) {
+		}
+		return false;
 	}
 
 	/** 保存一个类上所有字段的注解 */

@@ -22,7 +22,7 @@ public class MethodUtil {
 
 	/** 对Getter方法的包装 */
 	public class MethodInfoOfGetter extends BaseMethodInfo {
-		private boolean array;// 是否数组或者list
+		private boolean collection;// 是否数组或者list
 		private final boolean openType; // 返回的类型是否是常见内部类型
 		private Class<?> returnTypeClass; // 返回的类型
 
@@ -33,10 +33,10 @@ public class MethodUtil {
 			Class<?> compClass = ClassUtil.getMethodReturnComponentType(method);
 			if (compClass != null) {
 				// 如果是数组或者list，这用数组结构的类型作为返回类型
-				this.array = true;
+				this.collection = true;
 				this.returnTypeClass = compClass;
 			} else {
-				this.array = false;
+				this.collection = false;
 				this.returnTypeClass = method.getReturnType();
 			}
 
@@ -51,7 +51,7 @@ public class MethodUtil {
 
 		/** 返回类型是否是array */
 		public boolean isArray() {
-			return array;
+			return collection;
 		}
 
 		/** 返回类型是否是 常见类型 */
