@@ -167,6 +167,24 @@ public class WebUtils {
 
 	}
 
+	public static String getServerName(HttpServletRequest request) {
+		Assert.notNull(request, "request 参数不能为空");
+
+		StringBuffer url = new StringBuffer();
+		String scheme = request.getScheme();
+		int port = request.getServerPort();
+
+		url.append(request.getServerName());// xxx.com
+
+		if ((scheme.equals("http") && (port != 80)) || (scheme.equals("https") && (port != 443))) {
+			// 如果不是默认端口，需要加上端口
+			url.append(':');
+			url.append(port);
+		}
+		return url.toString();
+
+	}
+
 	/**
 	 * 获得全路径
 	 */

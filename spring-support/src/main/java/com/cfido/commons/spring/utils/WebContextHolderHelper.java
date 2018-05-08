@@ -22,6 +22,10 @@ public class WebContextHolderHelper {
 		return WebUtils.getFullPath(getRequest(), null);
 	}
 
+	public static String getBasePathNotHttp() {
+		return WebUtils.getServerName(getRequest());
+	}
+
 	/**
 	 * 获得用户的ip
 	 * 
