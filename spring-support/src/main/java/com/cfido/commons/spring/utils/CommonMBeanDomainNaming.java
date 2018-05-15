@@ -17,4 +17,6 @@ public interface CommonMBeanDomainNaming {
 
 	public final static String DOMAIN_SMS = "Commons短信";
 
+	public final static String DOMAIN_WECHAT = "Commons微信";
+
 }

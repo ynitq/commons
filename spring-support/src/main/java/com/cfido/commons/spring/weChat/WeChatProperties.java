@@ -13,6 +13,7 @@ import com.cfido.commons.utils.oauth.WeChatOAuthClient;
  * 
  * wechat.appId = 
  * wechat.appSecret = 
+ * wechat.jsAuth=true 激活JS安全域名认证
  * 
  * 参数在 application.properties 中配置
  * </pre>

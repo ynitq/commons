@@ -56,7 +56,7 @@ public class WeChatService {
 	@Autowired
 	private RedisTemplate<String, WechatTicketBean> jsapiTicketCache;
 
-	@Autowired
+	@Autowired(required = false)
 	private MonitorClientService monitorClient;
 
 	@Autowired
@@ -174,7 +174,9 @@ public class WeChatService {
 
 			} catch (IOException e) {
 				String msg = LogUtil.getTraceString("向微信请求jsapi ticket时，失败,", e);
-				this.monitorClient.reportMsgToServer(MonitorMsgTypeEnum.ERROR, msg);
+				if (this.monitorClient != null) {
+					this.monitorClient.reportMsgToServer(MonitorMsgTypeEnum.ERROR, msg);
+				}
 				throw new WeChatAccessFailException(e);
 			}
 		} else {
