@@ -34,7 +34,7 @@ public class WhereBuilder {
 	public final static int INT_VALUE_IS_NULL = -999;
 
 	/** 生成的sql是否是 jpa的风格 */
-	public static boolean JPA_STYLE = false;
+	public static boolean JPA_STYLE = true;
 
 	public final static String OPT_LIKE = "like";
 
@@ -72,9 +72,10 @@ public class WhereBuilder {
 	 * @return
 	 */
 	public static WhereBuilder create(Object form, String wherePrefix, boolean jpa) {
+		boolean old = JPA_STYLE;
 		JPA_STYLE = jpa;
 		WhereBuilder builder = new WhereBuilder(form, wherePrefix);
-		JPA_STYLE = false;// 恢复默认false
+		JPA_STYLE = old;// 恢复原来的值
 		return builder;
 	}
 
