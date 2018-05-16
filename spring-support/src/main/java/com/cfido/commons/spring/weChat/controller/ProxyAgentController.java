@@ -14,7 +14,6 @@ import com.cfido.commons.spring.weChat.KeyBeanInAgent;
 import com.cfido.commons.spring.weChat.KeyBeanInMaster;
 import com.cfido.commons.spring.weChat.ProxyAgentService;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient;
-import com.cfido.commons.spring.weChat.WeChatProperties;
 import com.cfido.commons.utils.web.WebUtils;
 
 /**
@@ -25,28 +24,12 @@ import com.cfido.commons.utils.web.WebUtils;
  */
 @Controller
 @RequestMapping(WeChatUrls.PREFIX)
-public class ProxyAgentController {
+public class ProxyAgentController extends BaseController {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProxyAgentController.class);
 
 	@Autowired
-	private WeChatProperties wechatProperties;
-
-	@Autowired
 	private ProxyAgentService proxyAgentService;
-
-	/**
-	 * 根据授权码向微信请求用户信息
-	 * 
-	 * @param code
-	 *            授权码
-	 */
-	private WeChatUserInfoBean getUserInfoFromWeixin(String code) throws IOException, WeChatApiException {
-		WeChatOAuthClient client = this.wechatProperties.newClient();
-		client.onAuthorizeCallback(code);
-		WeChatUserInfoBean bean = client.getUserInfoBean();
-		return bean;
-	}
 
 	/**
 	 * master回调
@@ -74,6 +57,19 @@ public class ProxyAgentController {
 		} else {
 			log.warn("收到master回调，但参数缺失。code={}, key={}", code, key);
 		}
-		return null;
+		return this.getErrorPage();
+	}
+
+	/**
+	 * 根据授权码向微信请求用户信息
+	 * 
+	 * @param code
+	 *            授权码
+	 */
+	private WeChatUserInfoBean getUserInfoFromWeixin(String code) throws IOException, WeChatApiException {
+		WeChatOAuthClient client = this.wechatProperties.newClient();
+		client.onAuthorizeCallback(code);
+		WeChatUserInfoBean bean = client.getUserInfoBean();
+		return bean;
 	}
 }

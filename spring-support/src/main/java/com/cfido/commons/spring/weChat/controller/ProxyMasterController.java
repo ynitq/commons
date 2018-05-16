@@ -18,7 +18,6 @@ import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.spring.weChat.KeyBeanInMaster;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient.SCOPE;
-import com.cfido.commons.spring.weChat.WeChatProperties;
 import com.cfido.commons.spring.weChat.WeChatRedisKey;
 import com.cfido.commons.utils.utils.StringUtilsEx;
 import com.cfido.commons.utils.web.WebUtils;
@@ -31,12 +30,9 @@ import com.cfido.commons.utils.web.WebUtils;
  */
 @Controller
 @RequestMapping(WeChatUrls.PREFIX)
-public class ProxyMasterController {
+public class ProxyMasterController extends BaseController {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProxyMasterController.class);
-
-	@Autowired
-	private WeChatProperties wechatProperties;
 
 	/** 用于保存发起方 */
 	@Autowired
@@ -59,7 +55,8 @@ public class ProxyMasterController {
 
 		if (!this.wechatProperties.getAppId().equals(appId)) {
 			// 如果appId不匹配，就直接返回
-			return null;
+			log.warn("master收到邀请微信授权的请求，但appId非法, appId={}", appId);
+			return this.getErrorPage();
 		}
 
 		// 解析出要传给微信的scope参数
@@ -70,6 +67,7 @@ public class ProxyMasterController {
 
 		// 将调用方的key和url保存下来，并获得唯一值state，用于回调
 		String state = this.saveAgent(key);
+		log.debug("master向微信发起授权请求前，保存发起方:key={}, scope={}", key, scopeEnum);
 
 		// 发送认证请求给微信，将这个唯一值传给微信
 		WeChatOAuthClient wechatOAuthClient = this.wechatProperties.newClient();
@@ -103,8 +101,7 @@ public class ProxyMasterController {
 		} else {
 			log.warn("收到了微信回调，但没有授权码，或者state值，code={}, state={}", code, state);
 		}
-
-		return null;
+		return this.getErrorPage();
 	}
 
 	private String getRedisKey(String id) {
@@ -120,8 +117,6 @@ public class ProxyMasterController {
 		String id = StringUtilsEx.randomUUID();
 		String redisKey = this.getRedisKey(id);
 		this.agentMap.opsForValue().set(redisKey, bean, 1, TimeUnit.HOURS);
-
-		log.debug("master向微信发起授权请求前，保存发起方:{}", bean.toCallBackUrl("即将获得的授权码"));
 
 		return id;
 	}

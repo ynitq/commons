@@ -33,6 +33,9 @@ public class WeChatProperties {
 	/** 公众号后台设置的回调域名 例如 http://www.rating.liangwj.com */
 	private String masterUrl;
 
+	/** 错误页面的模板 */
+	private String errorPage = "wechat/error";
+
 	public String getMasterUrl() {
 		return masterUrl;
 	}
@@ -55,6 +58,14 @@ public class WeChatProperties {
 
 	public void setAppSecret(String appSecret) {
 		this.appSecret = appSecret;
+	}
+
+	public String getErrorPage() {
+		return errorPage;
+	}
+
+	public void setErrorPage(String errorPage) {
+		this.errorPage = errorPage;
 	}
 
 	@PostConstruct
