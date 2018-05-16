@@ -1,8 +1,9 @@
-package com.cfido.commons.spring.weChatProxy.service;
+package com.cfido.commons.spring.weChat;
 
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
-import com.cfido.commons.spring.weChat.WeChatProperties;
 import com.cfido.commons.utils.oauth.WeChatOAuthClient;
 import com.cfido.commons.utils.oauth.WeChatOAuthClient.SCOPE;
 
@@ -22,6 +22,7 @@ import com.cfido.commons.utils.oauth.WeChatOAuthClient.SCOPE;
  */
 @Controller
 @RequestMapping("/wechatProxy")
+@ConditionalOnProperty(prefix = "wechat", name = "proxy", havingValue = "true", matchIfMissing = false) // 如果enable=true开开启本服务
 public class ProxyController {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProxyController.class);
@@ -30,7 +31,7 @@ public class ProxyController {
 	private WeChatProperties wechatProperties;
 
 	@Autowired
-	private CallBackUrlService callBackUrlService;
+	private ProxyCallBackUrlService callBackUrlService;
 
 	@RequestMapping("/getCode")
 	public String getCode(String state) {

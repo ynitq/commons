@@ -51,7 +51,7 @@ public class JsAuthController {
 
 	@PostConstruct
 	protected void init() {
-		log.info("激活JS接口安全域名验证功能，请在JMX中管理");
+		log.info("自动配置-微信JS安全域名验证功能，可JMX中管理");
 	}
 
 }

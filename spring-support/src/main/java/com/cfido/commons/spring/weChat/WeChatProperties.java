@@ -1,5 +1,7 @@
 package com.cfido.commons.spring.weChat;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,6 +16,10 @@ import com.cfido.commons.utils.oauth.WeChatOAuthClient;
  * wechat.appId = 
  * wechat.appSecret = 
  * wechat.jsAuth=true 激活JS安全域名认证
+ * wechat.proxy=true 激活转发服务
+ * 
+ * wechat.porxyMap.testGetCode=http://test.rating.liangwj.com/wx/callback?state=testGetCode
+ * wechat.porxyMap.testGetUserInfo=http://test.rating.liangwj.com/wx/callback?state=testGetUserInfo
  * 
  * 参数在 application.properties 中配置
  * </pre>
@@ -33,6 +39,17 @@ public class WeChatProperties {
 
 	/** 额外的认证url，用于做微信网页认证的桥接 */
 	private String authUrl;
+
+	/** 配置微信回调转发服务的初始化 map */
+	private Map<String, String> proxyMap;
+
+	public Map<String, String> getProxyMap() {
+		return proxyMap;
+	}
+
+	public void setProxyMap(Map<String, String> proxyMap) {
+		this.proxyMap = proxyMap;
+	}
 
 	public String getAuthUrl() {
 		return authUrl;

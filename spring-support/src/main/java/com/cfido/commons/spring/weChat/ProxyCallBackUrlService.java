@@ -1,10 +1,11 @@
-package com.cfido.commons.spring.weChatProxy.service;
+package com.cfido.commons.spring.weChat;
 
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -17,7 +18,6 @@ import org.springframework.util.StringUtils;
 
 import com.cfido.commons.spring.jmxInWeb.ADomainOrder;
 import com.cfido.commons.spring.utils.CommonMBeanDomainNaming;
-import com.cfido.commons.spring.weChatProxy.WeChatProxyProperties;
 
 /**
  * <pre>
@@ -29,9 +29,10 @@ import com.cfido.commons.spring.weChatProxy.WeChatProxyProperties;
 @Service
 @ManagedResource(description = "管理微信callback后回调的url")
 @ADomainOrder(domainName = CommonMBeanDomainNaming.DOMAIN_WECHAT, order = CommonMBeanDomainNaming.ORDER)
-public class CallBackUrlService {
+@ConditionalOnProperty(prefix = "wechat", name = "proxy", havingValue = "true", matchIfMissing = false) // 如果enable=true开开启本服务
+public class ProxyCallBackUrlService {
 
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CallBackUrlService.class);
+	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProxyCallBackUrlService.class);
 
 	private final static String URL_MAP_KEY = "weixin:urlMap";
 
@@ -39,7 +40,7 @@ public class CallBackUrlService {
 	private RedisTemplate<String, String> redisTemplate;
 
 	@Autowired
-	private WeChatProxyProperties prop;
+	private WeChatProperties prop;
 
 	private HashOperations<String, String, String> hashOps;
 
@@ -50,13 +51,16 @@ public class CallBackUrlService {
 
 	@PostConstruct
 	protected void init() {
-		log.debug("初始化");
+		log.info("自动配置-微信回调转发功能，可JMX中管理");
+
 		this.hashOps = this.redisTemplate.opsForHash();
 
-		if (this.prop.getMap() != null && !this.prop.getMap().isEmpty()) {
-			for (Map.Entry<String, String> en : this.prop.getMap().entrySet()) {
+		Map<String, String> proxyMap = this.prop.getProxyMap();
+
+		if (proxyMap != null && !proxyMap.isEmpty()) {
+			for (Map.Entry<String, String> en : proxyMap.entrySet()) {
 				this.hashOps.putIfAbsent(URL_MAP_KEY, en.getKey(), en.getValue());
-				log.debug("初始化微信认证代理时，自动添加规则 {} -> {}", en.getKey(), en.getValue());
+				log.debug("微信回调转发: 初始化时自动添加规则 {} -> {}", en.getKey(), en.getValue());
 			}
 		}
 	}
