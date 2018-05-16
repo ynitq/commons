@@ -14,8 +14,10 @@ import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.oauth.WeChatUserInfoBean;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient.SCOPE;
+import com.cfido.commons.spring.weChat.controller.ProxyMasterController;
 import com.cfido.commons.spring.weChat.controller.WeChatUrls;
 import com.cfido.commons.utils.utils.StringUtilsEx;
+import com.cfido.commons.utils.web.WebUtils;
 
 @Service
 public class ProxyAgentService {
@@ -87,7 +89,11 @@ public class ProxyAgentService {
 		return WeChatRedisKey.KEY_AGENT_PREFIX + id;
 	}
 
-	/** 将当前的url保存下来，用于回调 */
+	/**
+	 * 将当前的url保存下来，用于回调
+	 * 
+	 * @see ProxyMasterController#call(String, String, String, String)
+	 */
 	private String saveUrl(HttpServletRequest request, SCOPE scope) {
 		KeyBeanInAgent bean = KeyBeanInAgent.create(request, scope);
 		String key = StringUtilsEx.randomUUID();
@@ -104,6 +110,8 @@ public class ProxyAgentService {
 		HttpServletRequest request = WebContextHolderHelper.getRequest();
 
 		if (request != null) {
+
+			String host = WebUtils.getSchemeAndServerName(request);
 
 			String key = this.saveUrl(request, scope);
 
@@ -126,6 +134,8 @@ public class ProxyAgentService {
 			sb.append("scope=").append(scope.toString());
 			sb.append("&");
 			sb.append("key=").append(key);
+			sb.append("&");
+			sb.append("host=").append(host);
 
 			String url = sb.toString();
 			log.debug("重定向到master，向微信发起授权请求。url={}", url);

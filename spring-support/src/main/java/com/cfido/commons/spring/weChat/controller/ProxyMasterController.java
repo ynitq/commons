@@ -3,8 +3,6 @@ package com.cfido.commons.spring.weChat.controller;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -13,14 +11,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.spring.weChat.KeyBeanInMaster;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient.SCOPE;
 import com.cfido.commons.spring.weChat.WeChatRedisKey;
+import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.StringUtilsEx;
-import com.cfido.commons.utils.web.WebUtils;
 
 /**
  * <pre>
@@ -38,9 +37,6 @@ public class ProxyMasterController extends BaseController {
 	@Autowired
 	private RedisTemplate<String, KeyBeanInMaster> agentMap;
 
-	@Autowired
-	private HttpServletRequest request;
-
 	/**
 	 * 获取验证码
 	 * 
@@ -49,9 +45,15 @@ public class ProxyMasterController extends BaseController {
 	 * @param key
 	 *            传回给agent的内容
 	 * @return
+	 * @throws MissFieldException
 	 */
 	@RequestMapping(WeChatUrls.MASTER_CALL)
-	public String call(String scope, String key, String appId) {
+	public String call(String scope, String key, String appId, String host) throws MissFieldException {
+
+		ExceptionUtil.hasText(key, "key 不能为空");
+		ExceptionUtil.hasText(scope, "scope 不能为空");
+		ExceptionUtil.hasText(appId, "appId 不能为空");
+		ExceptionUtil.hasText(host, "host 不能为空");
 
 		if (!this.wechatProperties.getAppId().equals(appId)) {
 			// 如果appId不匹配，就直接返回
@@ -66,8 +68,8 @@ public class ProxyMasterController extends BaseController {
 		}
 
 		// 将调用方的key和url保存下来，并获得唯一值state，用于回调
-		String state = this.saveAgent(key);
-		log.debug("master向微信发起授权请求前，保存发起方:key={}, scope={}", key, scopeEnum);
+		String state = this.saveAgent(key, host);
+		log.debug("master向微信发起授权请求前，保存发起方:host={}, key={}, scope={}", host, key, scopeEnum);
 
 		// 发送认证请求给微信，将这个唯一值传给微信
 		WeChatOAuthClient wechatOAuthClient = this.wechatProperties.newClient();
@@ -109,10 +111,14 @@ public class ProxyMasterController extends BaseController {
 		return WeChatRedisKey.KEY_MASTER_PREFIX + id;
 	}
 
-	/** 将调用方的key和url保存下来，用于回调 */
-	private String saveAgent(String key) {
+	/**
+	 * 将调用方的key和url保存下来，用于回调
+	 * 
+	 * @param host
+	 */
+	private String saveAgent(String key, String host) {
 		KeyBeanInMaster bean = new KeyBeanInMaster();
-		bean.setAgentHost(WebUtils.getSchemeAndServerName(request));
+		bean.setAgentHost(host);
 		bean.setKey(key);
 		String id = StringUtilsEx.randomUUID();
 		String redisKey = this.getRedisKey(id);
