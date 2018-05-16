@@ -268,4 +268,7 @@ public class WebUtils {
 		return new byte[0];
 	}
 
+	public static String getRedirect(String url) {
+		return "redirect:" + url;
+	}
 }

@@ -62,9 +62,6 @@ public class WeChatService {
 	@Autowired
 	private JmxInWebService jmxInWebService;
 
-	private final static String KEY_ACCESS_TOKEN = "wechat:accessToken";
-	private final static String KEY_JSAPI = "wechat:jsApi";
-
 	@ManagedResource(description = "微信服务")
 	@ADomainOrder(order = CommonMBeanDomainNaming.ORDER, domainName = CommonMBeanDomainNaming.DOMAIN)
 	public class WeChatServiceMBean {
@@ -109,7 +106,7 @@ public class WeChatService {
 	 * @throws WeChatAccessFailException
 	 */
 	public synchronized AccessTokenBean getAccessToken() throws WeChatAccessFailException {
-		AccessTokenBean token = this.accessTokenCache.opsForValue().get(KEY_ACCESS_TOKEN);
+		AccessTokenBean token = this.accessTokenCache.opsForValue().get(WeChatRedisKey.KEY_ACCESS_TOKEN);
 		if (token == null || token.checkIsExpired()) {
 			if (token == null) {
 				log.debug("微信access token 不存在，需要获取");
@@ -125,7 +122,7 @@ public class WeChatService {
 
 			try {
 				token = HttpUtil.requestJson(AccessTokenBean.class, url, paramMap, false, null);
-				this.accessTokenCache.opsForValue().set(KEY_ACCESS_TOKEN, token);
+				this.accessTokenCache.opsForValue().set(WeChatRedisKey.KEY_ACCESS_TOKEN, token);
 
 				if (log.isDebugEnabled()) {
 					log.debug("成功获取 access token:\n\t{}", JSON.toJSONString(token, true));
@@ -151,7 +148,7 @@ public class WeChatService {
 	 */
 	public synchronized WechatTicketBean getJsApiTicket() throws WeChatAccessFailException {
 
-		WechatTicketBean ticket = this.jsapiTicketCache.opsForValue().get(KEY_JSAPI);
+		WechatTicketBean ticket = this.jsapiTicketCache.opsForValue().get(WeChatRedisKey.KEY_JSAPI);
 		if (ticket == null || ticket.checkIsExpired()) {
 			if (ticket == null) {
 				log.debug("微信 jsapi ticket 不存在，需要获取");
@@ -159,14 +156,14 @@ public class WeChatService {
 				log.debug("微信 jsapi ticket 已经超时，需要重新获取");
 			}
 
-			String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
+			final String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
 			Map<String, Object> paramMap = new HashMap<>();
 			paramMap.put("type", "jsapi");
 			paramMap.put("access_token", this.getAccessToken().getAccess_token());
 
 			try {
 				ticket = HttpUtil.requestJson(WechatTicketBean.class, url, paramMap, false, null);
-				this.jsapiTicketCache.opsForValue().set(KEY_JSAPI, ticket);
+				this.jsapiTicketCache.opsForValue().set(WeChatRedisKey.KEY_JSAPI, ticket);
 
 				if (log.isDebugEnabled()) {
 					log.debug("成功获取 jsapi ticket:\n\t{}", JSON.toJSONString(ticket, true));

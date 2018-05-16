@@ -1,4 +1,4 @@
-package com.cfido.commons.spring.weChat;
+package com.cfido.commons.spring.weChat.controller;
 
 import javax.annotation.PostConstruct;
 

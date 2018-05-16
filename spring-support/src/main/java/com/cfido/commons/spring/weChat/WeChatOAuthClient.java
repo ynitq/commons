@@ -1,4 +1,4 @@
-package com.cfido.commons.utils.oauth;
+package com.cfido.commons.spring.weChat;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -61,8 +61,8 @@ public class WeChatOAuthClient {
 	private WeChatUserInfoBean userInfo;
 
 	public WeChatOAuthClient(String appId, String appSecert) {
-		Assert.hasText(appId,"appId不能为空");
-		Assert.hasText(appSecert,"app秘钥不能为空");
+		Assert.hasText(appId, "appId不能为空");
+		Assert.hasText(appSecert, "app秘钥不能为空");
 
 		this.appId = appId;
 		this.appSecert = appSecert;
@@ -141,7 +141,7 @@ public class WeChatOAuthClient {
 
 		this.userInfo = HttpUtil.requestJson(WeChatUserInfoBean.class, URL_USER_INFO, param, false, null);
 
-		log.debug("成功获得用户信息 : {}", JSON.toJSONString(this.userInfo, true));
+		log.debug("根据access token 成功获得用户信息 : {}", JSON.toJSONString(this.userInfo, true));
 
 		return this.userInfo;
 	}
@@ -195,14 +195,9 @@ public class WeChatOAuthClient {
 
 		this.token = HttpUtil.requestJson(UserTokenBean.class, URL_ACCESS_TOKEN, param, false, null);
 
-		this.afterGetToken();
+		log.debug("通过微信授权码，成功获取了access token：\n{}", JSON.toJSONString(this.token, true));
 
-		log.info("获得 token 成功：{}", token.getOpenid());
-		log.info("获得 token 成功：{}", token.getToken_type());
-		log.info("获得 token 成功：{}", token.getRefresh_token());
-		log.info("获得 token 成功：{}", token.getScope());
-		
-		log.info("获得 token 成功：{}", JSON.toJSONString(token, true));
+		this.afterGetToken();
 	}
 
 	/**
