@@ -22,8 +22,8 @@ public class WebContextHolderHelper {
 		return WebUtils.getFullPath(getRequest(), null);
 	}
 
-	public static String getFullPath(String url) {
-		return WebUtils.getFullPath(getRequest(), url);
+	public static String getFullPath(String path) {
+		return WebUtils.getFullPath(getRequest(), path);
 	}
 
 	public static String getBasePathNotHttp() {

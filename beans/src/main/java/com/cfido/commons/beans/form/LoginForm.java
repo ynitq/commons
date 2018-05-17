@@ -16,21 +16,23 @@ import com.cfido.commons.annotation.bean.AComment;
 @AForm
 public class LoginForm {
 
+	@AComment(value = "账号")
 	@NotNull(message = "请输入账号")
+	@AMock("admin")
 	private String account;
 
+	@AComment(value = "密码")
 	@NotNull(message = "请输入密码")
 	@AMock("linzi777")
 	private String password;
 
+	@AComment(value = "是否记住密码")
 	private boolean rememberMe;
 
 	public String getAccount() {
 		return account;
 	}
 
-	@AMock("admin")
-	@AComment(value = "账号")
 	public void setAccount(String account) {
 		this.account = account;
 	}
@@ -43,15 +45,12 @@ public class LoginForm {
 		return rememberMe;
 	}
 
-	@AComment(value = "是否记住密码")
 	public void setRememberMe(boolean rememberMe) {
 		this.rememberMe = rememberMe;
 	}
 
-	@AComment(value = "密码")
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
 
 }
