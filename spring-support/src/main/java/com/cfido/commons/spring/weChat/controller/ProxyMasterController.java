@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cfido.commons.beans.apiExceptions.MissFieldException;
 import com.cfido.commons.beans.apiServer.BaseApiException;
+import com.cfido.commons.enums.WeChatAuthScope;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.spring.weChat.KeyBeanInMaster;
 import com.cfido.commons.spring.weChat.WeChatOAuthClient;
-import com.cfido.commons.spring.weChat.WeChatOAuthClient.SCOPE;
 import com.cfido.commons.spring.weChat.WeChatRedisKey;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.utils.StringUtilsEx;
@@ -62,9 +62,9 @@ public class ProxyMasterController extends BaseController {
 		}
 
 		// 解析出要传给微信的scope参数
-		SCOPE scopeEnum = SCOPE.valueOf(scope);
+		WeChatAuthScope scopeEnum = WeChatAuthScope.valueOf(scope);
 		if (scopeEnum == null) {
-			scopeEnum = SCOPE.snsapi_base;
+			scopeEnum = WeChatAuthScope.snsapi_base;
 		}
 
 		// 将调用方的key和url保存下来，并获得唯一值state，用于回调

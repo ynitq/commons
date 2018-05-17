@@ -12,8 +12,8 @@ import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.oauth.WeChatUserInfoBean;
+import com.cfido.commons.enums.WeChatAuthScope;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
-import com.cfido.commons.spring.weChat.WeChatOAuthClient.SCOPE;
 import com.cfido.commons.spring.weChat.controller.ProxyMasterController;
 import com.cfido.commons.spring.weChat.controller.WeChatUrls;
 import com.cfido.commons.utils.utils.StringUtilsEx;
@@ -94,7 +94,7 @@ public class ProxyAgentService {
 	 * 
 	 * @see ProxyMasterController#call(String, String, String, String)
 	 */
-	private String saveUrl(HttpServletRequest request, SCOPE scope) {
+	private String saveUrl(HttpServletRequest request, WeChatAuthScope scope) {
 		KeyBeanInAgent bean = KeyBeanInAgent.create(request, scope);
 		String key = StringUtilsEx.randomUUID();
 		String redisKey = this.getRedisKey(key);
@@ -106,7 +106,7 @@ public class ProxyAgentService {
 	}
 
 	/** 获取向master请求微信授权的url */
-	public String redirectToMaster(SCOPE scope) {
+	public String redirectToMaster(WeChatAuthScope scope) {
 		HttpServletRequest request = WebContextHolderHelper.getRequest();
 
 		if (request != null) {

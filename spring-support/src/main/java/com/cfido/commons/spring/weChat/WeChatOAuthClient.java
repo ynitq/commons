@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.cfido.commons.beans.exceptions.WeChatApiException;
 import com.cfido.commons.beans.oauth.UserTokenBean;
 import com.cfido.commons.beans.oauth.WeChatUserInfoBean;
+import com.cfido.commons.enums.WeChatAuthScope;
 import com.cfido.commons.utils.utils.EncodeUtil;
 import com.cfido.commons.utils.utils.HttpUtil;
 import com.cfido.commons.utils.utils.HttpUtilException;
@@ -22,18 +23,6 @@ import com.cfido.commons.utils.utils.HttpUtilException;
  * </pre>
  */
 public class WeChatOAuthClient {
-
-	public enum SCOPE {
-		/**
-		 * 不弹出授权页面，直接跳转，只能获取用户openid
-		 */
-		snsapi_base,
-
-		/**
-		 * 弹出授权页面，可通过openid拿到昵称、性别、所在地。并且，即使在未关注的情况下，只要用户授权，也能获取其信息
-		 */
-		snsapi_userinfo
-	}
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WeChatOAuthClient.class);
 
@@ -82,7 +71,7 @@ public class WeChatOAuthClient {
 	 *            是否直接在微信打开链接。做页面302重定向时候，必须为真
 	 * @return
 	 */
-	public String getAuthorizeUrl(String redirectUrl, SCOPE scope, String state, boolean isWebChatRedirect) {
+	public String getAuthorizeUrl(String redirectUrl, WeChatAuthScope scope, String state, boolean isWebChatRedirect) {
 		StringBuilder b = new StringBuilder();
 		b.append("https://open.weixin.qq.com/connect/oauth2/authorize")
 				.append("?")

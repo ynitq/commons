@@ -2,7 +2,7 @@ package com.cfido.commons.spring.weChat;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cfido.commons.spring.weChat.WeChatOAuthClient.SCOPE;
+import com.cfido.commons.enums.WeChatAuthScope;
 import com.cfido.commons.utils.web.WebUtils;
 
 /**
@@ -16,7 +16,7 @@ import com.cfido.commons.utils.web.WebUtils;
 public class KeyBeanInAgent {
 
 	private String curUrl;
-	private SCOPE scope;
+	private WeChatAuthScope scope;
 
 	public String getCurUrl() {
 		return curUrl;
@@ -26,15 +26,15 @@ public class KeyBeanInAgent {
 		this.curUrl = curUrl;
 	}
 
-	public SCOPE getScope() {
+	public WeChatAuthScope getScope() {
 		return scope;
 	}
 
-	public void setScope(SCOPE scope) {
+	public void setScope(WeChatAuthScope scope) {
 		this.scope = scope;
 	}
 
-	public static KeyBeanInAgent create(HttpServletRequest request, SCOPE scope) {
+	public static KeyBeanInAgent create(HttpServletRequest request, WeChatAuthScope scope) {
 		KeyBeanInAgent bean = new KeyBeanInAgent();
 		bean.curUrl = WebUtils.getRequestURL(request, true);
 		bean.scope = scope;
