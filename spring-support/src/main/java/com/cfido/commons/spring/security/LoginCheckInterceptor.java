@@ -2,12 +2,16 @@ package com.cfido.commons.spring.security;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,7 +22,6 @@ import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.impl.CommonErrorResponse;
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
-import com.cfido.commons.spring.monitor.MonitorClientContext;
 import com.cfido.commons.utils.utils.ExceptionUtil;
 import com.cfido.commons.utils.web.WebUtils;
 
@@ -50,12 +53,43 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	@Autowired
 	private DebugModeProperties debugModeProperties;
 
-	@Autowired(required = false)
-	private MonitorClientContext monitorClientContext;
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	private final List<ILoginCheckExtService> extCheckServiceList = new LinkedList<>();
 
 	private final Map<String, Object> commonModel = new HashMap<>();
 
 	public LoginCheckInterceptor() {
+	}
+
+	/**
+	 * 增加其他的共用属性，增加后，每一个页面都会获得这些内容
+	 * 
+	 * @param attrName
+	 *            属性名
+	 * @param attrValue
+	 *            属性值
+	 */
+	public void addCommonModel(String attrName, Object attrValue) {
+		Assert.hasText(attrName, "attrName不能为空");
+		Assert.notNull(attrValue, "attrValue不能为空");
+
+		this.commonModel.put(attrName, attrValue);
+	}
+
+	@Override
+	public void afterCompletion(HttpServletRequest paramHttpServletRequest,
+			HttpServletResponse paramHttpServletResponse, Object paramObject, Exception paramException)
+			throws Exception {
+
+		ActionInfo info = this.context.getActionInfo();
+		info.showDebugMsg();
+	}
+
+	@Override
+	public void postHandle(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse,
+			Object paramObject, ModelAndView paramModelAndView) throws Exception {
 	}
 
 	/**
@@ -76,15 +110,24 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		ActionInfo info = ActionInfo.create(request, target, defaultLoginUrl);
 		this.context.saveActionInfo(info);
 
-		// 如果这个方法需要统计访问次数并汇报给监控系统
-		if (this.monitorClientContext != null && info.isNeedMonitorRequest()) {
-			this.monitorClientContext.addRequest();
-		}
-
 		// 如果需要做ajax跨域处理，就增加相应的header
 		if (info.isAjax()) {
 			/** Ajax跨域header */
 			WebUtils.addCrossDomainHeader(response, request);
+		}
+
+		// 执行额外的检查
+		for (ILoginCheckExtService extService : extCheckServiceList) {
+			try {
+				// 执行检查
+				extService.beforeCheckRight(info, response, request);
+			} catch (LoginExtCheckException e) {
+				// 如果需要跳转，就跳转
+				if (e.isNeedRedirect()) {
+					response.sendRedirect(e.getRedirectUrl());
+				}
+				return false;
+			}
 		}
 
 		try {
@@ -100,25 +143,21 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		return true;
-	}
-
-	/**
-	 * 将错误信息用json格式回到客户端
-	 * 
-	 * @param response
-	 * @param ex
-	 */
-	private void writeErrorResponse(HttpServletResponse response, BaseApiException ex) {
-		try {
-
-			CommonErrorResponse res = ExceptionUtil.getErrorResponse(response, ex,
-					this.debugModeProperties.isDebugMode());
-
-			response.getWriter().print(JSON.toJSONString(res));
-		} catch (IOException e) {
-			log.warn("HttpServletResponse.getWriter() 时出错了 ", e);
+		// 执行额外的检查
+		for (ILoginCheckExtService extService : extCheckServiceList) {
+			try {
+				// 执行检查
+				extService.afterCheckRight(info, response, request);
+			} catch (LoginExtCheckException e) {
+				// 如果需要跳转，就跳转
+				if (e.isNeedRedirect()) {
+					response.sendRedirect(e.getRedirectUrl());
+				}
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -152,29 +191,29 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 	}
 
 	/**
-	 * 增加其他的共用属性，增加后，每一个页面都会获得这些内容
-	 * 
-	 * @param attrName
-	 *            属性名
-	 * @param attrValue
-	 *            属性值
-	 */
-	public void addCommonModel(String attrName, Object attrValue) {
-		Assert.hasText(attrName, "attrName不能为空");
-		Assert.notNull(attrValue, "attrValue不能为空");
-
-		this.commonModel.put(attrName, attrValue);
-	}
-
-	/**
 	 * 设置Debug状态
 	 * 
 	 * @param request
 	 */
 	private void addDebugModeAttr(HttpServletRequest request) {
 		request.setAttribute(VoNames.IS_DEBUG, this.debugModeProperties.isDebugMode());
-		if (log.isDebugEnabled()) {
-			request.setAttribute(VoNames.DEBUG_CSS, this.debugModeProperties.getCssName());
+	}
+
+	/**
+	 * 将错误信息用json格式回到客户端
+	 * 
+	 * @param response
+	 * @param ex
+	 */
+	private void writeErrorResponse(HttpServletResponse response, BaseApiException ex) {
+		try {
+
+			CommonErrorResponse res = ExceptionUtil.getErrorResponse(response, ex,
+					this.debugModeProperties.isDebugMode());
+
+			response.getWriter().print(JSON.toJSONString(res));
+		} catch (IOException e) {
+			log.warn("HttpServletResponse.getWriter() 时出错了 ", e);
 		}
 	}
 
@@ -182,17 +221,17 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		return request.getContextPath() + "/" + loginCheck.loginUrl();
 	}
 
-	@Override
-	public void postHandle(HttpServletRequest paramHttpServletRequest, HttpServletResponse paramHttpServletResponse,
-			Object paramObject, ModelAndView paramModelAndView) throws Exception {
-	}
+	@PostConstruct
+	protected void init() {
+		// 获取额外的检查器
+		Map<String, ILoginCheckExtService> extCheckServiceMap = this.applicationContext
+				.getBeansOfType(ILoginCheckExtService.class);
+		this.extCheckServiceList.addAll(extCheckServiceMap.values());
 
-	@Override
-	public void afterCompletion(HttpServletRequest paramHttpServletRequest,
-			HttpServletResponse paramHttpServletResponse, Object paramObject, Exception paramException)
-			throws Exception {
-
-		ActionInfo info = this.context.getActionInfo();
-		info.showDebugMsg();
+		if (log.isDebugEnabled()) {
+			for (ILoginCheckExtService service : extCheckServiceList) {
+				log.debug("LoginCheckInterceptor 找到额外的检查器 {}", service.getClass().getName());
+			}
+		}
 	}
 }

@@ -106,7 +106,7 @@ public class ProxyAgentService {
 	}
 
 	/** 获取向master请求微信授权的url */
-	public String redirectToMaster(WeChatAuthScope scope) {
+	public String getRedirectToMasterUrl(WeChatAuthScope scope) {
 		HttpServletRequest request = WebContextHolderHelper.getRequest();
 
 		if (request != null) {
@@ -116,8 +116,6 @@ public class ProxyAgentService {
 			String key = this.saveUrl(request, scope);
 
 			StringBuilder sb = new StringBuilder();
-
-			sb.append("redirect:");
 
 			if (StringUtils.hasLength(this.wechatProperties.getMasterUrl())) {
 				// 看看是否有master是否在其他机器
