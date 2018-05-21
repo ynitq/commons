@@ -10,7 +10,7 @@ import com.cfido.commons.beans.exceptions.WeChatApiException;
  * @author 梁韦江 2017年6月15日
  */
 abstract class BaseWechatBean {
-	/** 调用微信接口时，如果有错，这里就是错误代码 */
+	/** 调用微信接口时，如果有错，这里就是错误代码 0:请求成功 */
 	private Integer errcode;
 
 	/** 调用微信接口时，如果有错，这里就是错误信息 */

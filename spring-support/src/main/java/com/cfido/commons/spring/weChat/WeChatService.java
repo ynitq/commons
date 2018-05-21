@@ -122,6 +122,12 @@ public class WeChatService {
 
 			try {
 				token = HttpUtil.requestJson(AccessTokenBean.class, url, paramMap, false, null);
+
+				if (token.getErrcode() != null && token.getErrcode() > 0) {
+					String msg = String.format("错误代码:%d %s", token.getErrcode(), token.getErrmsg());
+					throw new WeChatAccessFailException(msg);
+				}
+
 				this.accessTokenCache.opsForValue().set(WeChatRedisKey.KEY_ACCESS_TOKEN, token);
 
 				if (log.isDebugEnabled()) {
@@ -163,6 +169,12 @@ public class WeChatService {
 
 			try {
 				ticket = HttpUtil.requestJson(WechatTicketBean.class, url, paramMap, false, null);
+
+				if (ticket.getErrcode() != null && ticket.getErrcode() > 0) {
+					String msg = String.format("错误代码:%d %s", ticket.getErrcode(), ticket.getErrmsg());
+					throw new WeChatAccessFailException(msg);
+				}
+
 				this.jsapiTicketCache.opsForValue().set(WeChatRedisKey.KEY_JSAPI, ticket);
 
 				if (log.isDebugEnabled()) {

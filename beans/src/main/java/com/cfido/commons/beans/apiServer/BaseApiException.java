@@ -36,6 +36,7 @@ public abstract class BaseApiException extends Exception {
 
 	public BaseApiException(Throwable paramThrowable) {
 		super(paramThrowable);
+		this.errorMsg = "访问微信接口时，出现了错误";
 	}
 
 	private String errorMsg;
