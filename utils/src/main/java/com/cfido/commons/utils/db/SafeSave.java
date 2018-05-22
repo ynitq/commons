@@ -15,7 +15,6 @@ import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.utils.MethodUtil;
 import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfGetter;
 import com.cfido.commons.utils.utils.MethodUtil.MethodInfoOfSetter;
-import com.cfido.commons.utils.utils.StringUtilsEx;
 
 /**
  * <pre>
@@ -52,7 +51,7 @@ public class SafeSave<PO> {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SafeSave.class);
 
-	private final List<StringPropWithLength> getterList;
+	private List<StringPropWithLength> getterList;
 
 	private final Class<PO> entityClass;
 
@@ -60,11 +59,23 @@ public class SafeSave<PO> {
 		Assert.notNull(entityClass, "类型不能为空");
 
 		this.entityClass = entityClass;
-		this.getterList = this.findStringPropWithLength();
+	}
+
+	private void checkInit() {
+		if (this.getterList == null) {
+			synchronized (this) {
+				if (this.getterList == null) {
+					this.getterList = this.findStringPropWithLength();
+				}
+			}
+		}
 	}
 
 	/** 处理 PO的字符串内容 */
 	public void process(PO po) {
+
+		this.checkInit();
+
 		for (StringPropWithLength en : this.getterList) {
 			try {
 				String value = (String) en.getter.invoke(po);
@@ -74,7 +85,7 @@ public class SafeSave<PO> {
 
 					log.warn("存储对象 {} 时，字段 {} 的值的长度过长，自动将长度截取到 {}, 新的值为:{}",
 							this.entityClass.getSimpleName(),
-							StringUtilsEx.substring(en.getter.getName(), 3, 100),
+							en.getter.getName().substring(3).toLowerCase(),
 							en.length,
 							newvalue);
 				}
@@ -113,8 +124,13 @@ public class SafeSave<PO> {
 					// 必须有长度限制
 					Method setter = setterMap.get(getter.getPropName());
 					if (setter != null) {
+
+						StringPropWithLength en = new StringPropWithLength(getter.getOriginMethod(), anno.length(), setter);
+
 						// 如果还能找到对应的setter，就添加带list中
-						list.add(new StringPropWithLength(getter.getOriginMethod(), anno.length(), setter));
+						list.add(en);
+
+						log.debug("发现需要检查长度的字段: {}", en);
 					}
 				}
 			}
