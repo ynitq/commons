@@ -125,6 +125,7 @@ public class WeChatService {
 
 				if (token.getErrcode() != null && token.getErrcode() > 0) {
 					String msg = String.format("错误代码:%d %s", token.getErrcode(), token.getErrmsg());
+					log.debug("获取access token时，发生了错误:{}", msg);
 					throw new WeChatAccessFailException(msg);
 				}
 
@@ -172,6 +173,7 @@ public class WeChatService {
 
 				if (ticket.getErrcode() != null && ticket.getErrcode() > 0) {
 					String msg = String.format("错误代码:%d %s", ticket.getErrcode(), ticket.getErrmsg());
+					log.debug("获取jsapi ticket时，发生了错误:{}", msg);
 					throw new WeChatAccessFailException(msg);
 				}
 
