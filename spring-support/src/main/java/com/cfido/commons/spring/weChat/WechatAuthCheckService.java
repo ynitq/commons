@@ -12,6 +12,18 @@ import com.cfido.commons.spring.security.ActionInfo;
 import com.cfido.commons.spring.security.ILoginCheckExtService;
 import com.cfido.commons.spring.security.LoginExtCheckException;
 
+/**
+ * <pre>
+ * LoginCheck的额外服务，用于监听AWechatRequestAuth注解
+ * 
+ * 如果被调用的方法有这个注解，就需要检查能获取微信用户信息
+ * 如果没有微信用户信息，就会将调用proxyAgentService的相关功能
+ * 将请求转发给 wechat.masterUrl 中定义的服务器，让那台在外网的服务器向微信要求权限
+ * </pre>
+ * 
+ * @author 梁韦江
+ * 
+ */
 @Service
 public class WechatAuthCheckService implements ILoginCheckExtService {
 
