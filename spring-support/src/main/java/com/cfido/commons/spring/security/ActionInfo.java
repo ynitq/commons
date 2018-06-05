@@ -43,15 +43,11 @@ public class ActionInfo {
 	 * @return
 	 */
 	protected static ActionInfo create(HttpServletRequest request, Object target, String defaultLoginUrl) {
-		ActionInfo res = new ActionInfo();
-		res.initDebugMsg(request);
+		ActionInfo res = new ActionInfo(request);
 
 		if (target instanceof org.springframework.web.method.HandlerMethod) {
-			res.init(request, (HandlerMethod) target, defaultLoginUrl);
-		} else {
-			if (log.isDebugEnabled()) {
-				res.debugMsg.append(" 其他Handler ").append(target.getClass().getSimpleName());
-			}
+			// 如果是动态请求
+			res.init((HandlerMethod) target, defaultLoginUrl);
 		}
 		return res;
 	}
@@ -65,11 +61,12 @@ public class ActionInfo {
 
 	private final long createTime = System.currentTimeMillis();
 
-	private StringBuffer debugMsg;
-
 	private String loginUrl;
 
-	private ActionInfo() {
+	private final HttpServletRequest request;
+
+	private ActionInfo(HttpServletRequest request) {
+		this.request = request;
 	}
 
 	/** 返回方法上的注解 */
@@ -115,10 +112,10 @@ public class ActionInfo {
 	 * @param context
 	 *            LoginContext
 	 */
-	private void init(HttpServletRequest request, HandlerMethod handlerMethod, String defaultLoginUrl) {
+	private void init(HandlerMethod handlerMethod, String defaultLoginUrl) {
 
-		Class<?> clazz = handlerMethod.getBean().getClass();
-		targetMethod = handlerMethod.getMethod();
+		// Class<?> targetClass = handlerMethod.getBean().getClass();
+		this.targetMethod = handlerMethod.getMethod();
 
 		// 先看看方法中是否有定义需要检查权限
 		this.loginCheck = ClassUtil.getAnnotationFromMethodAndClass(targetMethod, ANeedCheckLogin.class);
@@ -133,47 +130,52 @@ public class ActionInfo {
 		}
 
 		this.isAjax = isAjaxRequest(request);
-
-		if (log.isDebugEnabled()) {
-
-			debugMsg.append(String.format(" 方法: %s:%s()", clazz.getName(), targetMethod.getName()));
-
-			if (!request.getParameterMap().isEmpty()) {
-				debugMsg.append(" 参数:");
-				WebUtils.debugRequest(request, debugMsg);
-			}
-
-			debugMsg.append("\n");
-			if (this.isAjax) {
-				debugMsg.append(" ajax请求");
-			} else {
-				debugMsg.append(" 页面请求");
-			}
-
-			if (loginCheck != null) {
-				debugMsg.append(LogUtil.format(" 需要安全验证: %s ",
-						loginCheck.userClass().getSimpleName()));
-			}
-		}
 	}
 
-	private void initDebugMsg(HttpServletRequest request) {
-		if (log.isDebugEnabled()) {
-			this.debugMsg = new StringBuffer(200);
+	/** 获取调试信息 */
+	private String getDebugInfo() {
+		StringBuffer debugMsg = new StringBuffer(200);
 
-			debugMsg.append(WebUtils.findRealRemoteAddr(request));
+		// 添加ip
+		debugMsg.append(WebUtils.findRealRemoteAddr(request));
 
-			debugMsg.append(" ");
-			debugMsg.append(request.getMethod());
-			debugMsg.append(" ");
-			debugMsg.append(request.getRequestURI());
+		// 添加请求方式
+		debugMsg.append(" ");
+		debugMsg.append(request.getMethod());
 
-			String qs = request.getQueryString();
-			if (qs != null) {
-				debugMsg.append("?");
-				debugMsg.append(qs);
-			}
+		// 添加url
+		debugMsg.append(" ");
+		debugMsg.append(request.getRequestURI());
+
+		// 添加?后的参数
+		String qs = request.getQueryString();
+		if (qs != null) {
+			debugMsg.append("?");
+			debugMsg.append(qs);
 		}
+
+		// 添加方法名和类名
+		Class<?> targetClass = this.targetMethod.getDeclaringClass();
+		debugMsg.append(String.format("\n\t方法: %s:%s()", targetClass.getName(), targetMethod.getName()));
+
+		if (!request.getParameterMap().isEmpty()) {
+			debugMsg.append("\n\t参数:");
+			WebUtils.debugRequest(request, debugMsg);
+		}
+
+		debugMsg.append("\n\t");
+		if (this.isAjax) {
+			debugMsg.append("ajax请求");
+		} else {
+			debugMsg.append("页面请求");
+		}
+
+		if (loginCheck != null) {
+			debugMsg.append(LogUtil.format(" 需要安全验证: %s ",
+					loginCheck.userClass().getSimpleName()));
+		}
+
+		return debugMsg.toString();
 	}
 
 	protected String getLoginUrl() {
@@ -190,11 +192,15 @@ public class ActionInfo {
 	}
 
 	protected void showDebugMsg() {
-		if (log.isDebugEnabled() && this.debugMsg != null) {
-			long time = System.currentTimeMillis() - this.createTime;
-			this.debugMsg.append(" 花费时间:").append(time).append("ms");
+		long time = System.currentTimeMillis() - this.createTime;
 
-			log.debug(this.debugMsg.toString());
+		if (log.isDebugEnabled()) {
+			log.debug("{}\n\t花费时间:{}ms", this.getDebugInfo(), time);
+		}
+
+		// 如果时间太长，需要警告
+		if (time > 1000) {
+			log.warn("{}\n\t执行时间过长，花费时间:{}ms", this.getDebugInfo(), time);
 		}
 	}
 
