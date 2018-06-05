@@ -10,7 +10,6 @@ import org.springframework.web.method.HandlerMethod;
 
 import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.utils.utils.ClassUtil;
-import com.cfido.commons.utils.utils.LogUtil;
 import com.cfido.commons.utils.web.WebUtils;
 
 /**
@@ -154,15 +153,7 @@ public class ActionInfo {
 			debugMsg.append(qs);
 		}
 
-		// 添加方法名和类名
-		Class<?> targetClass = this.targetMethod.getDeclaringClass();
-		debugMsg.append(String.format("\n\t方法: %s:%s()", targetClass.getName(), targetMethod.getName()));
-
-		if (!request.getParameterMap().isEmpty()) {
-			debugMsg.append("\n\t参数:");
-			WebUtils.debugRequest(request, debugMsg);
-		}
-
+		// 是否ajax
 		debugMsg.append("\n\t");
 		if (this.isAjax) {
 			debugMsg.append("ajax请求");
@@ -170,8 +161,17 @@ public class ActionInfo {
 			debugMsg.append("页面请求");
 		}
 
+		// 添加方法名和类名
+		Class<?> targetClass = this.targetMethod.getDeclaringClass();
+		debugMsg.append(String.format(" 方法: %s:%s()", targetClass.getName(), targetMethod.getName()));
+
+		if (!request.getParameterMap().isEmpty()) {
+			debugMsg.append("\n\t参数:");
+			WebUtils.debugRequest(request, debugMsg);
+		}
+
 		if (loginCheck != null) {
-			debugMsg.append(LogUtil.format(" 需要安全验证: %s ",
+			debugMsg.append(String.format(" 需要安全验证: %s ",
 					loginCheck.userClass().getSimpleName()));
 		}
 
