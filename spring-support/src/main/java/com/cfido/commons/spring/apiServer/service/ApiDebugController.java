@@ -19,6 +19,7 @@ import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.utils.EncodeUtil;
+import com.cfido.commons.utils.web.WebUtils;
 
 import freemarker.template.TemplateException;
 
@@ -91,9 +92,11 @@ public class ApiDebugController {
 		Collections.sort(list);
 
 		StringBuffer sb = new StringBuffer();
+		sb.append("来源ip:").append(WebUtils.findRealRemoteAddr(request));
+
 		for (String str : list) {
-			sb.append(str);
 			sb.append("\n");
+			sb.append(str);
 		}
 
 		if (log.isDebugEnabled()) {
