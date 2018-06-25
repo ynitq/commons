@@ -20,6 +20,8 @@ import com.cfido.commons.utils.utils.TimeLimitMap;
 /**
  * <pre>
  * 异步执行Cache动作的执行者，这个因为有@Async注解方法的缘故，会变成代理类，无法变成mbean
+ * 
+ * TODO JedisPool 在高并发时，会出现死锁的问题，所以先在cache上加个同步，但这个明显会影响性能
  * </pre>
  * 
  * @author 梁韦江 2016年8月25日
@@ -49,45 +51,31 @@ public class ASyncCacheExecuter implements IASyncCacheExecuter, SelfNaming {
 		this.level2CacheForValueWrapper = new TimeLimitMap<>(expireTimeInSec, TimeUnit.SECONDS, level2CacheSize);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#asyncClear(org.
-	 * springframework.cache.Cache)
-	 */
 	@Override
 	@Async
 	public void asyncClear(Cache cache) {
 		log.debug("Cache({}).clear()", cache.getName());
 
-		this.level2CacheForValueWrapper.clear();
-		cache.clear();
+		synchronized (cache) {
+			this.level2CacheForValueWrapper.clear();
+			cache.clear();
+		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#asyncEvict(org.
-	 * springframework.cache.Cache, java.lang.Object)
-	 */
 	@Override
 	@Async
 	public void asyncEvict(Cache cache, Object key) {
 		log.debug("Cache({}).asyncEvict(key={})", cache.getName(), key);
 
-		String key2 = getLevel2CacheKey(cache, key);
-		this.level2CacheForValueWrapper.remove(key2);
+		synchronized (cache) {
+			String key2 = getLevel2CacheKey(cache, key);
+			this.level2CacheForValueWrapper.remove(key2);
 
-		// 执行原来的方法
-		cache.evict(key);
+			// 执行原来的方法
+			cache.evict(key);
+		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.cfido.commons.spring.redis.IASyncCacheExecuter#asyncPut(org.
-	 * springframework.cache.Cache, java.lang.Object, java.lang.Object)
-	 */
 	@Override
 	@Async
 	public void asyncPut(Cache cache, Object key, Object value) {
@@ -98,8 +86,10 @@ public class ASyncCacheExecuter implements IASyncCacheExecuter, SelfNaming {
 		Assert.notNull(key, "key 不能为空");
 		Assert.notNull(value, "value 不能为空");
 
-		// 先将数据放到redis
-		cache.put(key, value);
+		synchronized (cache) {
+			// 先将数据放到redis
+			cache.put(key, value);
+		}
 
 		/**
 		 * 下面这段sleep的代码用于测试是否真的是异步执行，实践证明要异步执行的方法必须是public的
@@ -213,14 +203,16 @@ public class ASyncCacheExecuter implements IASyncCacheExecuter, SelfNaming {
 		// 计数器+1
 		this.counterMBean.incrementPutIfAbsent();
 
-		// 先执行原来的方法
-		ValueWrapper vw = cache.putIfAbsent(key, value);
+		synchronized (cache) {
+			// 先执行原来的方法
+			ValueWrapper vw = cache.putIfAbsent(key, value);
 
-		// 将结果放到内存中
-		String key2 = getLevel2CacheKey(cache, key);
-		this.level2CacheForValueWrapper.put(key2, vw);
+			// 将结果放到内存中
+			String key2 = getLevel2CacheKey(cache, key);
+			this.level2CacheForValueWrapper.put(key2, vw);
 
-		return vw;
+			return vw;
+		}
 	}
 
 	/**
