@@ -1,4 +1,4 @@
-package com.cfido.commons.spring.apiServer.service;
+package com.cfido.commons.spring.apiServer.ajax;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cfido.commons.spring.apiServer.core.ApiServerTemplateService;
 import com.cfido.commons.spring.apiServer.core.DebugPageVo;
 import com.cfido.commons.spring.debugMode.DebugModeProperties;
 import com.cfido.commons.spring.dict.core.DictCoreService;
@@ -44,8 +45,7 @@ public class ApiDebugController {
 	@Autowired
 	private ApiMapContainer apiMapContainer;
 
-	@Autowired
-	private ApiServerTemplateService templateService;
+	private final ApiServerTemplateService templateService = new ApiServerTemplateService();
 
 	@Autowired(required = false)
 	private DictCoreService dictCoreService;

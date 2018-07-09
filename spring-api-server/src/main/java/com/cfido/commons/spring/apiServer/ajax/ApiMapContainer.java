@@ -1,4 +1,4 @@
-package com.cfido.commons.spring.apiServer.service;
+package com.cfido.commons.spring.apiServer.ajax;
 
 import java.lang.annotation.Annotation;
 
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.cfido.commons.annotation.api.AApiServerImpl;
 import com.cfido.commons.beans.apiServer.BaseResponse;
+import com.cfido.commons.spring.apiServer.service.BaseApiContainer;
 
 /**
  * <pre>

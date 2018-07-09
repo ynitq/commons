@@ -1,10 +1,11 @@
-package com.cfido.commons.spring.apiServer.service;
+package com.cfido.commons.spring.apiServer.ajax;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.cfido.commons.beans.apiServer.BaseApiException;
 import com.cfido.commons.beans.apiServer.BaseResponse;
+import com.cfido.commons.spring.apiServer.service.ApiMethodInfo;
 
 /**
  * <pre>

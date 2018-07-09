@@ -1,6 +1,4 @@
-package com.cfido.commons.spring.apiServer.service;
-
-import org.springframework.stereotype.Service;
+package com.cfido.commons.spring.apiServer.core;
 
 import com.cfido.commons.spring.utils.BaseTemplateService;
 
@@ -10,7 +8,6 @@ import com.cfido.commons.spring.utils.BaseTemplateService;
  * </pre>
  * 
  */
-@Service
 public class ApiServerTemplateService extends BaseTemplateService {
 
 	@Override

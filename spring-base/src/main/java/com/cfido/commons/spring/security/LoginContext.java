@@ -25,7 +25,7 @@ import com.cfido.commons.utils.web.WebUtils;
  * @author 梁韦江 2016年8月23日
  */
 @Component
-public class LoginContext {
+public class LoginContext implements INeedLoginChecker {
 	private static final String NEXT_PAGE_MSG_SESSION_NAME = "NEXT_PAGE_MSG_SESSION_NAME";
 
 	/**

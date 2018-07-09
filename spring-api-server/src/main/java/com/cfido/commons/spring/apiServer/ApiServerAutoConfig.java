@@ -3,6 +3,8 @@ package com.cfido.commons.spring.apiServer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import com.cfido.commons.spring.apiServer.ajax.ApiController;
+
 /**
  * <pre>
  * api server 自动化配置
@@ -11,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @author 梁韦江 2017年4月14日
  */
 @Configuration
-@ComponentScan(basePackageClasses = ApiServerAutoConfig.class)
+@ComponentScan(basePackageClasses = ApiController.class)
 public class ApiServerAutoConfig {
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ApiServerAutoConfig.class);
 

@@ -8,8 +8,9 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.util.StringUtils;
+
 import com.cfido.commons.utils.utils.FileUtil;
-import com.cfido.commons.utils.utils.LogUtil;
 
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -26,6 +27,11 @@ import freemarker.template.TemplateException;
 public abstract class BaseTemplateService {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BaseTemplateService.class);
+
+	/** 是否打开模板缓存，为方便开发，我们一般是关闭的 */
+	protected boolean isEnableTemplateCache() {
+		return false;
+	}
 
 	/**
 	 * <pre>
@@ -44,16 +50,21 @@ public abstract class BaseTemplateService {
 
 		@Override
 		public Object findTemplateSource(String fileName) throws IOException {
-			if (fileName != null) {
+			if (StringUtils.hasText(fileName)) {
+				// 先尝试从缓存获取模板
 				TemplateSource source = this.sourceMap.get(fileName);
 				if (source == null) {
+					// 如果缓存中没有，就从classpath中读取
 					byte[] bytes = FileUtil.loadFileFromClassPath(getTemplatePath(fileName));
 					if (bytes != null) {
 						source = new TemplateSource(fileName, bytes);
-						// TODO 暂时关闭模板缓存
-						// this.sourceMap.put(fileName, source);
+
+						if (BaseTemplateService.this.isEnableTemplateCache()) {
+							// 用开关控制是否放入缓存
+							this.sourceMap.put(fileName, source);
+						}
 						if (log.isDebugEnabled()) {
-							log.debug(LogUtil.format("Read template from %s", fileName));
+							log.debug("从文件获取 {} 获取模板", fileName);
 						}
 					}
 				}
