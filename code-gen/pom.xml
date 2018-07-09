@@ -17,7 +17,7 @@
 		<!-- 我们自己项目的依赖 -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>spring-support</artifactId>
+			<artifactId>spring-jmx</artifactId>
 		</dependency>
 
 		<!-- /我们自己项目的依赖 -->

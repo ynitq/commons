@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 被2013 sp1 () 使用XMLSpy v编辑的 (http://www.altova.com) by -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="dictXml">
+		<xs:annotation>
+			<xs:documentation>字典</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="dictXmlRow" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>存储字典</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="value" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>这个key对应的value</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="memo" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>备注</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="todo" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>是否是新加入的，需要后台处理的</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="usedCount" type="xs:int" use="required">
+							<xs:annotation>
+								<xs:documentation>使用次数，是为了定期清理那些一次都没使用的</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="html" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>是否是html值，就是不转码直接输出</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="type" type="xs:int" use="required">
+							<xs:annotation>
+								<xs:documentation>值的类型。
+0：未转
+1：文本
+2：html
+3：markdown</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="key" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>键值</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="dictAttachmentRow" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>上传的附件文件</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:annotation>
+								<xs:documentation>用前缀和扩展名可分别组合成为原始文件和缩略图文件两个url</xs:documentation>
+							</xs:annotation>
+							<xs:element name="pathPrefix" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>在文件系统中的相对路径前缀，无扩展名</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="extName" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>文件扩展名，不允许为空的</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="memo" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>备注</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="key" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation>键值，同时也是文件名</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="imageFile" type="xs:boolean" use="required">
+							<xs:annotation>
+								<xs:documentation>是否是图片</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="imageWidth" type="xs:int" use="required">
+							<xs:annotation>
+								<xs:documentation>如果是图片时，图片宽度</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="imageHeight" type="xs:int" use="required">
+							<xs:annotation>
+								<xs:documentation>如果是图片时，图片高度</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

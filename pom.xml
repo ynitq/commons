@@ -40,9 +40,13 @@
 		<module>annotation</module>
 		<module>beans</module>
 		<module>utils</module>
-		<module>spring-support</module>
 		<module>code-gen</module>
-		<!-- <module>weixin</module> -->
+		<module>spring-support</module>
+		<module>spring-base</module>
+		<module>spring-api-server</module>
+		<module>spring-jmx</module>
+		<module>spring-other</module>
+		<module>spring-dict</module>
 	</modules>
 	<!-- /项目列表 -->
 
@@ -81,6 +85,37 @@
 				<artifactId>code-gen</artifactId>
 				<version>${version.cfido.commons}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>com.cfido.commons</groupId>
+				<artifactId>spring-base</artifactId>
+				<version>${version.cfido.commons}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.cfido.commons</groupId>
+				<artifactId>spring-api-server</artifactId>
+				<version>${version.cfido.commons}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.cfido.commons</groupId>
+				<artifactId>spring-jmx</artifactId>
+				<version>${version.cfido.commons}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.cfido.commons</groupId>
+				<artifactId>spring-other</artifactId>
+				<version>${version.cfido.commons}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.cfido.commons</groupId>
+				<artifactId>spring-dict</artifactId>
+				<version>${version.cfido.commons}</version>
+			</dependency>
+
 			<!-- /我们自己的工具类项目 -->
 
 			<!-- 常用工具包 -->
