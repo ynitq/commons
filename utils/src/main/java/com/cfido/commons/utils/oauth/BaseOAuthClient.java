@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import com.cfido.commons.beans.appServer.UserResponse;
 import com.cfido.commons.beans.oauth.UserTokenBean;
 import com.cfido.commons.utils.utils.HttpUtil;
 
@@ -124,13 +123,6 @@ public abstract class BaseOAuthClient {
 		param.put("client_secret", this.getClientSecret());
 		param.put("code", code);
 		param.put("redirect_uri", this.getRedirectUri());
-		
-		
-
-		log.info("client_id：{}", this.getClientId());
-		log.info("client_secret：{}", this.getClientSecret());
-		log.info("code：{}", code);
-		log.info("redirect_uri：{}", this.getRedirectUri());
 
 		// Set the Content-Type header
 		HttpHeaders headers = new HttpHeaders();
@@ -139,8 +131,6 @@ public abstract class BaseOAuthClient {
 		this.isTokenGot = false;
 		this.token = HttpUtil.requestJson(UserTokenBean.class, url, param, true, null);
 		this.isTokenGot = true;
-		
-		
 
 		log.info("获得 token 成功：{}", token.getAccess_token());
 
@@ -176,23 +166,6 @@ public abstract class BaseOAuthClient {
 
 	public String getCode() {
 		return code;
-	}
-
-	/**
-	 * 根据code，获得token，然后去获取用户信息
-	 * 
-	 * @param code
-	 *            appserver传过来的code
-	 */
-	public UserResponse getUserInfo(String code) throws IOException, OAuthClientException {
-		Assert.notNull(code,"授权码不能为空");
-
-		// 先获得token
-		this.createToken(code);
-
-		// 然后根据token去获得用户信息
-		UserResponse userBean = this.getResource(UserResponse.class, "/resources/customers/userInfo", null, false);
-		return userBean;
 	}
 
 }
