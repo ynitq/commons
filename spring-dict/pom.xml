@@ -19,7 +19,7 @@
 		<dependency>
 			<!-- 工具包 -->
 			<groupId>${project.groupId}</groupId>
-			<artifactId>utils</artifactId>
+			<artifactId>spring-base</artifactId>
 		</dependency>
 		<!-- /我们自己项目的依赖 -->
 
