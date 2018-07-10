@@ -19,6 +19,7 @@ import com.cfido.commons.beans.monitor.ClientInfoResponse;
 import com.cfido.commons.beans.monitor.DiskInfoBean;
 import com.cfido.commons.beans.monitor.OsInfoBean;
 import com.cfido.commons.beans.monitor.ServerRightsBean;
+import com.cfido.commons.spring.serviceInf.IMonitorClientContext;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.utils.OperatingSystemUtil;
 
@@ -30,7 +31,7 @@ import com.cfido.commons.utils.utils.OperatingSystemUtil;
  * @author 梁韦江 2016年12月16日
  */
 @Service
-public class MonitorClientContext {
+public class MonitorClientContext implements IMonitorClientContext {
 
 	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MonitorClientContext.class);
 
