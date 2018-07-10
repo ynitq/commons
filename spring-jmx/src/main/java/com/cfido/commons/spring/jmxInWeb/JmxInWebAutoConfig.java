@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import com.cfido.commons.spring.apiServer.ApiServerAutoConfig;
+import com.cfido.commons.spring.apiServer.ajax.AjaxApiServerAutoConfig;
 import com.cfido.commons.spring.debugMode.DebugModeAutoConfig;
 import com.cfido.commons.spring.dict.DictAutoConfig;
 import com.cfido.commons.spring.errorPage.ErrorPageAutoConfig;
@@ -32,7 +32,7 @@ import com.cfido.commons.spring.security.LoginCheckAutoConfig;
 		DebugModeAutoConfig.class, // debug mode组件，用于设置调试模式
 		LoginCheckAutoConfig.class, // loginCheck简易安全框架
 		ErrorPageAutoConfig.class, // 错误页面处理
-		ApiServerAutoConfig.class, // api server
+		AjaxApiServerAutoConfig.class, // api server
 })
 
 public class JmxInWebAutoConfig {
