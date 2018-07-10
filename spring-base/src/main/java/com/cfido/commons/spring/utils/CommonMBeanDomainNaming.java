@@ -19,4 +19,6 @@ public interface CommonMBeanDomainNaming {
 
 	public final static String DOMAIN_WECHAT = "Commons微信";
 
+	public final static String DOMAIN_API_SERVER = "Commons Api服务";
+
 }

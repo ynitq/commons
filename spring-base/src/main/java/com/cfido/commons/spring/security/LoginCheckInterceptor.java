@@ -131,6 +131,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		}
 
 		try {
+
 			this.context.checkRight(info.getLoginCheck());
 		} catch (BaseApiException ex) {
 			if (info.isAjax()) {

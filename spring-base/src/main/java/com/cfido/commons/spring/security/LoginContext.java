@@ -7,12 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
-import com.cfido.commons.beans.apiExceptions.InvalidLoginStatusException;
-import com.cfido.commons.beans.apiServer.BaseApiException;
-import com.cfido.commons.beans.exceptions.security.PermissionDeniedException;
-import com.cfido.commons.loginCheck.ANeedCheckLogin;
 import com.cfido.commons.loginCheck.IWebUser;
 import com.cfido.commons.spring.utils.WebContextHolderHelper;
 import com.cfido.commons.utils.web.WebUtils;
@@ -25,7 +20,7 @@ import com.cfido.commons.utils.web.WebUtils;
  * @author 梁韦江 2016年8月23日
  */
 @Component
-public class LoginContext implements INeedLoginChecker {
+public class LoginContext extends BaseLoginContext {
 	private static final String NEXT_PAGE_MSG_SESSION_NAME = "NEXT_PAGE_MSG_SESSION_NAME";
 
 	/**
@@ -59,6 +54,7 @@ public class LoginContext implements INeedLoginChecker {
 	 * @param clazz
 	 * @return
 	 */
+	@Override
 	public <T extends IWebUser> T getUser(Class<T> clazz) {
 		HttpServletRequest request = WebContextHolderHelper.getRequest();
 		HttpServletResponse response = WebContextHolderHelper.getResponse();
@@ -208,35 +204,5 @@ public class LoginContext implements INeedLoginChecker {
 		return WebUtils.findRealRemoteAddr(request);
 	}
 
-	/**
-	 * 根据方法的注解，检查权限
-	 * 
-	 * @param loginCheck
-	 * @throws BaseApiException
-	 */
-	public void checkRight(ANeedCheckLogin loginCheck) throws InvalidLoginStatusException {
-		if (loginCheck == null) {
-			// 如果没有权限要求，就返回
-			return;
-		}
 
-		IWebUser user = this.getUser(loginCheck.userClass());
-		if (user == null) {
-			// 如果没找到登录用户就抛错
-			throw new InvalidLoginStatusException();
-		}
-
-		if (StringUtils.isEmpty(loginCheck.optId())) {
-			// 如果没有指定需要特殊检查的权限id，就直接通过
-			return;
-		}
-
-		if (user.checkRights(loginCheck.optId())) {
-			// 只要有其中一个用户能通过权限校验，就当通过了
-			return;
-		}
-
-		// 如果所有用户的权限都无法满足当前权限,就抛错
-		throw new PermissionDeniedException();
-	}
 }
