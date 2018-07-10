@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import com.cfido.commons.spring.apiServer.ApiServerAutoConfig;
+import com.cfido.commons.spring.apiServer.ajax.AjaxApiServerAutoConfig;
 
 /**
  * api server服务
@@ -18,7 +18,7 @@ import com.cfido.commons.spring.apiServer.ApiServerAutoConfig;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(ApiServerAutoConfig.class)
+@Import(AjaxApiServerAutoConfig.class)
 public @interface EnableApiServer {
 
 }
