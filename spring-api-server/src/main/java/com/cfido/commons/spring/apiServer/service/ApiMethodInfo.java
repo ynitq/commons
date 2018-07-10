@@ -15,7 +15,7 @@ import com.cfido.commons.spring.apiServer.core.ApiServerInitException;
 import com.cfido.commons.spring.apiServer.core.ApiServerUtils;
 import com.cfido.commons.spring.apiServer.core.FindInferfaceResult;
 import com.cfido.commons.spring.apiServer.core.MethodParamVo;
-import com.cfido.commons.spring.security.INeedLoginChecker;
+import com.cfido.commons.spring.security.BaseLoginContext;
 import com.cfido.commons.utils.utils.ClassDescriber;
 import com.cfido.commons.utils.utils.ClassUtil;
 import com.cfido.commons.utils.web.BinderUtil;
@@ -336,18 +336,15 @@ public class ApiMethodInfo<T> {
 	}
 
 	/**
-	 * 检查登录情况，该方法需要用到的 IWebUserProvider 需要从外部注入。所有可用在 invoke前仔细
+	 * 检查登录情况
 	 * 
-	 * @param needLoginChecker
-	 *            已登录用户的查询接口
+	 * @param loginContext
+	 *            登录状态管理器
 	 * @throws InvalidLoginStatusException
-	 *             InvalidLoginStatusException
 	 * 
 	 */
-	public void checkRights(INeedLoginChecker needLoginChecker) throws InvalidLoginStatusException {
-
-		needLoginChecker.checkRight(this.loginCheck);
-
+	public void checkRights(BaseLoginContext loginContext) throws InvalidLoginStatusException {
+		loginContext.checkRight(loginCheck);
 	}
 
 	/**

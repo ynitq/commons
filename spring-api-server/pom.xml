@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- 主项目直接继承 我们自己定义的parent -->
@@ -16,11 +17,6 @@
 
 	<dependencies>
 		<!-- 我们自己项目的依赖 -->
-		<dependency>
-			<!-- 工具包 -->
-			<groupId>${project.groupId}</groupId>
-			<artifactId>utils</artifactId>
-		</dependency>
 
 		<dependency>
 			<!-- 核心 -->
@@ -33,6 +29,7 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>spring-dict</artifactId>
 		</dependency>
+
 		<!-- /我们自己项目的依赖 -->
 
 		<!-- Spring boot 批量依赖 -->
@@ -54,8 +51,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -79,14 +77,6 @@
 			<artifactId>freemarker</artifactId>
 		</dependency>
 		<!-- /其他的依赖 -->
-
-		<!-- 测试用依赖 -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<!-- /测试用依赖 -->
 
 	</dependencies>
 </project>
